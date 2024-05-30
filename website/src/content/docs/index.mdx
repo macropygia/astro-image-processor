@@ -1,0 +1,55 @@
+---
+title: Introduction
+# description:
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Astro Image Processor is [Astro](https://astro.build/) integration for image optimization and [art direction](https://developer.mozilla.org/en/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images) for static build.
+
+<Aside type="caution">
+  This integration is currently under early development. All specifications are subject to change without notice, including those involving breaking changes.
+</Aside>
+
+## Features
+
+- Supports static builds only
+    - SSR is not supported and there are no plans to support it
+    - Uses the built-in endpoint of the [Image Service API](https://docs.astro.build/reference/image-service-reference/#local-services) (`/_image`) to display images in the dev server
+- Supports local files, remote files, and [Data URLs](https://developer.mozilla.org/en/docs/Web/HTTP/Basics_of_HTTP/Data_URLs)
+    - Remote files are cached according to the [`Cache-Control`](https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Cache-Control) or [`Expires`](https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Expires) headers, just as in a browser
+- Includes standard components supporting common use cases
+    - [`<Image>` component](/astro-image-processor/component/image/) that outputs an `<img>` element
+        - Automatically switches between foreground mode (placing the element alone) and background mode (placing the element into the container) depending on the presence of the slot
+        - Supports art direction via the `srcset` attribute
+    - [`<Picture>` component](/astro-image-processor/component/picture/) that outputs a `<picture>` element
+        - Automatically switches between foreground mode (placing the element alone) and background mode (placing the element into the container) depending on the presence of the slot
+        - Supports full-spec art direction using `<source>` elements
+        - Supports placeholder animations using the `::after` pseudo-element
+            - Displays correctly even if JavaScript is disabled (animation is omitted)
+    - [`<Background>` component](/astro-image-processor/component/background/) that sets the `background-image` for the container element
+        - Supports art direction using [`image-set()`](https://developer.mozilla.org/en/docs/Web/CSS/image/image-set), nearly equivalent to the `<Picture>` component
+- Standard components inherit almost all properties of the elements they generate, including Astro-specific properties
+    - Supports `data-astro-cid-[hash]` attributes or `.astro-[hash]` classes used for scoped styles
+- A [custom component](/astro-image-processor/component/custom-component/) using the APIs can handle uncommon use cases
+- Uses [sharp](https://sharp.pixelplumbing.com/) for image processing
+    - Direct use of a sharp instance, so all sharp functions are available
+    - For example, you can crop images with different angles of view from a single high-resolution image
+- Equipped with an independent caching system
+    - Shared cache between dev server and static builds
+    - Cache deletion policies can use "expiration date" and "whether it was used in the last `n` builds" (individually or with AND conditions)
+    - Possible to sync the cache with a CDN and use it as public files
+    - The database for storing cache metadata is configurable (see: [Data Adapter](/astro-image-processor/extras/data-adapter/))
+- Focused on reducing duplication and speeding up processing
+- By default, images are output to `/dist/_astro/[hash].[ext]`
+- Hash algorithm used for generating file and string hashes is configurable (see: [Hasher](/astro-image-processor/extras/hasher/))
+- Outputs HTML compatible with the latest [HTML Living Standard](https://html.spec.whatwg.org/)
+    - `<style>` and `<link>` elements are output within the `<head>` element
+- TypeScript friendly
+- Supports [Bun](https://bun.sh/)
+
+## Considerations for Production Use
+
+For production use, it is strongly recommended to fix the versions of this integration and sharp.
+
+If these implementations are changed, the hashes used for image identification may change. If the hashes change, all caches will need to be rebuilt, and the content of the HTML will also be affected.

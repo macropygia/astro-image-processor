@@ -1,0 +1,55 @@
+---
+title: Introduction
+# description:
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Astro Image Processorは画像の最適化と[アートディレクション](https://developer.mozilla.org/ja/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images)を行う静的ビルド専用の[Astro](https://astro.build/)インテグレーションです。
+
+<Aside type="caution">
+  本インテグレーションは現在初期開発中です。破壊的変更を伴う場合を含め、全ての仕様は予告なく変更される可能性があります。
+</Aside>
+
+## 仕様・機能・特徴
+
+- 静的ビルド専用
+    - SSR非対応（対応予定なし）
+    - 開発サーバーでは[Image Service APIのビルトインエンドポイント](https://docs.astro.build/ja/reference/image-service-reference/#local-services)（ `/_image` ）を使用して表示する
+- ローカルファイル・リモートファイル・[Data URL](https://developer.mozilla.org/ja/docs/Web/HTTP/Basics_of_HTTP/Data_URLs)の読み込みに対応
+    - リモートファイルは [`Cache-Control`](https://developer.mozilla.org/ja/docs/Web/HTTP/Headers/Cache-Control) ないし [`Expires`](https://developer.mozilla.org/ja/docs/Web/HTTP/Headers/Expires) ヘッダーに従ってブラウザと同じ仕様でキャッシュされる
+- 一般的なユースケースをサポートする標準コンポーネントを同梱
+    - `<img>` 要素を出力する [`<Image>` コンポーネント](/astro-image-processor/ja/component/image/)
+        - slotの有無により要素を単独で設置する前景モードとコンテナ要素に内包する背景モードを自動切替
+        - `srcset` 属性によるアートディレクションに対応
+    - `<picture>` 要素を出力する [`<Picture>` コンポーネント](/astro-image-processor/ja/component/picture/)
+        - slotの有無により要素を単独で設置する前景モードとコンテナ要素に内包する背景モードを自動切替
+        - `<source>` 要素を使用したフルスペックのアートディレクションに対応
+        - `::after` 擬似要素を使用したプレースホルダーアニメーションに対応
+            - JavaScript無効化環境でもアニメーションを省略して正常に表示される
+    - コンテナ要素に `background-image` を設定する [`<Background>` コンポーネント](/astro-image-processor/ja/component/background/)
+        - [`image-set()`](https://developer.mozilla.org/ja/docs/Web/CSS/image/image-set) を利用したアートディレクションに対応（ `<Picture>` コンポーネントとほぼ同等）
+- 標準コンポーネントはAstro固有のものを含むほぼ全てのプロパティを生成する要素に継承する
+    - スタイルのスコープに使用される `data-astro-cid-[hash]` 属性ないし `.astro-[hash]` クラスの継承に対応
+- 特殊なユースケースにはAPIを利用した[カスタムコンポーネント](/astro-image-processor/ja/component/custom-component/)で対応可能
+- 画像の編集には[sharp](https://sharp.pixelplumbing.com/)を使用
+    - sharpインスタンスを直接使用するため、sharpの機能を全て使用できる
+    - 例えば1枚の高解像度画像から異なる画角の画像を切り出す、といった処理が可能
+- 独立したキャッシュシステムを搭載
+    - 開発サーバーと静的ビルドでキャッシュを共用する
+    - キャッシュ削除ポリシーとして「有効期限」と「直近n回のビルドで使用されたかどうか」を使用可能（単独またはAND条件）
+    - キャッシュをCDN等に同期してそのまま公開ファイルとして使用する設定も可能
+    - キャッシュのメタデータを格納するデータベースは変更可能（参照: [Data Adapter](/astro-image-processor/ja/extras/data-adapter/)）
+- 重複の抑制と処理の高速化に注力
+- 既定の設定では画像は `/dist/_astro/[hash].[ext]` に出力される
+- ファイル・文字列のハッシュ生成に使用するハッシュアルゴリズムは変更可能（参照: [Hasher](/astro-image-processor/ja/extras/hasher/)）
+- 最新の[HTML Living Standard](https://html.spec.whatwg.org/)に準拠したHTMLを出力
+    - `<style>` 要素と `<link>` 要素は `<head>` 要素内に出力される
+- TypeScriptフレンドリー
+- [Bun](https://bun.sh/)対応
+
+## プロダクション利用における留意事項
+
+プロダクション用途では本インテグレーションとsharpのバージョンを固定することを強く推奨する。
+
+これらの実装が変更された場合、画像の識別に使用されているハッシュが変更される可能性があり、ハッシュが変更されると全てのキャッシュのリビルドが必要になる。またHTMLの内容も変更される。

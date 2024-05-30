@@ -1,0 +1,49 @@
+name: Checks (Push/PR - Conditional)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.ts'
+      - '.prettierrc.json'
+      - 'biome.json'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '!website/**'
+      - '!**/__examples__/**'
+      - '!**/__scripts__/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.ts'
+      - '.prettierrc.json'
+      - 'biome.json'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '!website/**'
+      - '!**/__examples__/**'
+      - '!**/__scripts__/**'
+    types: [opened, reopened, synchronize]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm run lint:fix
+      - run: pnpm run format
+      - run: pnpm run typecheck
+      - run: pnpm run test

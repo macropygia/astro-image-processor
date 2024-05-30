@@ -1,0 +1,56 @@
+---
+title: Configuration
+description: Configuration
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+`astro.config.ts` で指定する。
+
+```ts ins={8}
+// astro.config.ts
+import { defineConfig } from "astro/config";
+import { astroImageProcessor } from "astro-image-processor";
+
+export default defineConfig({
+  integrations: [
+    astroImageProcessor({
+      scopedStyleStrategy: "class",
+    }),
+  ],
+});
+```
+
+## 設定ファイルの使用
+
+設定ファイルを作成して `astro.config.ts` で読み込むこともできる。（設定ファイルの自動読込は非対応）
+
+```ts
+// imageProcessor.config.ts
+import { defineConfig } from 'astro-image-processor/config';
+
+export default defineConfig({
+  scopedStyleStrategy: "class",
+  componentProps: {
+    objectFit: "cover",
+  },
+  formatOptions: {
+    avif: {
+      quality: 60,
+    },
+  },
+});
+```
+
+```ts {8} ins={4}
+// astro.config.ts
+import { defineConfig } from "astro/config";
+import { astroImageProcessor } from "astro-image-processor";
+import imageProcessorConfig from "./imageProcessorConfig.js"
+
+export default defineConfig({
+  integrations: [
+    astroImageProcessor(imageProcessorConfig),
+  ],
+});
+```

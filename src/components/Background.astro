@@ -1,0 +1,113 @@
+---
+//! astro-head-inject
+import type {
+  ImgProcBackgroundComponentProps,
+  ImgProcProcessorOptions,
+} from '../types';
+import { injectStyle } from './injectStyle';
+import { injectLink } from './injectLink';
+import { BackgroundSource } from '../api/BackgroundSource';
+
+type Props = ImgProcBackgroundComponentProps;
+
+const {
+  src,
+  width,
+  height,
+  densities,
+  widths,
+  sizes,
+  tagName,
+  placeholder,
+  placeholderColor,
+  upscale,
+  layout,
+  backgroundSize,
+  backgroundPosition,
+  enforceAspectRatio,
+  preload,
+  processor,
+  profile,
+  formats,
+  formatOptions,
+  artDirectives,
+  ...restProps
+} = Astro.props;
+
+// for `exactOptionalPropertyTypes: true`
+// NOTE: Specifying `undefined` for property in the component has no effect.
+const options = Object.fromEntries(
+  Object.entries({
+    src,
+    width,
+    height,
+    densities,
+    widths,
+    sizes,
+    tagName,
+    placeholder,
+    placeholderColor,
+    upscale,
+    layout,
+    backgroundSize,
+    backgroundPosition,
+    enforceAspectRatio,
+    preload,
+    processor,
+    profile,
+    formats,
+    formatOptions,
+    artDirectives,
+  }).filter(([, value]) => value !== undefined),
+) as Partial<ImgProcProcessorOptions> & { src: string };
+
+// Container tag name
+const TagName = tagName || 'div';
+
+// Prepare to inherit `crossorigin` from component to <link> element
+if (typeof restProps.crossorigin === 'string') {
+  options.crossOrigin = restProps.crossorigin;
+}
+
+// Prepare to merge additional classes into the container
+const { class: className, ...rawContainerAttributes } = restProps || {};
+
+// Pick `data-astro-cid-[hash]` attribute to inherit from Astro
+const [cid] = Object.keys(restProps).filter((key) =>
+  key.startsWith('data-astro-cid-'),
+);
+
+// Pick `astro-[hash]` class to inherit from Astro
+const classByAstro = (className as string)
+  ?.split(' ')
+  .filter((cls) => cls.startsWith('astro-'));
+
+// Run image processor
+const {
+  pictureAttributes: containerAttributes,
+  pictureClassList: containerClassList,
+  css,
+  links,
+} = await BackgroundSource.factory({
+  ctx: globalThis.imageProcessorContext,
+  options,
+});
+
+// Generate <style> and <link> elements for injection
+const [InjectStyle, InjectLink] = await Promise.all([
+  css ? injectStyle(css) : undefined,
+  links ? injectLink(links) : undefined,
+]);
+---
+
+<TagName
+  class:list={[className, containerClassList, classByAstro]}
+  {...rawContainerAttributes}
+  {...containerAttributes}
+  {...cid && { [cid]: true }}
+>
+  <slot />
+</TagName>
+
+{InjectStyle && <InjectStyle />}
+{InjectLink && <InjectLink />}

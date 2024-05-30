@@ -1,0 +1,53 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "files": {
+    "ignore": ["node_modules", "dist", "coverage", "*.astro", "*.d.ts"]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "all": true,
+      "style": {
+        "useNamingConvention": "off"
+      },
+      "nursery": {
+        "noConsole": "off",
+        "useImportRestrictions": "off",
+        "noNodejsModules": "off"
+      },
+      "suspicious": {
+        "noConsoleLog": "off"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "ignore": [],
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "javascript": {
+    "globals": ["Astro", "Bun"]
+  },
+  "overrides": [
+    {
+      "include": ["*.test.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noEmptyBlockStatements": "off",
+            "noExplicitAny": "off"
+          },
+          "performance": {
+            "noDelete": "off"
+          }
+        }
+      }
+    }
+  ]
+}

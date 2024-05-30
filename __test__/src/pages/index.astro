@@ -1,0 +1,117 @@
+---
+import sharp from 'sharp';
+import { Image, Picture, Background } from '../../../src/components';
+import Layout from '../components/Layout.astro';
+---
+
+<Layout>
+  <Image
+    src="/src/assets/images/foo/bar/3000_white.png"
+    alt="Alt text"
+    width="1000"
+  />
+  <Image
+    src="/src/assets/3000_gray.png"
+    alt="Alt text"
+    width={512}
+    height={384}
+    densities={[0.5, 1, 2, 3]}
+    sizes="100vw"
+    placeholder="dominantColor"
+    placeholderColor="#666"
+    upscale="never"
+    objectFit="cover"
+    enforceAspectRatio={true}
+    preload="webp"
+    processor={sharp().grayscale()}
+    format="webp"
+    formatOptions={{
+      webp: {
+        quality: 90,
+      },
+    }}
+    containerAttributes={{
+      'aria-hidden': true,
+    }}
+  >
+    <p class="foor">slot</p>
+  </Image>
+  <Picture
+    src="/src/assets/3000_gray.png"
+    alt="Astro Image Processor"
+    preload="avif"
+    width={1000}
+    widths={[1000, 2000, 3000]}
+    placeholder="blurred"
+    layout="fullWidth"
+    artDirectives={[
+      {
+        src: '/src/assets/3000_gray.png',
+        densities: [1, 2, 3],
+        width: 500,
+        media: '(max-width: 520px)',
+        processor: sharp().resize(2000, 3000),
+        placeholder: 'dominantColor',
+        placeholderColor: '#666',
+        preload: 'avif',
+      },
+    ]}
+  />
+  <Picture
+    src="/src/assets/3000_gray.png"
+    alt="Astro Image Processor"
+    preload="avif"
+    width={1000}
+    widths={[1000, 2000, 3000]}
+    placeholder="blurred"
+    blurProcessor={sharp().grayscale().resize(20).webp({ quality: 1 })}
+    artDirectives={[
+      {
+        src: '/src/assets/3000_gray.png',
+        densities: [1, 2, 3],
+        width: 500,
+        media: '(max-width: 520px)',
+        processor: sharp().resize(2000, 3000),
+        placeholder: 'dominantColor',
+        placeholderColor: '#666',
+        preload: 'avif',
+      },
+    ]}
+    tagName="section"
+    containerAttributes={{
+      'class:list': ['foo', 'bar'],
+    }}
+  >
+    <p class="baz">slot</p>
+  </Picture>
+  <Background
+    backgroundSize="cover"
+    backgroundPosition="left top"
+    enforceAspectRatio={true}
+    src="/src/assets/3000_gray.png"
+    width={512}
+    densities={[1, 2]}
+    artDirectives={[
+      {
+        src: '/src/assets/3000_gray.png',
+        width: 512,
+        densities: [1, 2],
+        media: '(max-width: 768px)',
+      },
+    ]}
+  >
+    <p>slot</p>
+  </Background>
+</Layout>
+
+<style>
+  .foo {
+    position: relative;
+  }
+  .bar {
+    padding: 20px;
+  }
+  .baz {
+    color: red;
+  }
+</style>

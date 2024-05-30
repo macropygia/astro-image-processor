@@ -1,0 +1,64 @@
+# name: "Feature requests"
+# title:
+# description: Use General if you cannot fill out the form
+labels:
+  - enhancement
+# assignees:
+#   - macropygia
+body:
+  - type: markdown
+    attributes:
+      value: ⚠ Please write in plain English. (Repository owner is not a native English speaker.) ※日本語可
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Do all of the following conditions apply?
+      options:
+        - label: Custom global styles are not a solution.
+          required: true
+        - label: Using the Astro features together is not a solution.
+          required: true
+        - label: Custom component using API is not a solution.
+          required: true
+        - label: Custom data adapter is not a solution.
+          required: true
+        - label: I understand the policy of not including low demand features.
+          required: true
+        - label: Feasibility is verified.
+          required: true
+  - type: checkboxes
+    id: category
+    attributes:
+      label: Category
+      description: You may select more than one.
+      options:
+        - label: Components
+        - label: API
+        - label: Cache
+        - label: Logic (other than above)
+        - label: HTML
+        - label: CSS
+        - label: Data Adapters
+        - label: Documentation
+        - label: Tests
+        - label: Security/Vulnerability
+        - label: Other
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the request.
+    validations:
+      required: true
+  - type: input
+    id: additional-dependencies
+    attributes:
+      label: Additional dependencies
+      description: If needed.
+  - type: checkboxes
+    id: will-pr
+    attributes:
+      label: Participation
+      options:
+        - label: I am willing to create a pull request for this issue.

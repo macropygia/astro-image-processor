@@ -1,0 +1,5 @@
+website/** linguist-detectable=false
+__mock__/**  linguist-detectable=false
+__test__/**  linguist-detectable=false
+*.config.ts linguist-detectable=false
+*.test.ts linguist-detectable=false

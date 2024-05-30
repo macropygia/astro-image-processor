@@ -1,0 +1,107 @@
+---
+title: Getting Started
+description: インストール
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+パッケージをインストールする。
+
+<Tabs syncKey="pkg">
+<TabItem label="pnpm">
+```sh
+pnpm add astro-image-processor
+```
+</TabItem>
+<TabItem label="Bun">
+```sh
+bun add astro-image-processor
+```
+</TabItem>
+<TabItem label="Yarn">
+```sh
+yarn add astro-image-processor
+```
+</TabItem>
+<TabItem label="npm">
+```sh
+npm install astro-image-processor
+```
+</TabItem>
+</Tabs>
+
+Astroの設定に追加する。
+
+```ts ins={3,7}
+// astro.config.ts
+import { defineConfig } from "astro/config";
+import { astroImageProcessor } from "astro-image-processor";
+
+export default defineConfig({
+  integrations: [
+    astroImageProcessor(),
+  ],
+});
+```
+
+共通CSSを設置する。
+
+```astro ins={3,18}
+// src/layout/Layout.astro
+---
+import { GlobalStyles } from 'astro-image-processor/components';
+---
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Astro Image Processor</title>
+  </head>
+  <body>
+    <h1>Astro Image Processor</h1>
+    <slot />
+  </body>
+</html>
+
+<GlobalStyles />
+```
+
+ページにコンポーネントを設置する。
+
+```astro ins={3,8}
+// src/pages/index.astro
+---
+import { Picture } from 'astro-image-processor/components';
+import { Layout } from '../layout/Layout.astro';
+---
+
+<Layout>
+  <Picture src="/src/assets/images/image.png" alt="Sample image" />
+</Layout>
+```
+
+ビルドする。
+
+<Tabs syncKey="pkg">
+<TabItem label="pnpm">
+```sh
+pnpm build
+```
+</TabItem>
+<TabItem label="Bun">
+```sh
+bun run build
+```
+</TabItem>
+<TabItem label="Yarn">
+```sh
+yarn build
+```
+</TabItem>
+<TabItem label="npm">
+```sh
+npm build
+```
+</TabItem>
+</Tabs>

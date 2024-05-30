@@ -1,0 +1,56 @@
+---
+title: Configuration
+description: Configuration
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Edit `astro.config.ts`.
+
+```ts ins={8}
+// astro.config.ts
+import { defineConfig } from "astro/config";
+import { astroImageProcessor } from "astro-image-processor";
+
+export default defineConfig({
+  integrations: [
+    astroImageProcessor({
+      scopedStyleStrategy: "class",
+    }),
+  ],
+});
+```
+
+## Using a configuration file
+
+A configuration file can be created and loaded with `astro.config.ts`. (Automatic loading of the configuration file is not supported.)
+
+```ts
+// imageProcessor.config.ts
+import { defineConfig } from 'astro-image-processor/config';
+
+export default defineConfig({
+  scopedStyleStrategy: "class",
+  componentProps: {
+    objectFit: "cover",
+  },
+  formatOptions: {
+    avif: {
+      quality: 60,
+    },
+  },
+});
+```
+
+```ts {8} ins={4}
+// astro.config.ts
+import { defineConfig } from "astro/config";
+import { astroImageProcessor } from "astro-image-processor";
+import imageProcessorConfig from "./imageProcessorConfig.js"
+
+export default defineConfig({
+  integrations: [
+    astroImageProcessor(imageProcessorConfig),
+  ],
+});
+```

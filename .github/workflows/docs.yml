@@ -1,0 +1,32 @@
+name: Deploy Docs
+
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy_docs2:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: |
+          pnpm install
+          pnpm run build
+        working-directory: ./website
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./website/dist
+      - uses: actions/deploy-pages@v4

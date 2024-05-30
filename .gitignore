@@ -1,0 +1,17 @@
+.astro
+.cache
+.temp
+node_modules
+
+dist
+coverage
+
+pnpm-debug.log*
+
+.env
+.vscode/settings.json
+
+*.log
+*.bak
+*.temp*
+.DS_Store

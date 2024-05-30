@@ -1,0 +1,118 @@
+{
+  "name": "astro-image-processor",
+  "version": "0.0.0",
+  "description": "Astro integartion for image optimization and art direction for static builds",
+  "keywords": [
+    "astro",
+    "withastro",
+    "astro-components",
+    "astro-integration",
+    "sharp",
+    "image"
+  ],
+  "homepage": "https://macropygia.github.io/astro-image-processor/",
+  "bugs": "https://github.com/macropygia/astro-image-processor/discussions/new/choose",
+  "license": "MIT",
+  "author": "macropygia",
+  "files": [
+    "tsconfig.json",
+    "src",
+    "!src/components/exports.ts",
+    "!src/extras/index.ts",
+    "!src/api/index.ts",
+    "!**/*.test.ts"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./config": "./src/config/index.ts",
+    "./const": "./src/const.ts",
+    "./components": "./src/components/index.ts",
+    "./extras/*": "./src/extras/*.ts",
+    "./api/*": "./src/api/*.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --apply .",
+    "lint:unsafe": "biome check --apply-unsafe .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test:watch": "vitest",
+    "test": "vitest run",
+    "test:update": "vitest run -u",
+    "test:bun": "bun test bun",
+    "coverage": "vitest run --coverage",
+    "dev": "astro dev --config astro.default.ts --root __test__",
+    "build": "astro build --config astro.default.ts --root __test__",
+    "build:loki": "astro build --config astro.loki.ts --root __test__",
+    "build:bun": "bun --bun astro build --config astro.bun.ts --root __test__",
+    "preview": "astro preview --config astro.default.ts --root __test__",
+    "hooks:pre-commit": "lint-staged",
+    "hooks:commit-msg": "commitlint -e",
+    "changeset:version": "changeset version",
+    "prepare": "simple-git-hooks"
+  },
+  "peerDependencies": {
+    "astro": "^4.9.1",
+    "deterministic-object-hash": "^2.0.2",
+    "lokijs": "^1.5.12",
+    "p-limit": "^5.0.0",
+    "sharp": "^0.33.4",
+    "xxhash-addon": "^2.0.3"
+  },
+  "peerDependenciesMeta": {
+    "lokijs": {
+      "optional": true
+    },
+    "xxhash-addon": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@astrojs/node": "^8.2.5",
+    "@astrojs/ts-plugin": "^1.8.0",
+    "@biomejs/biome": "^1.7.3",
+    "@changesets/cli": "^2.27.5",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@types/bun": "latest",
+    "@types/lokijs": "^1.5.14",
+    "@types/node": "^20.12.13",
+    "@vitest/coverage-v8": "^1.6.0",
+    "astro": "^4.9.2",
+    "commitlint": "^19.3.0",
+    "deterministic-object-hash": "^2.0.2",
+    "lint-staged": "^15.2.5",
+    "lokijs": "^1.5.12",
+    "p-limit": "^5.0.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-astro": "^0.14.0",
+    "sharp": "^0.33.4",
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.12",
+    "vitest": "^1.6.0",
+    "xxhash-addon": "^2.0.3"
+  },
+  "engines": {
+    "node": "^20.14.0",
+    "bun": "^1.1.4"
+  },
+  "packageManager": "pnpm@9.1.3",
+  "volta": {
+    "node": "20.14.0",
+    "pnpm": "9.1.3"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm run hooks:pre-commit",
+    "commit-msg": "pnpm run hooks:commit-msg"
+  },
+  "lint-staged": {
+    "*.{json,ts}": "biome check --apply",
+    "*.{astro,md,yaml,yml}": "prettier --write"
+  },
+  "publishConfig": {
+    "provenance": true
+  }
+}
