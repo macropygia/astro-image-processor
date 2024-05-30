@@ -34,6 +34,7 @@ jobs:
         with:
           title: '[ci] release'
           commit: '[ci] release'
+          publish: pnpm exec changeset publish
           createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

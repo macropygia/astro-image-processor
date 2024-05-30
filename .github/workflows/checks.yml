@@ -2,18 +2,6 @@ name: Checks (Push/PR - Conditional)
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - '**.ts'
-      - '.prettierrc.json'
-      - 'biome.json'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '!website/**'
-      - '!**/__examples__/**'
-      - '!**/__scripts__/**'
   pull_request:
     branches:
       - main
