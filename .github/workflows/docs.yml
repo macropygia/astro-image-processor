@@ -8,7 +8,7 @@ defaults:
     shell: bash
 
 jobs:
-  deploy_docs2:
+  deploy_docs:
     permissions:
       contents: read
       pages: write

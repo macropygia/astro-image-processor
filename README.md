@@ -4,7 +4,9 @@
 
 [Astro](https://astro.build/) integration for image optimization and art direction for static builds.
 
-**Currently under early development. It will be developed internally for a while. All specifications are subject to change without notice, including those involving breaking changes.**
+**Currently under early development. It will be developed internally for a while.**
+
+**All specifications are subject to change without notice, including those involving breaking changes.**
 
 ## Overview
 

@@ -30,7 +30,7 @@ export default defineConfig({
 
 ### xxHash3Hasher
 
-Uses `XXHash3` hash algorithm. Over 10 times faster than `MD5` generation by `Crypto`.
+Uses `XXHash3` hash algorithm. Over 10 times faster than `MD5` generation by `Crypto`. Could be faster than Crypto for huge projects.
 
 Requires [`xxhash-addon`](https://www.npmjs.com/package/xxhash-addon) and the toolchain used to build the binary.
 

@@ -49,17 +49,21 @@ export default defineConfig({
           label: "Start Here",
           items: [
             { label: "Introduction", link: "/" },
-            { label: "Sample Output", link: "/sample-output/" },
             { label: "Getting Started", link: "/getting-started/" },
+            { label: "Sample Output", link: "/sample-output/" },
           ],
         },
         {
-          label: "Configuration",
+          label: "Guides",
           items: [
-            { label: "Configuration", link: "/configuration/configuration/" },
+            { label: "Configuration", link: "/guides/configuration/" },
             {
               label: "Configuration Reference",
-              link: "/configuration/reference/",
+              link: "/guides/configuration-reference/",
+            },
+            {
+              label: "Tips",
+              link: "/guides/tips/",
             },
           ],
         },

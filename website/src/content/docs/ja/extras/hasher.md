@@ -30,7 +30,7 @@ export default defineConfig({
 
 ### xxHash3Hasher
 
-ハッシュアルゴリズムに `XXHash3` を使用する。 `Crypto` による `MD5` の生成より10倍以上高速。
+ハッシュアルゴリズムに `XXHash3` を使用する。 `Crypto` による `MD5` の生成より10倍以上高速なため、巨大なプロジェクトではCryptoより高速になる可能性がある。
 
 [`xxhash-addon`](https://www.npmjs.com/package/xxhash-addon) と同ライブラリが使用するビルド用ツールチェインが必要。
 
