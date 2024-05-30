@@ -23,12 +23,12 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
       - run: pnpm install
       - run: pnpm run lint:fix
       - run: pnpm run format
       - run: pnpm run typecheck
       - run: pnpm run test
+
       - id: changesets
         uses: changesets/action@v1
         with:
