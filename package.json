@@ -12,6 +12,10 @@
   ],
   "homepage": "https://macropygia.github.io/astro-image-processor/",
   "bugs": "https://github.com/macropygia/astro-image-processor/discussions/new/choose",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macropygia/astro-image-processor"
+  },
   "license": "MIT",
   "author": "macropygia",
   "files": [
