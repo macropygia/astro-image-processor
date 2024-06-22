@@ -1,9 +1,10 @@
-import fs from "node:fs";
 import path from "node:path";
 
-import { afterAll, describe, expect, test, vi } from "vitest";
+import { type Mock, afterAll, describe, expect, test, vi } from "vitest";
 
+import type { Ora } from "ora";
 import type { ImgProcDataAdapter } from "../../types.js";
+import { pathExists } from "../utils/pathExists.js";
 import { retrieveVariant } from "./retrieveVariant.js";
 
 const mockDb = {
@@ -11,6 +12,12 @@ const mockDb = {
   renew: vi.fn(),
   delete: vi.fn(),
 };
+
+const mockSpinner = {
+  text: vi.fn(),
+} as unknown as Ora;
+
+vi.mock("../utils/pathExists.js");
 
 describe("Unit/api/methods/retrieveVariant", () => {
   afterAll(() => {
@@ -28,6 +35,7 @@ describe("Unit/api/methods/retrieveVariant", () => {
       imageCacheDir: "cache/dir",
       variantWidth: 800,
       variantDensity: 1,
+      spinner: mockSpinner,
     });
 
     expect(result).toBeNull();
@@ -41,7 +49,8 @@ describe("Unit/api/methods/retrieveVariant", () => {
       height: 600,
     };
     mockDb.fetch.mockResolvedValue(variantData);
-    vi.spyOn(fs, "existsSync").mockReturnValue(true);
+    // vi.spyOn(fs, "existsSync").mockReturnValue(true);
+    (pathExists as Mock).mockResolvedValue(true);
     vi.spyOn(path, "join").mockReturnValue("cache/dir/variantHash.jpg");
 
     const result = await retrieveVariant({
@@ -52,6 +61,7 @@ describe("Unit/api/methods/retrieveVariant", () => {
       imageCacheDir: "cache/dir",
       variantWidth: 800,
       variantDensity: 1,
+      spinner: mockSpinner,
     });
 
     expect(result).toEqual({
@@ -70,6 +80,7 @@ describe("Unit/api/methods/retrieveVariant", () => {
       variantProfileHash: "variantProfileHash",
       imageCacheDir: "cache/dir",
       variantWidth: 800,
+      spinner: mockSpinner,
     });
 
     expect(resultWithoutDensity).toEqual({
@@ -90,7 +101,8 @@ describe("Unit/api/methods/retrieveVariant", () => {
       height: 600,
     };
     mockDb.fetch.mockResolvedValue(variantData);
-    vi.spyOn(fs, "existsSync").mockReturnValue(false);
+    // vi.spyOn(fs, "existsSync").mockReturnValue(false);
+    (pathExists as Mock).mockResolvedValue(false);
 
     const result = await retrieveVariant({
       src: "test.jpg",
@@ -100,6 +112,7 @@ describe("Unit/api/methods/retrieveVariant", () => {
       imageCacheDir: "cache/dir",
       variantWidth: 800,
       variantDensity: 1,
+      spinner: mockSpinner,
     });
 
     expect(result).toBeNull();

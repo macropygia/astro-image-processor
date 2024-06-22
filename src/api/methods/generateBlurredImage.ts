@@ -20,7 +20,6 @@ export const generateBlurredImage: GenerateBlurredImage = async (source) => {
     data: { hash: sourceHash },
     options: { processor: sourceProcessor, blurProcessor },
     settings: { hasher },
-    logger,
   } = source;
 
   if (!sourceHash) {
@@ -38,7 +37,7 @@ export const generateBlurredImage: GenerateBlurredImage = async (source) => {
   const data = await db.fetch({ source: sourceHash, profile });
   if (data?.base64) {
     await db.renew({ source: sourceHash, profile });
-    logger?.info(`Cache hit (placeholder): ${source.options.src}`);
+    // logger?.info(`Cache hit (placeholder): ${source.options.src}`);
     return `data:image/${data.format};base64,${data.base64}`;
   }
 
@@ -52,7 +51,7 @@ export const generateBlurredImage: GenerateBlurredImage = async (source) => {
   const metadata = await getMetadataFromBuffer({ buffer: blurredBuffer });
   const { format, width, height } = metadata;
 
-  logger?.info(`Generated (placeholder): ${source.options.src}`);
+  // logger?.info(`Generated (placeholder): ${source.options.src}`);
 
   const blurredHash = hasher(blurredBuffer);
   const base64 = blurredBuffer.toString("base64");

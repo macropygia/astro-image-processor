@@ -1,8 +1,6 @@
-import os from "node:os";
-
-import pLimit from "p-limit";
 import sharp from "sharp";
 
+import PQueue from "p-queue";
 import type { ImgProcVariant, ImgProcVariants } from "../../types.js";
 import type { BaseSource } from "../BaseSource.js";
 import { deterministicHash } from "../utils/deterministicHash.js";
@@ -10,10 +8,9 @@ import { getFilteredSharpOptions } from "../utils/getFilteredSharpOptions.js";
 import { generateVariant } from "./generateVariant.js";
 import { retrieveVariant } from "./retrieveVariant.js";
 
-const limit = pLimit(os.cpus().length);
-
 type GenerateVariants = (source: BaseSource) => Promise<ImgProcVariants>;
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
 export const generateVariants: GenerateVariants = async (source) => {
   const {
     db,
@@ -22,8 +19,9 @@ export const generateVariants: GenerateVariants = async (source) => {
     options: { src, format, formats, processor },
     formatOptions,
     resolved,
-    settings: { hasher },
+    settings: { concurrency, hasher },
     logger,
+    spinner,
   } = source;
 
   if (!sourceHash) {
@@ -38,7 +36,18 @@ export const generateVariants: GenerateVariants = async (source) => {
   const sourceProfile = source.profile;
   const formatsArray = source.componentType === "img" ? [format] : formats;
 
-  const queue: Promise<ImgProcVariant>[] = [];
+  // const queue: Promise<ImgProcVariant>[] = [];
+  const total = resolved.widths.length * formatsArray.length;
+  const queue = new PQueue({ concurrency });
+  queue.on("add", () => {
+    spinner.text = `Processing... (${total - queue.size - queue.pending}/${total})`;
+  });
+  queue.on("next", () => {
+    spinner.text = `Processing... (${total - queue.size - queue.pending}/${total})`;
+  });
+
+  // biome-ignore lint/suspicious/noConfusingVoidType: p-queue issue
+  const results: Promise<void | ImgProcVariant>[] = [];
 
   for (const variantFormat of formatsArray) {
     const variantFormatOption = formatOptions[variantFormat];
@@ -72,6 +81,7 @@ export const generateVariants: GenerateVariants = async (source) => {
         variantWidth,
         variantDensity,
         logger,
+        spinner,
       });
 
       if (itemFromCache) {
@@ -81,8 +91,8 @@ export const generateVariants: GenerateVariants = async (source) => {
 
       // New file
       const buffer = await source.getBuffer();
-      queue.push(
-        limit(() =>
+      const result = queue.add(
+        () =>
           generateVariant({
             src,
             buffer,
@@ -96,14 +106,20 @@ export const generateVariants: GenerateVariants = async (source) => {
             variantWidth,
             variantDensity,
             logger,
+            spinner,
           }),
-        ),
+        // ),
       );
+      results.push(result);
     }
   }
 
-  const generatedItems = await Promise.all(queue);
+  await queue.onIdle();
+  const generatedItems = await Promise.all(results);
   for (const item of generatedItems) {
+    if (!item) {
+      continue;
+    }
     variants[item.format]?.push(item);
   }
 

@@ -113,7 +113,7 @@ export interface ImgProcSettings {
    */
   imageOutDirPattern: string;
   /**
-   * Keep directory structure for image files
+   * Preserve directory structure for image files
    * - Place images by root relative paths with `srcDir` as the document root
    * - Image filenames are resolved according to `fileNamePattern`
    * - e.g.
@@ -125,7 +125,7 @@ export interface ImgProcSettings {
    */
   preserveDirectories: boolean;
   /**
-   * File name pattern when keep directory structure option is enabled
+   * File name pattern when preserve directory structure option is enabled
    * - Uses if `preserveDirectories` is true
    * - Support the following placeholders:
    *   - `[name]`: Original file name (without extension)
@@ -134,7 +134,7 @@ export interface ImgProcSettings {
    *   - `[width]`: Resolved width
    *   - `[height]`: Resolved height
    *   - `[descriptor]`: `1x` `2x` `1000w` `2000w`
-   *   - `[ext]`: Extension
+   *   - `[ext]`: Extension (without period)
    * - The file name must include all of `[name]`, `[width]`, `[height]`, and `[descriptor]`, or include `[hash8]` or `[hash]`
    *   - If this condition is not met, different images may be given the same name
    * - Cache buster can be specified using the hash and query parameter
@@ -168,6 +168,11 @@ export interface ImgProcSettings {
    * @default Configured for `<GlobalStyles>` component
    */
   globalClassNames: typeof defaultGlobalClassNames;
+  /**
+   * Concurrency
+   * @default Math.max(os.cpus().length, 1)
+   */
+  concurrency: number;
   /**
    * Download timeout duration (milliseconds)
    * - Timeout duration for downloading remote files
@@ -543,7 +548,7 @@ export interface ImgProcVariant {
   height: number;
   format: ImgProcOutputFormat;
   ext: string;
-  descriptor?: string;
+  descriptor: string;
 }
 
 /**

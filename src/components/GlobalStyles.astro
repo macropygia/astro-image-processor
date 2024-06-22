@@ -63,31 +63,36 @@ Astro Image Processor Global Styles
   }
 
   /* layout */
-  .aip-layout-constrained {
+  /* :where(.aip-elm-picture.aip-layout-constrained) {} */
+  :where(.aip-elm-img.aip-layout-constrained) {
     max-width: 100%;
     height: auto;
   }
-  .aip-layout-fixed {
+  /* :where(.aip-elm-picture.aip-layout-fixed) {} */
+  /* :where(.aip-elm-img.aip-layout-fixed) {} */
+  :where(.aip-elm-picture.aip-layout-fullWidth) {
+    width: 100%;
+    height: auto;
   }
-  .aip-layout-fullWidth {
+  :where(.aip-elm-img.aip-layout-fullWidth) {
     width: 100%;
     height: auto;
   }
 
   /* object-fit */
-  .aip-fit-fill {
+  :where(.aip-fit-fill) {
     object-fit: fill;
   }
-  .aip-fit-contain {
+  :where(.aip-fit-contain) {
     object-fit: contain;
   }
-  .aip-fit-cover {
+  :where(.aip-fit-cover) {
     object-fit: cover;
   }
-  .aip-fit-none {
+  :where(.aip-fit-none) {
     object-fit: none;
   }
-  .aip-fit-scale-down {
+  :where(.aip-fit-scale-down) {
     object-fit: scale-down;
   }
 </style>

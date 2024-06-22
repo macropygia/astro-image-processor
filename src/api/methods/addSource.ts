@@ -42,7 +42,7 @@ export const addSource: AddSource = async (source) => {
     );
 
     // Save remote file cache
-    fs.writeFileSync(source.downloadPath, buffer);
+    await fs.promises.writeFile(source.downloadPath, buffer);
   }
 
   await db.insert(data as ImgProcFile);

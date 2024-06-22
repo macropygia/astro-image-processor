@@ -19,7 +19,18 @@ import { getBufferFromRemoteUrl } from "./utils/getBufferFromRemoteUrl.js";
 // import { normalizePath } from './utils/normalizePath.js';
 import { getFilteredSharpOptions } from "./utils/getFilteredSharpOptions.js";
 
-vi.mock("node:fs");
+vi.mock("node:fs", () => ({
+  default: {
+    readFileSync: vi.fn(),
+    existsSync: vi.fn(),
+    mkdirSync: vi.fn(),
+    copyFileSync: vi.fn(),
+    promises: {
+      readFile: vi.fn(),
+      writeFile: vi.fn(),
+    },
+  },
+}));
 // vi.mock("node:path");
 vi.mock("./methods/addSource.js");
 vi.mock("./methods/generateBlurredImage.js");
@@ -178,7 +189,7 @@ describe("Unit/api/BaseSource", () => {
       };
       const instance = await BaseSource.factory(args);
       const mockBuffer = Buffer.from("test");
-      (fs.readFileSync as Mock).mockReturnValue(mockBuffer);
+      (fs.promises.readFile as Mock).mockReturnValue(mockBuffer);
 
       const buffer = await instance.getBuffer();
       expect(buffer).toBe(mockBuffer);
@@ -207,6 +218,7 @@ describe("Unit/api/BaseSource", () => {
       instance.downloadPath = "mockDownloadPath";
       instance.buffer = undefined;
       (fs.existsSync as Mock).mockReturnValue(false);
+      (fs.promises.writeFile as Mock).mockResolvedValue(undefined);
 
       const buffer2 = await instance.getBuffer();
       expect(buffer2).toBe(mockBuffer);
@@ -214,6 +226,7 @@ describe("Unit/api/BaseSource", () => {
       // downloadPath exists and cache found
       instance.buffer = undefined;
       (fs.existsSync as Mock).mockReturnValue(true);
+      (fs.promises.readFile as Mock).mockResolvedValue(mockBuffer);
 
       const buffer3 = await instance.getBuffer();
       expect(buffer3.toString()).toBe("test");

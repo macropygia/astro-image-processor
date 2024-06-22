@@ -55,9 +55,7 @@ export const initProcessor: InitProcessor = async ({
     true,
   );
 
-  if (!fs.existsSync(dirs.imageCacheDir)) {
-    fs.mkdirSync(dirs.imageCacheDir, { recursive: true });
-  }
+  await fs.promises.mkdir(dirs.imageCacheDir, { recursive: true });
 
   // Replace placeholders in download directory
   dirs.downloadDir = normalizePath(
@@ -70,9 +68,7 @@ export const initProcessor: InitProcessor = async ({
     true,
   );
 
-  if (!fs.existsSync(dirs.downloadDir)) {
-    fs.mkdirSync(dirs.downloadDir, { recursive: true });
-  }
+  await fs.promises.mkdir(dirs.downloadDir, { recursive: true });
 
   // Replace placeholders in image output directory
   dirs.imageOutDir = normalizePath(

@@ -50,6 +50,8 @@ export const mockContext = {
     imageAssetsDirName: "img/",
     imageOutDir: "out/img/",
   },
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  limit: vi.fn(() => (fn: any) => fn()),
   settings: {
     disableCopy: false,
     hasher: vi.fn(),

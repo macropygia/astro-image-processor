@@ -4,6 +4,7 @@ import path from "node:path";
 import type { AstroIntegrationLogger } from "astro";
 import type { Sharp } from "sharp";
 
+import type { Ora } from "ora";
 import { extByFormat } from "../../const.js";
 import type {
   ImgProcDataAdapter,
@@ -28,10 +29,10 @@ type GenerateVariant = (args: {
   variantWidth: number;
   variantDensity?: number | undefined;
   logger?: AstroIntegrationLogger | undefined;
+  spinner: Ora;
 }) => Promise<ImgProcVariant>;
 
 export const generateVariant: GenerateVariant = async ({
-  src,
   buffer,
   db,
   hasher,
@@ -42,7 +43,6 @@ export const generateVariant: GenerateVariant = async ({
   sourceHash,
   variantWidth,
   variantDensity,
-  logger,
 }) => {
   const variantSharp = applyProcessors({
     processors: [processor, variantProcessor],
@@ -64,9 +64,9 @@ export const generateVariant: GenerateVariant = async ({
     path.join(imageCacheDir, `${variantHash}.${ext}`),
   );
 
-  logger?.info(`Generated (${ext}, ${width}x${height}): ${src}`);
+  // logger?.info(`Generated (${ext}, ${width}x${height}): ${src}`);
 
-  fs.writeFileSync(imageCachePath, variantBuffer);
+  await fs.promises.writeFile(imageCachePath, variantBuffer);
 
   await db.insert({
     hash: variantHash,

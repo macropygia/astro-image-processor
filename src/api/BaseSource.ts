@@ -3,7 +3,12 @@ import path from "node:path";
 
 import type { AstroIntegrationLogger } from "astro";
 import type { HTMLAttributes } from "astro/types";
+import { blue, dim, magenta } from "kleur/colors";
+import type { Ora } from "ora";
+import ora from "ora";
 
+import { componentTypeToTag } from "../const.js";
+import { getTimeStat } from "../integration/utils/getTimeStat.js";
 import type {
   ImgProcContext,
   ImgProcContextDirectories,
@@ -27,6 +32,7 @@ import { getBufferFromDataUrl } from "./utils/getBufferFromDataUrl.js";
 import { getBufferFromRemoteUrl } from "./utils/getBufferFromRemoteUrl.js";
 import { getFilteredSharpOptions } from "./utils/getFilteredSharpOptions.js";
 import { normalizePath } from "./utils/normalizePath.js";
+import { pathExists } from "./utils/pathExists.js";
 import { resolveExpiresAt } from "./utils/resolveExpiresAt.js";
 import { resolvePathPattern } from "./utils/resolvePathPattern.js";
 
@@ -92,6 +98,9 @@ export class BaseSource {
     sizes?: string;
   } = {};
 
+  spinner: Ora;
+  timeStart: number;
+
   protected constructor({ ctx, componentType, options }: BaseSourceArgs) {
     const {
       logger,
@@ -107,6 +116,14 @@ export class BaseSource {
     this.dirs = dirs;
     this.settings = settings;
     this.logger = logger;
+
+    // Spinner
+    this.timeStart = performance.now();
+    this.spinner = ora("Processing...");
+    this.spinner.prefixText = blue("[astro-image-processor]");
+    this.spinner.prefixText += magenta(` ${componentTypeToTag[componentType]}`);
+    this.spinner.prefixText += dim(` ${options.src}`);
+    this.spinner.start();
 
     // Parse component options and set default
     const { src, width, height, formatOptions, ...rest } = options;
@@ -192,6 +209,10 @@ export class BaseSource {
 
     // Resolve element width and height
     resolveElementDimensions(this);
+
+    this.spinner.succeed(
+      `Completed in ${getTimeStat(this.timeStart, performance.now())}`,
+    );
   }
 
   protected resolvePath(item: ImgProcVariant): string {
@@ -221,7 +242,7 @@ export class BaseSource {
       return `${imageOutDirPattern}${filename}`;
     }
 
-    // Disable copy (fixed prefix)
+    // Preserve directories (fixed prefix)
     if (import.meta.env.MODE === "production" && preserveDirectories) {
       const { from, to, toDir, toSrc } = resolvePathPattern({
         src,
@@ -230,11 +251,11 @@ export class BaseSource {
         resolved,
         item,
       });
-      if (!fs.existsSync(toDir)) {
-        fs.mkdirSync(toDir, { recursive: true });
-      }
-      if (!fs.existsSync(to)) {
-        fs.copyFileSync(from, to);
+      fs.mkdirSync(toDir, { recursive: true });
+      try {
+        fs.copyFileSync(from, to, fs.constants.COPYFILE_EXCL);
+      } catch {
+        // Skipped
       }
       return toSrc;
     }
@@ -244,11 +265,11 @@ export class BaseSource {
       const from = normalizePath(path.join(imageCacheDir, `${filename}`));
       const toDir = normalizePath(path.join(outDir, imageAssetsDirName), true);
       const to = path.join(toDir, `${filename}`);
-      if (!fs.existsSync(toDir)) {
-        fs.mkdirSync(toDir, { recursive: true });
-      }
-      if (!fs.existsSync(to)) {
-        fs.copyFileSync(from, to);
+      fs.mkdirSync(toDir, { recursive: true });
+      try {
+        fs.copyFileSync(from, to, fs.constants.COPYFILE_EXCL);
+      } catch {
+        // Skipped
       }
       return `${imageAssetsDirName}${filename}`;
     }
@@ -271,31 +292,32 @@ export class BaseSource {
       return this.buffer;
     }
 
-    logger?.info(`Load: ${src}`);
+    // logger?.info(`Load: ${src}`);
+    // this.spinner.text = "Loading...";
 
     if (type === "local") {
       // Local file
-      this.buffer = fs.readFileSync(localSourcePath);
+      this.buffer = await fs.promises.readFile(localSourcePath);
     } else if (type === "remote" && !downloadPath) {
       // Remote file (new), called by `addSource`
       this.buffer = await this.download();
       // Save the file after `downloadPath` is resolved in the `addSource`
     } else if (type === "remote" && downloadPath) {
       // Remote file (cached), called by `renewSource`
-      if (!fs.existsSync(downloadPath)) {
+      if (!(await pathExists(downloadPath))) {
         logger?.info("Remote file cache does not exist. Downloading...");
         this.buffer = await this.download();
-        fs.writeFileSync(downloadPath, this.buffer);
+        await fs.promises.writeFile(downloadPath, this.buffer);
       } else if (!data.expiresAt) {
         // Remote images with cache disabled will not be re-downloaded during that session.
-        this.buffer = fs.readFileSync(downloadPath);
+        this.buffer = await fs.promises.readFile(downloadPath);
       } else if (data.expiresAt < Date.now()) {
         logger?.info("Remote file expired. Downloading...");
         this.buffer = await this.download();
-        fs.writeFileSync(downloadPath, this.buffer);
+        await fs.promises.writeFile(downloadPath, this.buffer);
       } else {
         // Cache exists
-        this.buffer = fs.readFileSync(downloadPath);
+        this.buffer = await fs.promises.readFile(downloadPath);
       }
     } else {
       // Data URL (Base64)

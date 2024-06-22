@@ -5,7 +5,13 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import type { BaseSource } from "../BaseSource.js";
 import { addSource } from "./addSource.js";
 
-vi.mock("node:fs");
+vi.mock("node:fs", () => ({
+  default: {
+    promises: {
+      writeFile: vi.fn(),
+    },
+  },
+}));
 
 describe("Unit/api/utils/addSource", () => {
   afterEach(() => {

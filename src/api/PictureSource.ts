@@ -1,5 +1,6 @@
 import type { HTMLAttributes } from "astro/types";
 
+import { defaultGlobalClassNames } from "../const.js";
 import type { ImgProcContext, ImgProcProcessorOptions } from "../types.js";
 import { ArtDirectiveSource } from "./ArtDirectiveSource.js";
 import { ImageSource } from "./ImageSource.js";
@@ -67,6 +68,7 @@ export class PictureSource extends ImageSource {
 
   public get pictureClassList(): string[] {
     const {
+      options: { layout },
       settings: { globalClassNames, scopedStyleStrategy },
       asBackground,
       componentType,
@@ -81,6 +83,10 @@ export class PictureSource extends ImageSource {
 
     if (asBackground) {
       classList.push(globalClassNames.element.asBackground);
+    }
+
+    if (layout) {
+      classList.push(defaultGlobalClassNames.layout[layout]);
     }
 
     return classList;

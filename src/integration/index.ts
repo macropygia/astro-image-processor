@@ -13,40 +13,12 @@ export const astroImageProcessor = (
   return {
     name: "astro-image-processor",
     hooks: {
-      "astro:config:setup": async ({ config, updateConfig, logger }) => {
+      "astro:config:setup": async ({ config, logger }) => {
         // Init and create context
         globalThis.imageProcessorContext = await initProcessor({
           options,
           config,
           logger,
-        });
-
-        // Inject vite plugin
-        updateConfig({
-          vite: {
-            plugins: [
-              {
-                name: "vite-plugin-astro-image-processor",
-                enforce: "pre",
-                config(_config, _env) {
-                  return {
-                    optimizeDeps: {
-                      exclude: [
-                        "deterministic-object-hash",
-                        "lokijs",
-                        "p-limit",
-                        "sharp",
-                        "xxhash-addon",
-                      ],
-                    },
-                    ssr: {
-                      external: true,
-                    },
-                  };
-                },
-              },
-            ],
-          },
         });
       },
       "astro:build:done": async () => {

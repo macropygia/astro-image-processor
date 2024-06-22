@@ -10,13 +10,15 @@
     "enabled": true,
     "rules": {
       "all": true,
-      "style": {
-        "useNamingConvention": "off"
+      "correctness": {
+        "noNodejsModules": "off"
       },
       "nursery": {
         "noConsole": "off",
-        "useImportRestrictions": "off",
-        "noNodejsModules": "off"
+        "useImportRestrictions": "off"
+      },
+      "style": {
+        "useNamingConvention": "off"
       },
       "suspicious": {
         "noConsoleLog": "off"

@@ -4,6 +4,7 @@ import path from "node:path";
 import type { Sharp } from "sharp";
 import { type Mock, afterAll, describe, expect, test, vi } from "vitest";
 
+import type { Ora } from "ora";
 import type { ImgProcDataAdapter } from "../../types.js";
 import { applyProcessors } from "../utils/applyProcessors.js";
 import { generateVariant } from "./generateVariant.js";
@@ -12,6 +13,10 @@ const mockDb = {
   insert: vi.fn(),
   fetch: vi.fn(),
 };
+
+const mockSpinner = {
+  text: vi.fn(),
+} as unknown as Ora;
 
 vi.mock("../../const.js", () => ({
   extByFormat: {
@@ -66,7 +71,7 @@ describe("Unit/api/methods/generateVariant", () => {
     mockHasher.mockReturnValue(variantHash);
     mockSharpInstance.metadata.mockResolvedValue(variantMetadata);
 
-    vi.spyOn(fs, "writeFileSync").mockReturnValue(undefined);
+    vi.spyOn(fs.promises, "writeFile").mockResolvedValue(undefined);
 
     const result = await generateVariant({
       src: "test.jpg",
@@ -80,6 +85,7 @@ describe("Unit/api/methods/generateVariant", () => {
       sourceHash: "sourceHash",
       variantWidth: 800,
       variantDensity: 1,
+      spinner: mockSpinner,
     });
 
     expect(applyProcessors).toHaveBeenCalledWith({
@@ -89,7 +95,7 @@ describe("Unit/api/methods/generateVariant", () => {
     expect(mockSharpInstance.toBuffer).toHaveBeenCalled();
     expect(mockHasher).toHaveBeenCalledWith(variantBuffer);
     expect(mockSharpInstance.metadata).toHaveBeenCalled();
-    expect(fs.writeFileSync).toHaveBeenCalledWith(
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
       path.join("cache/dir", `${variantHash}.jpg`),
       variantBuffer,
     );
@@ -122,6 +128,7 @@ describe("Unit/api/methods/generateVariant", () => {
       variantProfileHash: "variantProfileHash",
       sourceHash: "sourceHash",
       variantWidth: 800,
+      spinner: mockSpinner,
     });
     expect(resultWithWidth).toEqual({
       hash: variantHash,
@@ -163,6 +170,7 @@ describe("Unit/api/methods/generateVariant", () => {
         sourceHash: "sourceHash",
         variantWidth: 800,
         variantDensity: 1,
+        spinner: mockSpinner,
       }),
     ).rejects.toThrowError("DB insert error");
   });

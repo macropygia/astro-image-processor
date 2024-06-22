@@ -1,3 +1,5 @@
+import os from "node:os";
+
 import sharp from "sharp";
 
 import { JsonFileDataAdapter } from "./extras/JsonFileDataAdapter.js";
@@ -46,6 +48,7 @@ export const defaultOptions: Omit<ImgProcOptions, "scopedStyleStrategy"> = {
   retentionCount: 10,
   hasher: cryptoHasher,
   globalClassNames: defaultGlobalClassNames,
+  concurrency: Math.max(os.cpus().length, 1),
   dataAdapter: new JsonFileDataAdapter(),
   componentProps: {
     placeholder: "blurred",
@@ -70,4 +73,10 @@ export const extByFormat: Record<ImgProcOutputFormat, string> = {
   webp: "webp",
   avif: "avif",
   gif: "gif",
+};
+
+export const componentTypeToTag = {
+  img: "<Image>",
+  picture: "<Picture>",
+  background: "<Backgorund>",
 };

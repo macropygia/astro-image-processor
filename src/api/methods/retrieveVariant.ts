@@ -1,10 +1,11 @@
-import fs from "node:fs";
 import path from "node:path";
 
 import type { AstroIntegrationLogger } from "astro";
 
+import type { Ora } from "ora";
 import { extByFormat } from "../../const.js";
 import type { ImgProcDataAdapter, ImgProcVariant } from "../../types.js";
+import { pathExists } from "../utils/pathExists.js";
 import { isOutputFormat } from "../utils/typeGuards.js";
 
 type RetrieveVariant = (args: {
@@ -16,17 +17,16 @@ type RetrieveVariant = (args: {
   variantWidth: number;
   variantDensity?: number | undefined;
   logger?: AstroIntegrationLogger | undefined;
+  spinner: Ora;
 }) => Promise<ImgProcVariant | null>;
 
 export const retrieveVariant: RetrieveVariant = async ({
-  src,
   db,
   sourceHash,
   variantProfileHash,
   imageCacheDir,
   variantWidth,
   variantDensity,
-  logger,
 }) => {
   const variantData = await db.fetch({
     source: sourceHash,
@@ -44,8 +44,8 @@ export const retrieveVariant: RetrieveVariant = async ({
   const ext = extByFormat[format];
   const imageCachePath = path.join(imageCacheDir, `${hash}.${ext}`);
 
-  if (fs.existsSync(imageCachePath) && width === variantWidth) {
-    logger?.info(`Cache hit (${ext} ${width}x${height}): ${src}`);
+  if ((await pathExists(imageCachePath)) && width === variantWidth) {
+    // logger?.info(`Cache hit (${ext} ${width}x${height}): ${src}`);
 
     await db.renew({
       source: sourceHash,

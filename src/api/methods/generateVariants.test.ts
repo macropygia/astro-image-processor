@@ -12,9 +12,17 @@ vi.mock("sharp", () => ({
   })),
 }));
 
-vi.mock("p-limit", () => ({
+vi.mock("p-queue", () => ({
   __esModule: true,
-  default: vi.fn(() => (fn: any) => fn()),
+  default: vi.fn().mockImplementation(() => {
+    return {
+      on: vi.fn(),
+      add: vi.fn((arg) => arg()),
+      onIdle: vi.fn().mockResolvedValue(undefined),
+      size: 0,
+      pending: 0,
+    };
+  }),
 }));
 
 vi.mock("./retrieveVariant.js", () => ({

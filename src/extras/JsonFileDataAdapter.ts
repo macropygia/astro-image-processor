@@ -98,8 +98,8 @@ export class JsonFileDataAdapter implements ImgProcDataAdapter {
     if (this.saveTimer) {
       clearTimeout(this.saveTimer);
     }
-    this.saveTimer = setTimeout(() => {
-      fs.writeFileSync(this.dbPath, JSON.stringify(this.files));
+    this.saveTimer = setTimeout(async () => {
+      await fs.promises.writeFile(this.dbPath, JSON.stringify(this.files));
       this.saveTimer = undefined;
     }, this.debounce);
   }

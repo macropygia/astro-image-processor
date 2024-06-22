@@ -65,35 +65,6 @@ describe("Unit/integration/astroImageProcessor", () => {
     });
 
     expect(globalThis.imageProcessorContext).toBe(mockContext);
-    expect(mockUpdateConfig).toHaveBeenCalledWith({
-      vite: {
-        plugins: [
-          {
-            name: "vite-plugin-astro-image-processor",
-            enforce: "pre",
-            config: expect.any(Function),
-          },
-        ],
-      },
-    });
-
-    // Test the config function inside the vite plugin
-    const vitePlugin = mockUpdateConfig.mock.calls[0][0].vite.plugins[0];
-    const result = vitePlugin.config({}, {});
-    expect(result).toMatchObject({
-      optimizeDeps: {
-        exclude: [
-          "deterministic-object-hash",
-          "lokijs",
-          "p-limit",
-          "sharp",
-          "xxhash-addon",
-        ],
-      },
-      ssr: {
-        external: true,
-      },
-    });
   });
 
   test("build done", () => {
