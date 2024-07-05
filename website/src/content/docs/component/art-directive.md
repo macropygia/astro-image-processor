@@ -44,7 +44,7 @@ The value of the `height` attribute of the `<source>` element.
 
 Specifies `x` descriptors used in the `srcset` attribute of the `<source>` element.
 
-- Type: `[number, ...number[]]`
+- Type: `number[]`
 - Example: `[1, 2, 3]`
 - If `width` is not set, the original size of the image is interpreted as the maximum scale.
 
@@ -52,7 +52,7 @@ Specifies `x` descriptors used in the `srcset` attribute of the `<source>` eleme
 
 Specifies `w` descriptors used in the `srcset` attribute of the `<source>` element.
 
-- Type: `[number, ...number[]]`
+- Type: `number[]`
 - Example: `[1000, 2000, 3000]`
 
 ### `sizes`

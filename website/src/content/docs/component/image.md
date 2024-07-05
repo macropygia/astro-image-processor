@@ -9,7 +9,6 @@ A standard component that generates a `<img>` element.
 - Supports art direction using the `sizes` attribute and `srcset` attribute of the `<img>` element.
 - Placeholder uses the `background-image` or `background-color` of the `<img>` element.
     - Does not support animations.
-- `<StaticImage>` available as alias.
 
 ## Foreground mode
 
@@ -79,7 +78,7 @@ The value of the `height` attribute of the `<img>` element.
 
 Specifies `x` descriptors used in the `srcset` attribute of the `<img>` element.
 
-- Type: `[number, ...number[]]`
+- Type: `number[]`
 - Example: `[1, 2, 3]`
 - If `width` is not set, the original size of the image is interpreted as the maximum scale.
 
@@ -87,7 +86,7 @@ Specifies `x` descriptors used in the `srcset` attribute of the `<img>` element.
 
 Specifies `w` descriptors used in the `srcset` attribute of the `<img>` element.
 
-- Type: `[number, ...number[]]`
+- Type: `number[]`
 - Example: `[1000, 2000, 3000]`
 
 ### `sizes`

@@ -456,12 +456,12 @@ export interface ImgProcProcessorOptions {
  */
 export type ImgProcWidthsInProps =
   | {
-      widths?: [number, ...number[]];
+      widths?: number[];
       densities?: never;
     }
   | {
       widths?: never;
-      densities?: [number, ...number[]];
+      densities?: number[];
     };
 
 /**

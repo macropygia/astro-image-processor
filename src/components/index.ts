@@ -10,4 +10,18 @@ import Picture from "./Picture.astro";
 import { injectLink } from "./injectLink.js";
 import { injectStyle } from "./injectStyle.js";
 
-export { Background, GlobalStyles, Image, Picture, injectLink, injectStyle };
+const StaticBackground = Background;
+const StaticImage = Image;
+const StaticPicture = Picture;
+
+export {
+  Background,
+  GlobalStyles,
+  Image,
+  Picture,
+  StaticBackground,
+  StaticImage,
+  StaticPicture,
+  injectLink,
+  injectStyle,
+};

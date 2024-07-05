@@ -121,6 +121,13 @@ Class names used in global CSS.
 - Reference: [&lt;GlobalStyles /&gt;](/astro-image-processor/component/global-styles/)
 - If changed, need to create and place the corresponding global CSS.
 
+### `concurrency`
+
+Maximum concurrent image processing limit
+
+- Type: `number`
+- Default: `Math.max(os.cpus().length, 1)`
+
 ### `timeoutDuration`
 
 Download timeout duration in milliseconds.

@@ -9,7 +9,6 @@ title: <Image />
 - `<img>` 要素の `sizes` 属性と `srcset` 属性を使用したアートディレクションに対応
 - プレースホルダーは `<img>` 要素の `background-image` ないし `background-color` を使用する
     - アニメーションには非対応
-- 別名として `<StaticImage>` を使用可能
 
 ## 前景モード
 
@@ -79,7 +78,7 @@ import Image from 'astro-image-processor/components';
 
 `<img>` 要素の `srcset` 属性で使用する `x` 記述子の指定
 
-- 型: `[number, ...number[]]`
+- 型: `number[]`
 - 例: `[1, 2, 3]`
 - `width` が設定されていない場合、画像の原寸を最大倍率のものとして解釈する
 
@@ -87,7 +86,7 @@ import Image from 'astro-image-processor/components';
 
 `<img>` 要素の `srcset` 属性で使用する `w` 記述子の指定
 
-- 型: `[number, ...number[]]`
+- 型: `number[]`
 - 例: `[1000, 2000, 3000]`
 
 ### `sizes`

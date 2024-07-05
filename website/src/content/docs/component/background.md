@@ -7,7 +7,6 @@ Standard component that sets the CSS property `background-image` for container e
 
 - Use [`image-set()`](https://developer.mozilla.org/en/docs/Web/CSS/image/image-set) for art direction.
 - Functionality is almost the same as the `<Picture>` component.
-- `<StaticBackground>` available as alias.
 
 ```astro
 // src/pages/index.astro
@@ -57,7 +56,7 @@ Height equivalent to 1x.
 
 Specifies `x` descriptors used in the `image-set()`.
 
-- Type: `[number, ...number[]]`
+- Type: `number[]`
 - Example: `[1, 2, 3]`
 - If `width` is not set, the original size of the image is interpreted as the maximum scale
 

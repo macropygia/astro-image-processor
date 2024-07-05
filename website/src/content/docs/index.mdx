@@ -46,7 +46,6 @@ Astro Image Processor is [Astro](https://astro.build/) integration for image opt
     - Cache deletion policies can use "expiration date" and "whether it was used in the last `n` builds" (individually or with AND conditions)
     - Possible to sync the cache with a CDN and use it as public files
     - The database for storing cache metadata is configurable (see: [Data Adapter](/astro-image-processor/extras/data-adapter/))
-- Focused on reducing duplication and speeding up processing
 - By default, images are output to `/dist/_astro/[hash].[ext]`
 - Hash algorithm used for generating file and string hashes is configurable (see: [Hasher](/astro-image-processor/extras/hasher/))
 - Outputs HTML compatible with the latest [HTML Living Standard](https://html.spec.whatwg.org/)

@@ -44,7 +44,7 @@ title: Art Directive
 
 `<source>` 要素の `srcset` 属性で使用する `x` 記述子の指定
 
-- 型: `[number, ...number[]]`
+- 型: `number[]`
 - 例: `[1, 2, 3]`
 - `width` が設定されていない場合、画像の原寸を最大倍率のものとして解釈する
 
@@ -52,7 +52,7 @@ title: Art Directive
 
 `<source>` 要素の `srcset` 属性で使用する `w` 記述子の指定
 
-- 型: `[number, ...number[]]`
+- 型: `number[]`
 - 例: `[1000, 2000, 3000]`
 
 ### `sizes`

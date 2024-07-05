@@ -11,7 +11,6 @@ title: <Picture />
     - [CSSアニメーション](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_animations/Using_CSS_animations)を使用したアニメーションに対応
     - JavaScriptが無効な場合は `<img>` 要素の `background-image` ないし `background-color` にフォールバックする
 - JavaScriptが無効でも正常に表示される
-- 別名として `<StaticPicture>` を使用可能
 
 ## 前景モード
 
@@ -81,7 +80,7 @@ import Picture from 'astro-image-processor/components';
 
 `<img>` 要素の `srcset` 属性で使用する `x` 記述子の指定
 
-- 型: `[number, ...number[]]`
+- 型: `number[]`
 - 例: `[1, 2, 3]`
 - `width` が設定されていない場合、画像の原寸を最大倍率のものとして解釈する
 
@@ -89,7 +88,7 @@ import Picture from 'astro-image-processor/components';
 
 `<img>` 要素の `srcset` 属性で使用する `w` 記述子の指定
 
-- 型: `[number, ...number[]]`
+- 型: `number[]`
 - 例: `[1000, 2000, 3000]`
 
 ### `sizes`

@@ -122,6 +122,13 @@ title: Configuration Reference
 - 参照: [&lt;GlobalStyles /&gt;](/astro-image-processor/ja/component/global-styles/)
 - 変更する場合は対応するグローバルCSSを用意して設置する必要がある
 
+### `concurrency`
+
+画像処理の最大同時実行数
+
+- Type: `number`
+- Default: `Math.max(os.cpus().length, 1)`
+
 ### `timeoutDuration`
 
 ダウンロードタイムアウト（ミリ秒）

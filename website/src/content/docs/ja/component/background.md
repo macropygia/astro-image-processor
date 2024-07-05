@@ -7,7 +7,6 @@ title: <Background />
 
 - アートディレクションには [`image-set()`](https://developer.mozilla.org/ja/docs/Web/CSS/image/image-set) を使用する
 - 機能は `<Picture>` コンポーネントとほぼ同等
-- 別名として `<StaticBackground>` を使用可能
 
 ```astro
 // src/pages/index.astro
@@ -57,7 +56,7 @@ import Background from 'astro-image-processor/components';
 
 `<img>` 要素の `srcset` 属性で使用する `x` 記述子の指定
 
-- 型: `[number, ...number[]]`
+- 型: `number[]`
 - 例: `[1, 2, 3]`
 - `width` が設定されていない場合、画像の原寸を最大倍率のものとして解釈する
 
