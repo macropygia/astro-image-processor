@@ -56,14 +56,12 @@ describe("Unit/api/ImageSource", () => {
     expect(instance.imageClassList).toEqual([
       "aip-elm-img",
       "astro-aip-mockHash",
-      "aip-fit-fill",
     ]);
 
     instance.asBackground = true;
     expect(instance.imageClassList).toEqual([
       "aip-elm-img",
       "astro-aip-mockHash",
-      "aip-fit-fill",
       "aip-elm-as-background",
     ]);
 
@@ -74,7 +72,6 @@ describe("Unit/api/ImageSource", () => {
       "aip-elm-img",
       "astro-aip-mockHash",
       "aip-layout-constrained",
-      "aip-fit-fill",
     ]);
   });
 
@@ -147,7 +144,11 @@ describe("Unit/api/ImageSource", () => {
     };
     instance.resolved = { width: 1024, height: 768 };
 
-    expect(instance.cssObj).toBeUndefined();
+    expect(instance.cssObj).toEqual({
+      selectors: {
+        "img[scope]": [["object-fit", "cover"]],
+      },
+    });
 
     instance.options.placeholder = "dominantColor";
     instance.options.objectPosition = "60% 40%";
@@ -156,6 +157,7 @@ describe("Unit/api/ImageSource", () => {
       selectors: {
         "img[scope]": [
           ["background-color", "rgb(0 255 0)"],
+          ["object-fit", "cover"],
           ["object-position", "60% 40%"],
         ],
       },
@@ -171,7 +173,10 @@ describe("Unit/api/ImageSource", () => {
     instance.asBackground = true;
     expect(instance.cssObj).toEqual({
       selectors: {
-        "img[scope]": [["background-color", "#fff"]],
+        "img[scope]": [
+          ["background-color", "#fff"],
+          ["object-fit", "cover"],
+        ],
         "section[scope]": [
           ["width", "1024px"],
           ["aspect-ratio", "1024 / 768"],
@@ -195,8 +200,9 @@ describe("Unit/api/ImageSource", () => {
       selectors: {
         "img[scope]": [
           ["background-size", "cover"],
-          undefined,
+          ["background-position", "50% 50%"],
           ["background-image", 'url("undefined")'],
+          ["object-fit", "cover"],
         ],
       },
     });
@@ -209,6 +215,7 @@ describe("Unit/api/ImageSource", () => {
           ["background-size", "cover"],
           ["background-position", "60% 40%"],
           ["background-image", 'url("undefined")'],
+          ["object-fit", "cover"],
           ["object-position", "60% 40%"],
         ],
       },

@@ -10,8 +10,8 @@
 
 ## Overview
 
-- Outputs `<img>` and `<picture>` elements as foreground or background
-- Sets `background-image` for container elements using `image-set()`
+- Outputs the `<img>` and `<picture>` elements as foreground or background
+- Sets the `background-image` for the container elements using `image-set()`
 - Supports static builds only
     - SSR is not supported and there are no plans to support it
 - Depends on [sharp](https://sharp.pixelplumbing.com/)

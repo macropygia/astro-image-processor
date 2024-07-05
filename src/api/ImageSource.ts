@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from "astro/types";
 
-import { defaultGlobalClassNames } from "../const.js";
+import { defaultGlobalClassNames, replicateFitByBg } from "../const.js";
 import type {
   ImgProcContext,
   ImgProcCssObj,
@@ -10,6 +10,7 @@ import type {
 import type { ArtDirectiveSource } from "./ArtDirectiveSource.js";
 import { BaseSource } from "./BaseSource.js";
 import { generateComponentHash } from "./methods/generateComponentHash.js";
+import { CssObjBuilder } from "./utils/CssObjBuilder.js";
 import { parseCssObj } from "./utils/parseCssObj.js";
 
 export interface ImageSourceArgs {
@@ -59,7 +60,7 @@ export class ImageSource extends BaseSource {
 
   public get imageClassList(): string[] {
     const {
-      options: { layout, objectFit },
+      options: { layout },
       settings: { globalClassNames, scopedStyleStrategy },
       asBackground,
       componentHash,
@@ -73,10 +74,6 @@ export class ImageSource extends BaseSource {
 
     if (layout && !asBackground) {
       classList.push(defaultGlobalClassNames.layout[layout]);
-    }
-
-    if (objectFit) {
-      classList.push(defaultGlobalClassNames.objectFit[objectFit]);
     }
 
     if (asBackground) {
@@ -146,7 +143,10 @@ export class ImageSource extends BaseSource {
       options: {
         placeholder,
         placeholderColor,
+        objectFit,
         objectPosition,
+        backgroundSize,
+        backgroundPosition,
         layout,
         enforceAspectRatio,
         tagName,
@@ -159,88 +159,107 @@ export class ImageSource extends BaseSource {
       data,
     } = this;
 
-    const cssObj: ImgProcCssObj = { selectors: {} };
+    const cssObj = new CssObjBuilder();
 
     if (placeholder === "dominantColor") {
-      cssObj.selectors = {
-        "img[scope]": [
-          [
-            "background-color",
-            placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
-          ],
-        ],
-      };
+      cssObj.add("img[scope]", [
+        "background-color",
+        placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
+      ]);
       if (componentType === "picture") {
         // Both overlay and img element have placeholder in the picture element
-        cssObj.selectors["picture[scope]::after"] = [
-          [
-            "background-color",
-            placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
-          ],
-        ];
+        cssObj.add("picture[scope]::after", [
+          "background-color",
+          placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
+        ]);
       }
-    } else if (placeholder === "blurred") {
-      cssObj.selectors = {
-        "img[scope]": [
-          ["background-size", "cover"],
-          objectPosition ? ["background-position", objectPosition] : undefined,
-        ],
-      };
+    }
+
+    if (placeholder === "blurred") {
+      cssObj.add(
+        "img[scope]",
+        ["background-size", "cover"],
+        // inherit from object-position (default: "50% 50%")
+        ["background-position", objectPosition || "50% 50%"],
+      );
       if (componentType === "picture") {
         // Both overlay and img element have placeholder in the picture element
-        cssObj.selectors["picture[scope]"] = [
-          [
-            globalClassNames.cssVariables.blurredImage,
-            `url("${blurredDataUrl}")`,
-          ],
-        ];
-        cssObj.selectors["picture[scope]::after"] = [
-          ["background-size", "cover"],
-          [
-            "background-image",
-            `var(${globalClassNames.cssVariables.blurredImage})`,
-          ],
-          objectPosition ? ["background-position", objectPosition] : undefined,
-        ];
+        cssObj.add("picture[scope]", [
+          globalClassNames.cssVariables.blurredImage,
+          `url("${blurredDataUrl}")`,
+        ]);
+        cssObj.add("picture[scope]::after", [
+          "background-image",
+          `var(${globalClassNames.cssVariables.blurredImage})`,
+        ]);
+
+        // Set the CSS prop `background-size` from the component prop `backgroundSize`
+        // or replicate from component prop `objectFit`
+        if (backgroundSize !== undefined) {
+          if (backgroundSize !== null) {
+            cssObj.add("picture[scope]::after", [
+              "background-size",
+              backgroundSize,
+            ]);
+          }
+        } else if (objectFit) {
+          cssObj.add("picture[scope]::after", replicateFitByBg[objectFit]);
+        }
+
+        // Set the CSS prop `background-position` from the component prop `backgroundPosition`
+        // or replicate from component prop `objectPosition`
+        if (backgroundPosition !== undefined) {
+          if (backgroundPosition !== null) {
+            cssObj.add("picture[scope]::after", [
+              "background-position",
+              backgroundPosition,
+            ]);
+          }
+        } else {
+          cssObj.add("picture[scope]::after", [
+            "background-position",
+            objectPosition || "50% 50%",
+          ]);
+        }
+
         // blurred image inherit from picture element in the picture component
-        cssObj.selectors["img[scope]"]?.push([
+        cssObj.add("img[scope]", [
           "background-image",
           `var(${globalClassNames.cssVariables.blurredImage})`,
         ]);
       } else {
         // blurred image assign directly in the image component
-        cssObj.selectors["img[scope]"]?.push([
+        cssObj.add("img[scope]", [
           "background-image",
           `url("${blurredDataUrl}")`,
         ]);
       }
     }
 
-    if (asBackground && layout && layout !== "fullWidth") {
-      const selector = `${tagName}[scope]`;
-      cssObj.selectors[selector] = cssObj.selectors[selector] || [];
-      cssObj.selectors[selector]?.push(["width", `${resolved.width}px`]);
+    if (
+      asBackground &&
+      layout &&
+      (layout === "constrained" || layout === "fixed")
+    ) {
+      cssObj.add(`${tagName}[scope]`, ["width", `${resolved.width}px`]);
+    }
+
+    if (objectFit) {
+      cssObj.add("img[scope]", ["object-fit", objectFit]);
     }
 
     if (objectPosition) {
-      cssObj.selectors["img[scope]"] = cssObj.selectors["img[scope]"] || [];
-      cssObj.selectors["img[scope]"].push(["object-position", objectPosition]);
+      cssObj.add("img[scope]", ["object-position", objectPosition]);
     }
 
     if (asBackground && enforceAspectRatio) {
-      const selector = `${tagName}[scope]`;
-      cssObj.selectors[selector] = cssObj.selectors[selector] || [];
-      cssObj.selectors[selector]?.push([
+      cssObj.add(`${tagName}[scope]`, [
         "aspect-ratio",
         `${resolved.width} / ${resolved.height}`,
       ]);
     }
 
-    if (Object.keys(cssObj.selectors).length) {
-      return cssObj;
-    }
-
-    return undefined;
+    return cssObj.value;
   }
 
   public get css(): string {

@@ -31,12 +31,11 @@ import { GlobalStyles } from 'astro-image-processor/components';
 以下の内容が含まれる。
 
 - `<Picture>` コンポーネントのプレースホルダーアニメーション
-    - 初期化用のJavaScriptを含む
+    - 初期化用のJavaScript
     - JavaScriptが動作しない場合はアニメーションが省略され、プレースホルダーは `<img>` 要素の `background-image` または `background-color` にフォールバックされる
 - 各コンポーネントが生成する要素の共通クラス
 - 各コンポーネントの `layout` プロパティに対応するクラス
-- 各コンポーネントの `objectFit` プロパティに対応するクラス
 
 使用するクラス名は[インテグレーション設定の `globalClassNames`](/astro-image-processor/ja/configuration/reference/#globalclassnames) で変更できる。
 
-変更する場合は対応するクラス名を使用したグローバルCSSを自前で作成して設置する必要がある。
+変更する場合は変更したクラス名等を使用するグローバルCSSを自前で作成して設置する必要がある。

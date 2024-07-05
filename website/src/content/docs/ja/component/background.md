@@ -94,16 +94,35 @@ import Background from 'astro-image-processor/components';
 
 ### `layout`
 
-画像の水平方向のレイアウトを指定する
+画像のレイアウトを指定する
 
 - 型: `"constrained" | "fixed" | "fullWidth" | "fill" | null`
 - 既定値: `constrained`
-- `constrained`: `width: 100%; max-width: ${resolvedWidth};` を指定する
-- `fixed`: `width: ${resolvedWidth};` を指定する
-- `fullWidth`: `width: 100%;` を指定する
-- コンテナ要素に指定する
-    - `constrained` または `fixed` の場合、`<img>` 要素から `width` プロパティを継承する
+- `constrained` または `fixed` の場合、 `<img>` 要素のCSSプロパティ `width` をスコープ付きCSSで最終的な画像幅に設定する
+- グローバルクラス `globalClassNames.layout[layout]` が `<img>` 要素に適用される
+- `<GlobalStyles>` コンポーネントは以下のスタイルを適用する
+    - `constrained`: `max-width: 100%; height: auto;`
+    - `fixed`: N/A
+    - `fullWidth`: `width: 100%; height: auto;`
+    - `fill`: `width: 100%; height: 100%;`
+- グローバルクラスを利用して任意のスタイルを設定することもできる
 - アスペクト比を固定したい場合は `enforceAspectRatio` と併用する
+
+### `backgroundSize`
+
+コンテナ要素のCSSプロパティ `background-size` を設定する
+
+- 型: `"cover" | "contain" | "auto" | string | null`
+- 参照: [background-size (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-size)
+- スコープ付きCSSによって反映する
+
+### `backgroundPosition`
+
+コンテナ要素のCSSプロパティ `background-position` を設定する
+
+- 型: `string | null`
+- 参照: [background-position (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-position)
+- スコープ付きCSSによって反映する
 
 ### `enforceAspectRatio`
 
@@ -112,24 +131,6 @@ import Background from 'astro-image-processor/components';
 - 型: `boolean`
 - 既定値: false
 - CSSプロパティ `aspect-ratio` に最終的な `<img>` 要素の `width` および `height` の値を元に `${width} / ${heigt}` を設定する
-- スコープ付きCSSによって反映する
-
-### `backgroundSize`
-
-コンテナ要素にCSSプロパティ `background-size` を設定する
-
-- 型: `"cover" | "contain" | string | null`
-- 既定値: `cover`
-- 参照: [background-size (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-size)
-- スコープ付きCSSによって反映する
-
-### `backgroundPosition`
-
-コンテナ要素にCSSプロパティ `background-position` を設定する
-
-- 型: `string`
-- 既定値: `50% 50%`
-- 参照: [background-position (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-position)
 - スコープ付きCSSによって反映する
 
 ### `processor`

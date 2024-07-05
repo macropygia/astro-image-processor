@@ -20,13 +20,6 @@ export const defaultGlobalClassNames = {
     fullWidth: "aip-layout-fullWidth",
     fill: "aip-layout-fill",
   },
-  objectFit: {
-    fill: "aip-fit-fill",
-    contain: "aip-fit-contain",
-    cover: "aip-fit-cover",
-    none: "aip-fit-none",
-    "scale-down": "aip-fit-scale-down",
-  },
   cssVariables: {
     placeholderAnimationState: "--aip-placeholder-animation-state",
     blurredImage: "--aip-blurred-image",
@@ -55,10 +48,10 @@ export const defaultOptions: Omit<ImgProcOptions, "scopedStyleStrategy"> = {
     blurProcessor: sharp().resize(20).webp({ quality: 1 }),
     upscale: "never",
     layout: "constrained",
-    objectFit: "cover",
-    objectPosition: "50% 50%",
-    backgroundSize: "cover",
-    backgroundPosition: "50% 50%",
+    // objectFit: "cover",
+    // objectPosition: null,
+    // backgroundSize: "cover",
+    // backgroundPosition: "50% 50%",
     format: "webp",
     formats: ["avif", "webp"],
     tagName: "div",
@@ -79,4 +72,19 @@ export const componentTypeToTag = {
   img: "<Image>",
   picture: "<Picture>",
   background: "<Backgorund>",
+};
+
+/**
+ * Replicate `object-fit` by `background-size`
+ * - `scale-down` is treated as `contain`
+ */
+export const replicateFitByBg: Record<
+  "fill" | "contain" | "cover" | "none" | "scale-down",
+  [string, string]
+> = {
+  fill: ["background-size", "100% 100%"],
+  contain: ["background-size", "contain"],
+  cover: ["background-size", "cover"],
+  none: ["background-size", "auto"],
+  "scale-down": ["background-size", "contain"],
 };

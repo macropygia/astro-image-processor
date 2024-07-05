@@ -330,32 +330,54 @@ export interface ImgProcProcessorOptions {
    */
   upscale: "never" | "always" | "original";
   /**
-   * Specify the horizontal layout of the image
-   * - `constrained`: Set CSS as `width: 100%; max-width: ${resolvedWidth};`
-   * - `fixed`: Set CSS as `width: ${resolvedWidth};`
-   * - `fullWidth`: Set CSS as `width: 100%;`
-   * - In the `<Image>` and `<Picture>` components, set to the `<img>` element.
-   * - If component has container element, set to the container element.
-   *     - If set to `constrained` or `fixed`, inherit CSS property `width` from the `<img>` element as scoped style.
+   * Specify the layout of the image
+   * - Apply by adding the global class `globalClassNames.layout[layout]` to the `<picture>` and `<img>` elements.
+   * - If set to `constrained` or `fixed`, the CSS property `width` of the `<img>` element is set to the resolved value as scoped style.
+   * - The `<GlobalStyles>` component sets the styles as follows:
+   *     - `constrained`: `max-width: 100%; height: auto;`
+   *     - `fixed`: N/A
+   *     - `fullWidth`: `width: 100%; height: auto;`
+   *     - `fill`: `width: 100%; height: 100%;`
+   * - Styles can also be defined manually instead of `<GlobalStyles>` using the generated classes.
    * @see [layout (Gatsby Image plugin)](https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-plugin-image/#layout)
    * @default "constrained"
    */
-  layout?: "constrained" | "fixed" | "fullWidth" | null;
+  layout?: "constrained" | "fixed" | "fullWidth" | "fill" | null;
   /**
    * Set CSS property `object-fit` to the `<img>` element
-   * - Requires `<GlobalStyles>` component
+   * - Apply by adding the global class `globalClassNames.objectFit[objectFit]` to the `<img>` element.
+   * - The `object-fit` is set to this value by the `<GlobalStyles>` component.
+   * - Styles can also be defined manually instead of `<GlobalStyles>` using the generated classes.
+   * - If a default value is required, specify it in the global style.
    * @see [MDN Reference: object-fit](https://developer.mozilla.org/docs/Web/CSS/object-fit)
-   * @default "cover"
+   * @default null
    */
   objectFit?: "fill" | "contain" | "cover" | "none" | "scale-down" | null;
   /**
    * Set CSS property `object-position` to the `<img>` element
-   * - If `placeholder` is `blurred`, the value uses for `background-position` property for blurred image.
-   *     - By default, `50% 50%` is used.
+   * - If `placeholder` is `blurred` and `backgroundPosition` is `null`, the value uses for `background-position` property for blurred image.
+   *     - If both `objectPosition` and `backgroundPosition` are `null`, then `50% 50%` is used.
+   * - If a default value is required, specify it in the global style.
    * @see [MDN Reference: object-position](https://developer.mozilla.org/docs/Web/CSS/object-position)
-   * @default "50% 50%"
+   * @default null
    */
   objectPosition?: string | null;
+  /**
+   * Set CSS property `background-size` to the container element or the blurred image
+   * - For `<Background>` component, apply to the container element.
+   * - If `<Image>` or `<Picture>` component and the `placeholder` is `blurred`, apply to the `<picture>` and `<img>` elements.
+   * @see [MDN Reference: background-size](https://developer.mozilla.org/docs/Web/CSS/background-size)
+   * @default "cover"
+   */
+  backgroundSize?: "cover" | "contain" | "auto" | string | null;
+  /**
+   * Set CSS property `background-position` to the container element or the blurred image
+   * - For `<Background>` component, apply to the container element.
+   * - If `<Image>` or `<Picture>` component and the `placeholder` is `blurred`, apply to the `<picture>` and `<img>` elements.
+   * @see [MDN Reference: background-position](https://developer.mozilla.org/docs/Web/CSS/background-position)
+   * @default "50% 50%"
+   */
+  backgroundPosition?: string | null;
   /**
    * Set CSS property `aspect-ratio` to the container element based on `width` and `height`
    * - Only for `<Background>` component and background mode.
@@ -369,20 +391,6 @@ export interface ImgProcProcessorOptions {
    * @default false
    */
   asBackground?: boolean;
-  /**
-   * Set CSS property `background-size` to the container element
-   * - Only for `<Background>` component.
-   * @see [MDN Reference: background-size](https://developer.mozilla.org/docs/Web/CSS/background-size)
-   * @default "cover"
-   */
-  backgroundSize?: "cover" | "contain" | string | null;
-  /**
-   * Set CSS property `background-position` to the container element
-   * - Only for `<Background>` component.
-   * @see [MDN Reference: background-position](https://developer.mozilla.org/docs/Web/CSS/background-position)
-   * @default "50% 50%"
-   */
-  backgroundPosition?: string | null;
   /**
    * Output `<link rel="preload" ... >`
    * - Only one format can be selected.
@@ -475,8 +483,6 @@ export type ImgProcImageComponentProps = Omit<HTMLAttributes<"img">, "sizes"> &
     formats?: never;
     artDirectives?: never;
     pictureAttributes?: never;
-    backgroundSize?: never;
-    backgroundPosition?: never;
   } & ImgProcWidthsInProps;
 
 /**
@@ -491,8 +497,6 @@ export type ImgProcPictureComponentProps = Omit<
     alt: string;
     media?: never;
     format?: never;
-    backgroundSize?: never;
-    backgroundPosition?: never;
   } & ImgProcWidthsInProps;
 
 /**
@@ -531,8 +535,6 @@ export type ImgProcArtDirectiveSourceProps =
     format?: never;
     pictureAttributes?: never;
     asBackground?: never;
-    backgroundSize?: never;
-    backgroundPosition?: never;
   } & ImgProcWidthsInProps;
 
 // ===============================

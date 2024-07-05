@@ -1,5 +1,6 @@
 import type { HTMLAttributes } from "astro/types";
 
+import { replicateFitByBg } from "../const.js";
 import type {
   ImgProcContext,
   ImgProcCssObj,
@@ -9,6 +10,7 @@ import type {
 } from "../types.js";
 import { BaseSource } from "./BaseSource.js";
 import { generateImageSet } from "./methods/generateImageSet.js";
+import { CssObjBuilder } from "./utils/CssObjBuilder.js";
 
 export interface ArtDirectiveSourceArgs {
   /** Integration context */
@@ -76,7 +78,15 @@ export class ArtDirectiveSource extends BaseSource {
 
   public get cssObj(): ImgProcCssObj | undefined {
     const {
-      options: { placeholder, placeholderColor, media },
+      options: {
+        placeholder,
+        placeholderColor,
+        media,
+        objectFit,
+        objectPosition,
+        backgroundSize,
+        backgroundPosition,
+      },
       componentType,
       data,
       blurredDataUrl,
@@ -91,30 +101,58 @@ export class ArtDirectiveSource extends BaseSource {
       throw new Error("Media query does not exist");
     }
 
+    const cssObj = new CssObjBuilder(media);
+
     if (placeholder === "dominantColor") {
       const value = placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`;
-      return {
-        media,
-        selectors: {
-          "picture[scope]::after": [["background-color", value]],
-        },
-      };
+      cssObj.add("picture[scope]::after", ["background-color", value]);
     }
 
     if (placeholder === "blurred") {
-      return {
-        media,
-        selectors: {
-          "picture[scope]::after": [
-            ["background-size", "cover"],
-            ["background-image", `url("${blurredDataUrl}")`],
-            ["background-position", "50% 50%"],
-          ],
-        },
-      };
+      cssObj.add("picture[scope]::after", [
+        "background-image",
+        `url("${blurredDataUrl}")`,
+      ]);
+
+      // Set the CSS prop `background-size` from the component prop `backgroundSize`
+      // or replicate from component prop `objectFit`
+      if (backgroundSize !== undefined) {
+        if (backgroundSize !== null) {
+          cssObj.add("picture[scope]::after", [
+            "background-size",
+            backgroundSize,
+          ]);
+        }
+      } else if (objectFit) {
+        cssObj.add("picture[scope]::after", replicateFitByBg[objectFit]);
+      }
+
+      // Set the CSS prop `background-position` from the component prop `backgroundPosition`
+      // or replicate from component prop `objectPosition`
+      if (backgroundPosition !== undefined) {
+        if (backgroundPosition !== null) {
+          cssObj.add("picture[scope]::after", [
+            "background-position",
+            backgroundPosition,
+          ]);
+        }
+      } else {
+        cssObj.add("picture[scope]::after", [
+          "background-position",
+          objectPosition || "50% 50%",
+        ]);
+      }
     }
 
-    return undefined;
+    if (objectFit) {
+      cssObj.add("img[scope]", ["object-fit", objectFit]);
+    }
+
+    if (objectPosition) {
+      cssObj.add("img[scope]", ["object-position", objectPosition]);
+    }
+
+    return cssObj.value;
   }
 
   public get backgroundCssObj(): ImgProcCssObj | undefined {
@@ -125,6 +163,8 @@ export class ArtDirectiveSource extends BaseSource {
         placeholderColor,
         tagName,
         media,
+        objectFit,
+        objectPosition,
         enforceAspectRatio,
       },
       variants,
@@ -153,34 +193,38 @@ export class ArtDirectiveSource extends BaseSource {
         (variant.at(-1) as ImgProcVariant),
     )}`;
 
+    const cssObj = new CssObjBuilder(media);
     const selector = `${tagName}[scope]`;
 
-    const cssObj: ImgProcCssObj = {
-      media,
-      selectors: {
-        [selector]: [
-          ["background-image", `url("${fallbackPath}")`],
-          ["background-image", imageSet],
-        ],
-      },
-    };
+    cssObj.add(
+      selector,
+      ["background-image", `url("${fallbackPath}")`],
+      ["background-image", imageSet],
+    );
 
     if (placeholder === "dominantColor") {
-      cssObj.selectors[selector]?.push([
+      cssObj.add(selector, [
         "background-color",
         placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
       ]);
     }
 
     if (enforceAspectRatio) {
-      cssObj.selectors[selector] = cssObj.selectors[selector] || [];
-      cssObj.selectors[selector]?.push([
+      cssObj.add(selector, [
         "aspect-ratio",
         `${resolved.width} / ${resolved.height}`,
       ]);
     }
 
-    return cssObj;
+    if (objectFit) {
+      cssObj.add("img[scope]", ["object-fit", objectFit]);
+    }
+
+    if (objectPosition) {
+      cssObj.add("img[scope]", ["object-position", objectPosition]);
+    }
+
+    return cssObj.value;
   }
 
   public get imageSet(): string {

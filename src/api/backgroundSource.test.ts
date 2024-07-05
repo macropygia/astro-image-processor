@@ -80,16 +80,11 @@ describe("Unit/api/BackgroundSource", () => {
     expect(instance.cssObj).toEqual({
       selectors: {
         "undefined[scope]": [
-          undefined,
           ["background-image", `url("mockWebp2x.webp")`],
           [
             "background-image",
             `image-set(url("mockAvif2x.avif") 2x type("image/avif"),url("mockAvif1x.avif") 1x type("image/avif"),url("mockWebp2x.webp") 2x type("image/webp"),url("mockWebp1x.webp") 1x type("image/webp"))`,
           ],
-          undefined,
-          undefined,
-          undefined,
-          undefined,
         ],
       },
     });
@@ -107,9 +102,6 @@ describe("Unit/api/BackgroundSource", () => {
             `image-set(url("mockAvif2x.avif") 2x type("image/avif"),url("mockAvif1x.avif") 1x type("image/avif"),url("mockWebp2x.webp") 2x type("image/webp"),url("mockWebp1x.webp") 1x type("image/webp"))`,
           ],
           ["width", "1024px"],
-          undefined,
-          undefined,
-          undefined,
         ],
       },
     });

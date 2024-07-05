@@ -250,13 +250,20 @@ describe("Unit/api/PictureSource", () => {
     };
     instance.resolved = { width: 1024, height: 768 };
 
-    expect(instance.cssObj).toBeUndefined();
+    expect(instance.cssObj).toEqual({
+      selectors: {
+        "img[scope]": [["object-fit", "cover"]],
+      },
+    });
 
     instance.options.placeholder = "dominantColor";
 
     expect(instance.cssObj).toEqual({
       selectors: {
-        "img[scope]": [["background-color", "rgb(0 255 0)"]],
+        "img[scope]": [
+          ["background-color", "rgb(0 255 0)"],
+          ["object-fit", "cover"],
+        ],
         "picture[scope]::after": [["background-color", "rgb(0 255 0)"]],
       },
     });
@@ -267,6 +274,7 @@ describe("Unit/api/PictureSource", () => {
       selectors: {
         "img[scope]": [
           ["background-color", "#fff"],
+          ["object-fit", "cover"],
           ["object-position", "60% 40%"],
         ],
         "picture[scope]::after": [["background-color", "#fff"]],
@@ -289,14 +297,15 @@ describe("Unit/api/PictureSource", () => {
       selectors: {
         "img[scope]": [
           ["background-size", "cover"],
-          undefined,
+          ["background-position", "50% 50%"],
           ["background-image", "var(--aip-blurred-image)"],
+          ["object-fit", "cover"],
         ],
         "picture[scope]": [["--aip-blurred-image", `url("undefined")`]],
         "picture[scope]::after": [
-          ["background-size", "cover"],
           ["background-image", "var(--aip-blurred-image)"],
-          undefined,
+          ["background-size", "cover"],
+          ["background-position", "50% 50%"],
         ],
       },
     });
@@ -309,12 +318,13 @@ describe("Unit/api/PictureSource", () => {
           ["background-size", "cover"],
           ["background-position", "60% 40%"],
           ["background-image", "var(--aip-blurred-image)"],
+          ["object-fit", "cover"],
           ["object-position", "60% 40%"],
         ],
         "picture[scope]": [["--aip-blurred-image", `url("undefined")`]],
         "picture[scope]::after": [
-          ["background-size", "cover"],
           ["background-image", "var(--aip-blurred-image)"],
+          ["background-size", "cover"],
           ["background-position", "60% 40%"],
         ],
       },

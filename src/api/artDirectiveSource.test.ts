@@ -114,7 +114,6 @@ describe("Unit/api/ArtDirectiveSource", () => {
       media: "(min-width: 800px)",
       selectors: {
         "picture[scope]::after": [
-          ["background-size", "cover"],
           ["background-image", 'url("data:image/jpeg;base64,...")'],
           ["background-position", "50% 50%"],
         ],

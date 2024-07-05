@@ -7,6 +7,7 @@ import type {
 } from "../types.js";
 import { PictureSource } from "./PictureSource.js";
 import { generateImageSet } from "./methods/generateImageSet.js";
+import { CssObjBuilder } from "./utils/CssObjBuilder.js";
 
 export interface BackgroundSourceArgs {
   /** Integration context */
@@ -65,30 +66,31 @@ export class BackgroundSource extends PictureSource {
         (variant.at(-1) as ImgProcVariant),
     )}`;
 
-    return {
-      selectors: {
-        [`${tagName}[scope]`]: [
-          placeholder !== null
-            ? [
-                "background-color",
-                placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
-              ]
-            : undefined,
-          ["background-image", `url("${fallbackPath}")`],
-          ["background-image", imageSet],
-          layout && layout !== "fullWidth"
-            ? ["width", `${resolved.width}px`]
-            : undefined,
-          backgroundSize ? ["background-size", backgroundSize] : undefined,
-          backgroundPosition
-            ? ["background-position", backgroundPosition]
-            : undefined,
-          enforceAspectRatio
-            ? ["aspect-ratio", `${resolved.width} / ${resolved.height}`]
-            : undefined,
-        ],
-      },
-    };
+    const cssObj = new CssObjBuilder();
+
+    cssObj.add(
+      `${tagName}[scope]`,
+      placeholder !== null
+        ? [
+            "background-color",
+            placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
+          ]
+        : undefined,
+      ["background-image", `url("${fallbackPath}")`],
+      ["background-image", imageSet],
+      layout && (layout === "constrained" || layout === "fixed")
+        ? ["width", `${resolved.width}px`]
+        : undefined,
+      backgroundSize ? ["background-size", backgroundSize] : undefined,
+      backgroundPosition
+        ? ["background-position", backgroundPosition]
+        : undefined,
+      enforceAspectRatio
+        ? ["aspect-ratio", `${resolved.width} / ${resolved.height}`]
+        : undefined,
+    );
+
+    return cssObj.value;
   }
 
   public get imageSet(): string {

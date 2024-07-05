@@ -23,7 +23,7 @@ import Background from 'astro-image-processor/components';
 
 ### `src`
 
-Specifies the image to use.
+Sets the image to use.
 
 - Type: `string`
 - Required
@@ -54,7 +54,7 @@ Height equivalent to 1x.
 
 ### `densities`
 
-Specifies `x` descriptors used in the `image-set()`.
+Sets the `x` descriptors used in the `image-set()`.
 
 - Type: `number[]`
 - Example: `[1, 2, 3]`
@@ -62,7 +62,7 @@ Specifies `x` descriptors used in the `image-set()`.
 
 ### `placeholder`
 
-Specifies the placeholder.
+Selects the type of the placeholder.
 
 - Type: `"dominantColor" | null`
 - Default: `dominantColor`
@@ -75,7 +75,7 @@ Specifies the placeholder.
 
 ### `placeholderColor`
 
-Specifies the color to use when `placeholder` is `dominantColor`.
+Sets the color to use when `placeholder` is `dominantColor`.
 
 - Type: `string`
 - Example: `"#333"`, `"hsl(150, 30%, 60%)"`, `"var(--some-color)"`
@@ -84,7 +84,7 @@ Specifies the color to use when `placeholder` is `dominantColor`.
 
 ### `upscale`
 
-Specifies how to handle image upscaling required by `densities` or `widths`.
+Selects how to handle image upscaling required by `densities` or `widths`.
 
 - Type: `"never" | "always" | "original"`
 - Default: `never`
@@ -94,42 +94,43 @@ Specifies how to handle image upscaling required by `densities` or `widths`.
 
 ### `layout`
 
-Specifies the horizontal layout of the image.
+Selects the layout of the image.
 
 - Type: `"constrained" | "fixed" | "fullWidth" | "fill" | null`
 - Default: `constrained`
-- `constrained`: Set CSS as `width: 100%; max-width: ${resolvedWidth};`.
-- `fixed`: Set CSS as `width: ${resolvedWidth};`.
-- `fullWidth`: Set CSS as `width: 100%;`.
-- Set to the container element.
-    - If set to `constrained` or `fixed`, inherit CSS property `width` from the `<img>` element as scoped style.
+- If set to `constrained` or `fixed`, the CSS property `width` of the `<img>` element is set to the resolved value as scoped style.
+- The global class `globalClassNames.layout[layout]` is added to the `<picture>` and `<img>` elements.
+- The `<GlobalStyles>` component sets the styles as follows:
+    - `constrained`: `max-width: 100%; height: auto;`
+    - `fixed`: N/A
+    - `fullWidth`: `width: 100%; height: auto;`
+    - `fill`: `width: 100%; height: 100%;`
+- Styles can also be defined manually instead of `<GlobalStyles>` using the global classes.
 - Use with `enforceAspectRatio` if you want to fix the aspect ratio.
-
-### `enforceAspectRatio`
-
-Sets the CSS property `aspect-ratio` on `<picture>` and `<img>` elements.
-
-- Type: `boolean`
-- Default: `false`
-- Sets the CSS property `aspect-ratio` to `${width} / ${height}` based on the final resolved `width` and `height` values of the `<img>` element.
-- Apply through scoped CSS.
 
 ### `backgroundSize`
 
-Sets the CSS property `background-size` on the container elements.
+Selects the CSS property `object-position` for the container element.
 
-- Type: `"cover" | "contain" | string | null`
-- Default: `cover`
+- Type: `"cover" | "contain" | "auto" | string | null`
 - Reference: [background-size (MDN)](https://developer.mozilla.org/en/docs/Web/CSS/background-size)
 - Apply through scoped CSS.
 
 ### `backgroundPosition`
 
-Sets the CSS property `background-position` on the container elements.
+Selects the CSS property `background-size` for the container element.
 
 - Type: `string | null`
-- Default: `50% 50%`
 - Reference: [background-position (MDN)](https://developer.mozilla.org/en/docs/Web/CSS/background-position)
+- Apply through scoped CSS.
+
+### `enforceAspectRatio`
+
+Applies the CSS property `aspect-ratio` to the `<picture>` and `<img>` elements.
+
+- Type: `boolean`
+- Default: `false`
+- Sets the CSS property `aspect-ratio` to `${width} / ${height}` based on the final resolved `width` and `height` values of the `<img>` element.
 - Apply through scoped CSS.
 
 ### `processor`
@@ -146,7 +147,7 @@ Assigns an individual identifier name as a string for the image editing content.
 
 ### `formats`
 
-Specifies the output formats.
+Selects the output formats.
 
 - Type: `("jpeg" | "png" | "avif" | "webp" | "gif")[]`
 - Default: `["avif", "webp"]`

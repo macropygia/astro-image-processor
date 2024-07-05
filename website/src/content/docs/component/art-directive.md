@@ -11,7 +11,7 @@ Generates `<source>` elements or elements within `image-set()` that are part of 
 
 ### `src`
 
-Specifies the image to use.
+Sets the image to use.
 
 - Type: `string`
 - Required
@@ -42,7 +42,7 @@ The value of the `height` attribute of the `<source>` element.
 
 ### `densities`
 
-Specifies `x` descriptors used in the `srcset` attribute of the `<source>` element.
+Sets the `x` descriptors used in the `srcset` attribute of the `<source>` element.
 
 - Type: `number[]`
 - Example: `[1, 2, 3]`
@@ -50,14 +50,14 @@ Specifies `x` descriptors used in the `srcset` attribute of the `<source>` eleme
 
 ### `widths`
 
-Specifies `w` descriptors used in the `srcset` attribute of the `<source>` element.
+Sets the `w` descriptors used in the `srcset` attribute of the `<source>` element.
 
 - Type: `number[]`
 - Example: `[1000, 2000, 3000]`
 
 ### `sizes`
 
-Specifies the `sizes` attribute of the `<source>` element.
+Sets the `sizes` attribute of the `<source>` element.
 
 - Type: `string | (resolvedWidths: number[], resolvedDensities: number[]) => string`
 - Reference: [sizes (MDN)](https://developer.mozilla.org/en/docs/Web/API/HTMLImageElement/sizes)
@@ -66,7 +66,7 @@ Specifies the `sizes` attribute of the `<source>` element.
 
 ### `media`
 
-Specifies the `media` attribute of the `<source>` element
+Sets the `media` attribute of the `<source>` element
 
 - Type: `string`
 - Required
@@ -74,7 +74,7 @@ Specifies the `media` attribute of the `<source>` element
 
 ### `placeholder`
 
-Specifies the placeholder.
+Selects the type of the placeholder.
 
 - Type: `"blurred" | "dominantColor" | null`
 - Default: `blurred`
@@ -89,7 +89,7 @@ Specifies the placeholder.
 
 ### `placeholderColor`
 
-Specifies the color to use when `placeholder` is `dominantColor`.
+Sets the color to use when `placeholder` is `dominantColor`.
 
 - Type: `string`
 - Example: `"#333"`, `"hsl(150, 30%, 60%)"`, `"var(--some-color)"`
@@ -105,7 +105,7 @@ Sharp instance used to generate the blurred placeholder image.
 
 ### `upscale`
 
-Specifies how to handle image upscaling required by `densities` or `widths`.
+Selects how to handle image upscaling required by `densities` or `widths`.
 
 - Type: `"never" | "always" | "original"`
 - Default: `never`
@@ -113,37 +113,48 @@ Specifies how to handle image upscaling required by `densities` or `widths`.
 - `always`: Upscale if required.
 - `original`: Ignore upscaling requests and add the original size of the image.
 
-### `layout`
-
-Specifies the horizontal layout of the image.
-
-- Type: `"constrained" | "fixed" | "fullWidth" | "fill" | null`
-- Default: `constrained`
-- `constrained`: Set CSS as `width: 100%; max-width: ${resolvedWidth};`.
-- `fixed`: Set CSS as `width: ${resolvedWidth};`.
-- `fullWidth`: Set CSS as `width: 100%;`.
-- In the `<Image>` and `<Picture>` components, set to the `<img>` element.
-- If the component has a container element, set to the container element.
-    - If set to `constrained` or `fixed`, inherit CSS property `width` from the `<img>` element as scoped style.
-- Use with `enforceAspectRatio` if you want to fix the aspect ratio.
-
 ### `objectFit`
 
-Value of the CSS property `object-fit` for the `<img>` element.
+Selects the CSS property `object-fit` for the `<img>` element.
 
 - Type: `"fill" | "contain" | "cover" | "none" | "scale-down"`
-- Apply by adding the global class `globalClassNames.objectFit[objectFit]` to the `<img>` element.
+- Apply through scoped CSS.
+- If `placeholder` is set to `blurred`, applies to the placeholder using `background-size`.
+    - `scale-down` falls back to `contain`.
 
 ### `objectPosition`
 
-Value of the CSS property `object-position` for the `<img>` element.
+Selects the CSS property `object-position` for the `<img>` element.
 
 - Type: `string`
+- Apply through scoped CSS.
+- If `placeholder` is set to `blurred`, applies to the placeholder using `background-position`.
+
+### `backgroundSize`
+
+Selects the CSS property `background-size` for the placeholder.
+
+- Type: `"cover" | "contain" | "auto" | string | null`
+- Reference: [background-size (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-size)
+- Used if `placeholder` is `blurred`.
+- If `backgroundSize` is not set and `objectFit` is set, the value of `objectFit` に準じた値が使用される
+- Apply through scoped CSS.
+
+### `backgroundPosition`
+
+Sets the CSS property `background-position` for the placeholder.
+
+- Type: `string | null`
+- Reference: [background-position (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-position)
+- Used if `placeholder` is `blurred`.
+- If `backgroundPosition` is not set and `objectPosition` is set, the value according to `objectFit` is used.
+- Both `backgroundPosition` and `objectPosition` are not set, `50% 50%` is used.
+    - It is the default value of `object-position`.
 - Apply through scoped CSS.
 
 ### `enforceAspectRatio`
 
-Sets the CSS property `aspect-ratio` on `<picture>` and `<img>` elements.
+Applies the CSS property `aspect-ratio` to the `<picture>` and `<img>` elements.
 
 - Type: `boolean`
 - Default: `false`
@@ -171,7 +182,7 @@ Assigns an individual identifier name as a string for the image editing content.
 
 ### `formats`
 
-Specifies the output formats.
+Selects the output formats.
 
 - Type: `("jpeg" | "png" | "avif" | "webp" | "gif")[]`
 - Default: `["avif", "webp"]`

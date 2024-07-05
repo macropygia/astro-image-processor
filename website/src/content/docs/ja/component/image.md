@@ -141,16 +141,18 @@ import Image from 'astro-image-processor/components';
 
 ### `layout`
 
-画像の水平方向のレイアウトを指定する
+画像のレイアウトを指定する
 
 - 型: `"constrained" | "fixed" | "fullWidth" | "fill" | null`
 - 既定値: `constrained`
-- `constrained`: `width: 100%; max-width: ${resolvedWidth};` を指定する
-- `fixed`: `width: ${resolvedWidth};` を指定する
-- `fullWidth`: `width: 100%;` を指定する
-- `<img>` 要素に指定する
-- 背景モードではコンテナ要素に指定する
-    - `constrained` または `fixed` の場合、`<img>` 要素から `width` プロパティを継承する
+- `constrained` または `fixed` の場合、 `<img>` 要素のCSSプロパティ `width` をスコープ付きCSSで最終的な画像幅に設定する
+- グローバルクラス `globalClassNames.layout[layout]` が `<img>` 要素に適用される
+- `<GlobalStyles>` コンポーネントにより以下のスタイルが適用される
+    - `constrained`: `max-width: 100%; height: auto;`
+    - `fixed`: N/A
+    - `fullWidth`: `width: 100%; height: auto;`
+    - `fill`: `width: 100%; height: 100%;`
+- 独自のグローバルCSSを定義することでカスタマイズ可能
 - アスペクト比を固定したい場合は `enforceAspectRatio` と併用する
 
 ### `objectFit`
@@ -158,13 +160,38 @@ import Image from 'astro-image-processor/components';
 `<img>` 要素のCSSプロパティ `object-fit` の値
 
 - 型: `"fill" | "contain" | "cover" | "none" | "scale-down"`
-- `globalClassNames.objectFit[objectFit]` のグローバルクラスを `<img>` 要素に適用することで反映する
+- スコープ付きCSSによって反映する
+- `placeholder` が `blurred` の場合、 `background-size` を利用してプレースホルダーにも適用される
+    - `scale-down` は `contain` にフォールバックする
 
 ### `objectPosition`
 
 `<img>` 要素のCSSプロパティ `object-position` の値
 
 - 型: `string`
+- スコープ付きCSSによって反映する
+- `placeholder` が `blurred` の場合、 `background-position` を利用してプレースホルダーにも適用される
+
+### `backgroundSize`
+
+プレースホルダー画像のCSSプロパティ `background-size` を設定する
+
+- 型: `"cover" | "contain" | "auto" | string | null`
+- 参照: [background-size (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-size)
+- `placeholder` が `blurred` の場合に使用される
+- `backgroundSize` が設定されておらず `objectFit` が設定されている場合は `objectFit` に準じた値が使用される
+- スコープ付きCSSによって反映する
+
+### `backgroundPosition`
+
+プレースホルダー画像のCSSプロパティ `background-position` を設定する
+
+- 型: `string | null`
+- 参照: [background-position (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/background-position)
+- `placeholder` が `blurred` の場合に使用される
+- `backgroundPosition` が設定されておらず `objectPosition` が設定されている場合は `objectPosition` の値が使用される
+- `backgroundPosition` も `objectPosition` も設定されていない場合は `50% 50%` が使用される
+    - CSSプロパティ `object-position` の既定値
 - スコープ付きCSSによって反映する
 
 ### `enforceAspectRatio`
