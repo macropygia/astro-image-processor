@@ -27,7 +27,7 @@ Astro Image Processor Global Styles
   :where(.aip-elm-img) {
     display: inline-block;
     overflow: clip;
-    contain: paint;
+    /* contain: paint; Disabled because sub-pixel processing is different from overflow */
     vertical-align: middle;
     background-repeat: no-repeat;
   }
@@ -47,7 +47,7 @@ Astro Image Processor Global Styles
     animation-name: var(--aip-placeholder-animation-name);
     animation-duration: 1s;
     animation-fill-mode: forwards;
-    animation-timing-function: ease-in;
+    animation-timing-function: ease;
     animation-play-state: var(--aip-placeholder-animation-state);
     background-repeat: no-repeat;
   }

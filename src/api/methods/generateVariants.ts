@@ -13,15 +13,17 @@ type GenerateVariants = (source: BaseSource) => Promise<ImgProcVariants>;
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
 export const generateVariants: GenerateVariants = async (source) => {
   const {
+    componentType,
     db,
     dirs: { imageCacheDir },
     data: { hash: sourceHash },
-    options: { src, format, formats, processor },
+    options: { src, densities, format, formats, processor },
     formatOptions,
     resolved,
     settings: { concurrency, hasher },
     logger,
     spinner,
+    profile,
   } = source;
 
   if (!sourceHash) {
@@ -33,8 +35,7 @@ export const generateVariants: GenerateVariants = async (source) => {
   }
 
   const variants: ImgProcVariants = {};
-  const sourceProfile = source.profile;
-  const formatsArray = source.componentType === "img" ? [format] : formats;
+  const formatsArray = componentType === "img" ? [format] : formats;
 
   // const queue: Promise<ImgProcVariant>[] = [];
   const total = resolved.widths.length * formatsArray.length;
@@ -54,17 +55,16 @@ export const generateVariants: GenerateVariants = async (source) => {
     variants[variantFormat] = [];
 
     for (let index = 0; index < resolved.widths.length; index++) {
-      const variantWidth = Math.round(resolved.widths[index] as number); // NOTE:
-      const variantDensity = resolved.densities
-        ? resolved.densities[index]
-        : undefined;
+      const variantWidth = Math.round(resolved.widths[index] as number);
+      const variantDensity =
+        densities && resolved.densities ? resolved.densities[index] : undefined;
 
       const variantProcessor = sharp()
         .resize(variantWidth)
         .toFormat(variantFormat, variantFormatOption);
 
       const variantProfile = [
-        sourceProfile,
+        profile,
         getFilteredSharpOptions(variantProcessor),
       ]
         .flat()
@@ -91,24 +91,22 @@ export const generateVariants: GenerateVariants = async (source) => {
 
       // New file
       const buffer = await source.getBuffer();
-      const result = queue.add(
-        () =>
-          generateVariant({
-            src,
-            buffer,
-            db,
-            hasher,
-            imageCacheDir,
-            processor,
-            variantProcessor,
-            variantProfileHash,
-            sourceHash,
-            variantWidth,
-            variantDensity,
-            logger,
-            spinner,
-          }),
-        // ),
+      const result = queue.add(() =>
+        generateVariant({
+          src,
+          buffer,
+          db,
+          hasher,
+          imageCacheDir,
+          processor,
+          variantProcessor,
+          variantProfileHash,
+          sourceHash,
+          variantWidth,
+          variantDensity,
+          logger,
+          spinner,
+        }),
       );
       results.push(result);
     }

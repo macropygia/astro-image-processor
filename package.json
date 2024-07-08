@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@astrojs/node": "^8.3.2",
-    "@astrojs/ts-plugin": "^1.8.0",
+    "@astrojs/ts-plugin": "^1.9.0",
     "@biomejs/biome": "^1.8.3",
     "@changesets/cli": "^2.27.7",
     "@commitlint/cli": "^19.3.0",
@@ -86,7 +86,7 @@
     "@types/bun": "latest",
     "@types/lokijs": "^1.5.14",
     "@types/node": "^20.14.10",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^2.0.1",
     "astro": "^4.11.5",
     "deterministic-object-hash": "^2.0.2",
     "kleur": "^4.1.5",
@@ -100,7 +100,7 @@
     "simple-git-hooks": "^2.11.1",
     "typescript": "^5.5.3",
     "vite": "^5.3.3",
-    "vitest": "^1.6.0",
+    "vitest": "^2.0.1",
     "xxhash-addon": "^2.0.3"
   },
   "engines": {

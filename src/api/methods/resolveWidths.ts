@@ -43,6 +43,7 @@ export const resolveWidths: ResolveWidths = (source) => {
     return;
   }
 
+  // Both widths and dencities are not set
   resolved.widths = [width || data.width];
   resolved.densities = [1];
 };
