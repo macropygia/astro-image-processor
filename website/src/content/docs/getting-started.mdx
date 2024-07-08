@@ -49,7 +49,7 @@ Place global styles.
 ```astro ins={3,18}
 // src/layout/Layout.astro
 ---
-import { GlobalStyles } from 'astro-image-processor/components';
+import GlobalStyles from 'astro-image-processor/components/GlobalStyles.astro';
 ---
 
 <!doctype html>
@@ -72,8 +72,8 @@ Place component to the page.
 ```astro ins={3,8}
 // src/pages/index.astro
 ---
-import { Picture } from 'astro-image-processor/components';
-import { Layout } from '../layout/Layout.astro';
+import Picture from 'astro-image-processor/components/Picture.astro';
+import Layout from '../layout/Layout.astro';
 ---
 
 <Layout>

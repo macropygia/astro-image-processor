@@ -23,7 +23,7 @@ export const templateObject: Pick<
 ```jsx
 // foo.astro
 ---
-import { Picture } from 'astro-image-processor/components';
+import Picture from 'astro-image-processor/components/Picture.astro';
 import { templateObject } from 'path/to/templates';
 ---
 

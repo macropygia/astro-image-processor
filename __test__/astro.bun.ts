@@ -7,7 +7,6 @@ export default defineConfig({
   root: "__test__",
   output: "static",
   integrations: [
-    // @ts-ignore
     astroImageProcessor({
       dataAdapter: new BunSqliteDataAdapter(),
     }),

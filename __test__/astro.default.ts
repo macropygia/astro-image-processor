@@ -7,7 +7,6 @@ export default defineConfig({
   output: "static",
   // scopedStyleStrategy: "class",
   integrations: [
-    // @ts-ignore
     astroImageProcessor({
       preserveDirectories: true,
       componentProps: {

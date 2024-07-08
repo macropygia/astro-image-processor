@@ -10,7 +10,7 @@ Normally, it is placed in a common layout and applied to the whole site as follo
 ```astro ins={3,18}
 // src/layout/Layout.astro
 ---
-import { GlobalStyles } from 'astro-image-processor/components';
+import GlobalStyles from 'astro-image-processor/components/GlobalStyles.astro';
 ---
 
 <!doctype html>

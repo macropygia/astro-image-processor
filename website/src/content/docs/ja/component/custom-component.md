@@ -61,8 +61,8 @@ const {
 ```astro ins={4,9} del={3,8}
 // src/pages/index.astro
 ---
-import { Image } from 'astro-image-processor/components/CustomImage.astro';
-import { CustomImage } from '../path/to/CustomImage.astro';
+import Image from 'astro-image-processor/components/Image.astro';
+import CustomImage from '../path/to/CustomImage.astro';
 ---
 
 <Layout>

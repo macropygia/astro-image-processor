@@ -2,4 +2,4 @@
 'astro-image-processor': patch
 ---
 
-Restore component aliases
+**[BREAKING CHANGE]** Delete named exports of components

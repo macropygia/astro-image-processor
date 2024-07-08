@@ -10,7 +10,7 @@ title: <GlobalStyles />
 ```astro ins={3,18}
 // src/layout/Layout.astro
 ---
-import { GlobalStyles } from 'astro-image-processor/components';
+import GlobalStyles from 'astro-image-processor/components/GlobalStyles.astro';
 ---
 
 <!doctype html>
