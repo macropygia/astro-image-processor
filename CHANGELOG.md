@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.1.3
+
+### Patch Changes
+
+- a7dc99b: Fix to output sizes correctly
+
 ## 0.1.2
 
 ### Patch Changes
