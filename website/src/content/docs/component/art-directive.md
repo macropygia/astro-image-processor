@@ -60,6 +60,7 @@ Sets the `w` descriptors used in the `srcset` attribute of the `<source>` elemen
 Sets the `sizes` attribute of the `<source>` element.
 
 - Type: `string | (resolvedWidths: number[], resolvedDensities: number[]) => string`
+- Default: Inherit from the `<img>` element
 - Reference: [sizes (MDN)](https://developer.mozilla.org/en/docs/Web/API/HTMLImageElement/sizes)
 - `resolvedWidths` will be the final resolved variations of image widths.
     - Even if `densities` is used, it will be the width value.

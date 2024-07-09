@@ -12,6 +12,7 @@ describe("Unit/api/utils/resolveSizes", () => {
         resolved: {
           widths: [500, 1000],
           densities: [1, 2],
+          width: 1000,
         },
       },
       result: "(min-width: 1000px) 1000px, 100vw",
@@ -23,6 +24,7 @@ describe("Unit/api/utils/resolveSizes", () => {
         resolved: {
           widths: [500, 1000],
           densities: [1, 2],
+          width: 1000,
         },
       },
       result: "sizes",
@@ -38,6 +40,7 @@ describe("Unit/api/utils/resolveSizes", () => {
         resolved: {
           widths: [500, 1000],
           densities: [1, 2],
+          width: 1000,
         },
       },
       result: "500,1000",

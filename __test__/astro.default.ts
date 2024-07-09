@@ -8,7 +8,7 @@ export default defineConfig({
   // scopedStyleStrategy: "class",
   integrations: [
     astroImageProcessor({
-      preserveDirectories: true,
+      // preserveDirectories: true,
       componentProps: {
         objectFit: "cover",
       },

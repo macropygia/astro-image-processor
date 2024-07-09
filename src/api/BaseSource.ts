@@ -198,17 +198,17 @@ export class BaseSource {
       this.blurredDataUrl = await generateBlurredImage(this);
     }
 
-    // Resolve widhs and densities
+    // Resolve `resolved.widths` and `resolved.densities`
     resolveWidths(this);
-
-    // Resolve sizes
-    this.resolved.sizes = resolveSizes(this);
 
     // Generate variants
     this.variants = await generateVariants(this);
 
-    // Resolve element width and height
+    // Resolve `resolved.width` and `resolved.height`
     resolveElementDimensions(this);
+
+    // Resolve `resolved.sizes`
+    this.resolved.sizes = resolveSizes(this);
 
     this.spinner.succeed(
       `Completed in ${getTimeStat(this.timeStart, performance.now())}`,

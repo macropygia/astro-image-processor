@@ -94,9 +94,14 @@ import Image from 'astro-image-processor/components';
 `<img>` 要素の `sizes` 属性の指定
 
 - 型: `string | (resolvedWidths: number[], resolvedDensities: number[]) => string`
+- 既定値: `layout` の値に応じて以下のように設定される
+    - `fixed` : `${resolvedWidth}px`
+    - `fill`, `fullWidth` : `100vw`
+    - `constrained`, `undefined` : `(min-width: ${resolvedWidth}px) ${resolvedWidth}px, 100vw`
 - 参照: [sizes (MDN)](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/sizes)
 - `resolvedWidths` は最終的に解決された画像の幅の配列
     - `densities` を使用する場合でも幅が入る
+- `resolvedWidth` は最終的に `<img>` 要素の `width` に設定される値
 
 ### `placeholder`
 

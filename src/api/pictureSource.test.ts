@@ -72,6 +72,7 @@ describe("Unit/api/PictureSource", () => {
   test("parseArtDirectives", async () => {
     const instance = await PictureSource.factory(args);
     instance.options = { tagName: "section" };
+    instance.resolved = { sizes: "resolved.sizes" };
 
     const empty = await instance.parseArtDirectives();
     expect(empty).toBeUndefined();

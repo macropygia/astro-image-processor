@@ -96,9 +96,14 @@ Sets the `w` descriptors used in the `srcset` attribute of the `<img>` element.
 Sets the `sizes` attribute of the `<img>` element.
 
 - Type: `string | (resolvedWidths: number[], resolvedDensities: number[]) => string`
+- Default: Sets according to the `layout` as follows:
+    - `fixed` : `${resolvedWidth}px`
+    - `fill` or `fullWidth` : `100vw`
+    - `constrained` or `undefined` : `(min-width: ${resolvedWidth}px) ${resolvedWidth}px, 100vw`
 - Reference: [sizes (MDN)](https://developer.mozilla.org/en/docs/Web/API/HTMLImageElement/sizes)
 - `resolvedWidths` will be the final resolved variations of image widths.
     - Even if `densities` is used, it will be the width value.
+- `resolvedWidth` is the value of the `width` attribute of the `<img>` element.
 
 ### `placeholder`
 

@@ -60,6 +60,7 @@ title: Art Directive
 `<source>` 要素の `sizes` 属性の指定
 
 - 型: `string | (resolvedWidths: number[], resolvedDensities: number[]) => string`
+- 既定値: `<img>` 要素から継承
 - 参照: [sizes (MDN)](https://developer.mozilla.org/ja/docs/Web/API/HTMLImageElement/sizes)
 - `resolvedWidths` は最終的に解決された画像幅のバリエーションとなる
     - `densities` を使用する場合でも幅が入る

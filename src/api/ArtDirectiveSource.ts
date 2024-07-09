@@ -21,17 +21,21 @@ export interface ArtDirectiveSourceArgs {
   componentHash: string;
   /** Component props (readonly) */
   options: Readonly<Partial<ImgProcProcessorOptions> & { src: string }>;
+  /** Parent sizes */
+  parentSizes: string;
 }
 
 export class ArtDirectiveSource extends BaseSource {
   /** Component hash */
   override readonly componentHash: string;
+  readonly parentSizes: string;
 
   protected constructor(args: ArtDirectiveSourceArgs) {
     super(args);
 
     this.isArtDirective = true;
     this.componentHash = args.componentHash;
+    this.parentSizes = args.parentSizes;
   }
 
   /** Async constructor */
@@ -43,9 +47,10 @@ export class ArtDirectiveSource extends BaseSource {
 
   public get sources(): HTMLAttributes<"source">[] {
     const {
-      options: { formats, media },
+      options: { sizes, formats, media },
       variants,
       resolved,
+      parentSizes,
     } = this;
 
     // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
@@ -66,6 +71,7 @@ export class ArtDirectiveSource extends BaseSource {
         srcset: variant
           .map((item) => `${this.resolvePath(item)} ${item.descriptor}`)
           .join(", "),
+        sizes: sizes ? resolved.sizes : parentSizes,
         width: resolved.width,
         height: resolved.height,
         type: `image/${format}`,

@@ -5,7 +5,7 @@ type ResolveSizes = (source: BaseSource) => string;
 export const resolveSizes: ResolveSizes = (source) => {
   const {
     data,
-    options: { src, sizes },
+    options: { src, sizes, layout },
     resolved,
   } = source;
 
@@ -19,14 +19,25 @@ export const resolveSizes: ResolveSizes = (source) => {
     throw new Error(`Widths or densities unresolved: ${src}`);
   }
 
-  if (!sizes) {
-    const maxWidth = resolved.widths.at(-1) as number; // NOTE: TypeScript issue
-    return `(min-width: ${maxWidth}px) ${maxWidth}px, 100vw`;
-  }
-
   if (typeof sizes === "string") {
     return sizes;
   }
 
-  return sizes(resolved.widths, resolved.densities);
+  if (typeof sizes === "function") {
+    return sizes(resolved.widths, resolved.densities);
+  }
+
+  // const maxWidth = resolved.widths.at(-1) as number; // NOTE: TypeScript issue
+
+  switch (layout) {
+    case "fixed":
+      return `${resolved.width}px`;
+    case "fill":
+    case "fullWidth":
+      return "100vw";
+    case "constrained":
+      return `(min-width: ${resolved.width}px) ${resolved.width}px, 100vw`;
+    default:
+      return `(min-width: ${resolved.width}px) ${resolved.width}px, 100vw`;
+  }
 };

@@ -61,6 +61,7 @@ export class PictureSource extends ImageSource {
           componentType: this.componentType,
           componentHash: this.componentHash,
           options: { ...artDirective, ...(tagName ? { tagName } : undefined) },
+          parentSizes: this.resolved.sizes || "",
         }),
       ),
     );
@@ -142,6 +143,7 @@ export class PictureSource extends ImageSource {
           srcset: variant
             .map((item) => `${this.resolvePath(item)} ${item.descriptor}`)
             .join(", "),
+          sizes: resolved.sizes,
           width: resolved.width,
           height: resolved.height,
           type: `image/${format}`,
