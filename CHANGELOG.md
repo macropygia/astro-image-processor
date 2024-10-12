@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.1.4
+
+### Patch Changes
+
+- a456fe5: Fix to round off calculated width or height
+
 ## 0.1.3
 
 ### Patch Changes
