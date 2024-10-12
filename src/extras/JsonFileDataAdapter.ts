@@ -46,6 +46,7 @@ export class JsonFileDataAdapter implements ImgProcDataAdapter {
 
   public files: ImgProcFileRecord[] = [];
 
+  // @ts-ignore Bun types are not available in Node.js environment
   // biome-ignore lint/correctness/noUndeclaredVariables: Runtime matter
   private saveTimer?: NodeJS.Timeout | Timer | undefined;
 

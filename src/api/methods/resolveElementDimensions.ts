@@ -40,9 +40,13 @@ export const resolveElementDimensions: ResolveElementDimensions = (source) => {
     elementHeight = height;
   } else if (width && !height) {
     elementWidth = width;
-    elementHeight = width * (variantItem.height / variantItem.width);
+    elementHeight = Math.round(
+      width * (variantItem.height / variantItem.width),
+    );
   } else if (!width && height) {
-    elementWidth = height * (variantItem.width / variantItem.height);
+    elementWidth = Math.round(
+      height * (variantItem.width / variantItem.height),
+    );
     elementHeight = height;
   } else {
     elementWidth = variantItem.width;
