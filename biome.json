@@ -14,14 +14,13 @@
         "noNodejsModules": "off"
       },
       "nursery": {
-        "noConsole": "off",
         "useImportRestrictions": "off"
       },
       "style": {
         "useNamingConvention": "off"
       },
       "suspicious": {
-        "noConsoleLog": "off"
+        "noConsole": "off"
       }
     }
   },
