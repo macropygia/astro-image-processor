@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.1.5
+
+### Patch Changes
+
+- b96b2de: Bump dependencies
+
 ## 0.1.4
 
 ### Patch Changes
