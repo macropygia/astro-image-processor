@@ -54,7 +54,12 @@ export class ImageSource extends BaseSource {
   /** Async constructor */
   static override async factory(args: ImageSourceArgs): Promise<ImageSource> {
     const instance = new ImageSource({ ...args, componentType: "img" });
-    await instance.main();
+    try {
+      await instance.main();
+    } catch (error) {
+      instance.spinner.fail("Failed");
+      throw error as Error;
+    }
     return instance;
   }
 

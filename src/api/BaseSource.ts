@@ -166,7 +166,12 @@ export class BaseSource {
   /** Async constructor */
   static async factory(args: BaseSourceArgs): Promise<BaseSource> {
     const instance = new BaseSource(args);
-    await instance.main();
+    try {
+      await instance.main();
+    } catch (error) {
+      instance.spinner.fail("Failed");
+      throw error as Error;
+    }
     return instance;
   }
 

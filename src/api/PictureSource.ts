@@ -44,8 +44,13 @@ export class PictureSource extends ImageSource {
     args: PictureSourceArgs,
   ): Promise<PictureSource> {
     const instance = new PictureSource({ ...args, componentType: "picture" });
-    await instance.main();
-    await instance.parseArtDirectives();
+    try {
+      await instance.main();
+      await instance.parseArtDirectives();
+    } catch (error) {
+      instance.spinner.fail("Failed");
+      throw error as Error;
+    }
     return instance;
   }
 
@@ -136,9 +141,11 @@ export class PictureSource extends ImageSource {
     additionalFormats
       .map((format) => {
         const variant = variants[format];
+
         if (!variant) {
           throw new Error("Format mismatch");
         }
+
         return {
           srcset: variant
             .map((item) => `${this.resolvePath(item)} ${item.descriptor}`)

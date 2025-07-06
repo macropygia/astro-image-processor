@@ -41,7 +41,12 @@ export class ArtDirectiveSource extends BaseSource {
   /** Async constructor */
   static override async factory(args: ArtDirectiveSourceArgs) {
     const instance = new ArtDirectiveSource(args);
-    await instance.main();
+    try {
+      await instance.main();
+    } catch (error) {
+      instance.spinner.fail("Failed");
+      throw error as Error;
+    }
     return instance;
   }
 
