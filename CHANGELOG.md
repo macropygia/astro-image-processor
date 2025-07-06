@@ -1,5 +1,13 @@
 # astro-image-processor
 
+## 0.1.6
+
+### Patch Changes
+
+- 4d5f340: Fix package.json to build xxhash-addon with pnpm v10
+- 448d4f4: Fix to stop the spinner when an error occurs
+- 6cabecf: Bump dependencies
+
 ## 0.1.5
 
 ### Patch Changes
