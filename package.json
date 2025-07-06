@@ -66,7 +66,7 @@
     "ora": "^7.0.1 || ^8.0.1",
     "p-queue": "^8.0.1",
     "sharp": "^0.33.1",
-    "xxhash-addon": "^2.0.2"
+    "xxhash-addon": "^2.0.3"
   },
   "peerDependenciesMeta": {
     "lokijs": {
@@ -104,13 +104,16 @@
     "xxhash-addon": "^2.0.3"
   },
   "engines": {
-    "node": "^20.14.0",
-    "bun": "^1.1.10"
+    "node": ">= 20",
+    "bun": ">= 1"
   },
   "packageManager": "pnpm@10.12.4",
   "volta": {
     "node": "24.3.0",
     "pnpm": "10.12.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["xxhash-addon"]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm run hooks:pre-commit",
