@@ -19,9 +19,13 @@ export default defineConfig({
           label: "日本語",
         },
       },
-      social: {
-        github: "https://github.com/macropygia/astro-image-processor",
-      },
+      social: [
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/macropygia/astro-image-processor",
+        },
+      ],
       customCss: ["./src/styles/custom.css"],
       plugins: [
         starlightTypeDoc({

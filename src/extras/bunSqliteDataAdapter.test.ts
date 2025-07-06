@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import fs from "node:fs";
 
+import { afterAll } from "vitest";
 import {
   mockPlaceholder1,
   mockSource1,
@@ -9,9 +10,8 @@ import {
   mockSource4,
   mockVariant1,
   mockVariant2,
-} from "@mock/mock.js";
-import { sleep } from "@mock/utils.js";
-import { afterAll } from "vitest";
+} from "#mock/mock.js";
+import { sleep } from "#mock/utils.js";
 import { BunSqliteDataAdapter } from "./BunSqliteDataAdapter.js";
 
 let db: BunSqliteDataAdapter;

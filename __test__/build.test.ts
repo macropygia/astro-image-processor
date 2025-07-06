@@ -9,14 +9,14 @@ describe("Integration/build", () => {
     await buildTestConfigs();
   });
 
-  test("case1", () => {
-    expect(
+  test("case1", async () => {
+    await expect(
       fs.readFileSync("__test__/dist/1/index.html").toString(),
     ).toMatchFileSnapshot("./__snapshots__/1.html");
   });
 
-  test("case2", () => {
-    expect(
+  test("case2", async () => {
+    await expect(
       fs.readFileSync("__test__/dist/2/index.html").toString(),
     ).toMatchFileSnapshot("./__snapshots__/2.html");
   });

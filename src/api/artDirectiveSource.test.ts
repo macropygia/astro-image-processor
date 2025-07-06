@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { mockVariants } from "@mock/mock.js";
+import { mockVariants } from "#mock/mock.js";
 import type { ImgProcVariants } from "../types.js";
 import {
   ArtDirectiveSource,

@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { mockLogger } from "@mock/mock.js";
+import { mockLogger } from "#mock/mock.js";
 import type { BaseSource } from "../BaseSource.js";
 import { renewSource } from "./renewSource.js";
 

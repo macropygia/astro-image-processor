@@ -1,7 +1,7 @@
 import type { Sharp } from "sharp";
 import { describe, expect, test } from "vitest";
 
-import { mockAstroConfig } from "@mock/mock.js";
+import { mockAstroConfig } from "#mock/mock.js";
 import { deterministicHash } from "../../api/utils/deterministicHash.js";
 import { getFilteredSharpOptions } from "../../api/utils/getFilteredSharpOptions.js";
 import { defaultOptions } from "../../const.js";

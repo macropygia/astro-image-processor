@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { mockVariants } from "@mock/mock.js";
+import { mockVariants } from "#mock/mock.js";
 import {
   BackgroundSource,
   type BackgroundSourceArgs,

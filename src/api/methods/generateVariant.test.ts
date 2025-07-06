@@ -157,7 +157,7 @@ describe("Unit/api/methods/generateVariant", () => {
     mockDb.insert.mockRejectedValue(new Error("DB insert error"));
     mockDb.fetch.mockResolvedValue({ profile: "oldProfileHash" });
 
-    expect(() =>
+    await expect(() =>
       generateVariant({
         src: "test.jpg",
         buffer,

@@ -89,7 +89,7 @@ describe("Unit/api/utils/getMetadataFromBuffer", () => {
     // @ts-ignore
     mockSharpInstance.metadata.mockReturnValue({ format: "jpeg" });
 
-    expect(() => getMetadataFromBuffer({ buffer })).rejects.toThrowError(
+    await expect(() => getMetadataFromBuffer({ buffer })).rejects.toThrowError(
       "Sharp could not retrieve metadata",
     );
   });
@@ -103,7 +103,7 @@ describe("Unit/api/utils/getMetadataFromBuffer", () => {
     // @ts-ignore
     mockSharpInstance.stats.mockResolvedValue({ dominant: { r: 1 } });
 
-    expect(() =>
+    await expect(() =>
       getMetadataFromBuffer({ buffer, useDominant: true }),
     ).rejects.toThrowError("stats() failed");
   });

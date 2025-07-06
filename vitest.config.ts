@@ -29,11 +29,11 @@ export default defineConfig({
       reporter: ["html", "json"],
     },
     alias: {
-      "@test": path.resolve(
+      "#test": path.resolve(
         path.dirname(fileURLToPath(import.meta.url)),
         "./__test__/src",
       ),
-      "@mock": path.resolve(
+      "#mock": path.resolve(
         path.dirname(fileURLToPath(import.meta.url)),
         "./__mock__/",
       ),

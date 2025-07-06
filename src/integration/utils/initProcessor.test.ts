@@ -2,7 +2,7 @@ import { existsSync, rmdirSync } from "node:fs";
 
 import { describe, expect, test } from "vitest";
 
-import { mockAstroConfig, mockLogger } from "@mock/mock.js";
+import { mockAstroConfig, mockLogger } from "#mock/mock.js";
 import { initProcessor } from "./initProcessor.js";
 
 describe("Unit/intergration/initProcessor", () => {

@@ -4,7 +4,7 @@ import path from "node:path";
 import type { AstroIntegrationLogger } from "astro";
 import { type Mock, describe, expect, test, vi } from "vitest";
 
-import { mockContext } from "@mock/mock.js";
+import { mockContext } from "#mock/mock.js";
 import { deleteOutdatedImages, pruneCache } from "./pruneCache.js";
 
 vi.mock("node:fs", () => ({

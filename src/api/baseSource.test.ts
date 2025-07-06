@@ -3,7 +3,7 @@ import fs from "node:fs";
 import sharp from "sharp";
 import { type Mock, afterEach, describe, expect, test, vi } from "vitest";
 
-import { mockContext } from "@mock/mock.js";
+import { mockContext } from "#mock/mock.js";
 import type { ImgProcContext } from "../types.js";
 import { BaseSource, type BaseSourceArgs } from "./BaseSource.js";
 import { addSource } from "./methods/addSource.js";

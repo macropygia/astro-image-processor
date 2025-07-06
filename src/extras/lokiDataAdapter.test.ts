@@ -10,8 +10,8 @@ import {
   mockSource4,
   mockVariant1,
   mockVariant2,
-} from "@mock/mock.js";
-import { sleep } from "@mock/utils.js";
+} from "#mock/mock.js";
+import { sleep } from "#mock/utils.js";
 import { LokiDataAdapter } from "../extras/LokiDataAdapter.js";
 
 let db: LokiDataAdapter;

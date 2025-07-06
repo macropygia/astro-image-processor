@@ -28,13 +28,15 @@ describe("Unit/api/utils/generateBlurredImage", () => {
     settings: { hasher: () => "mock-hash" },
   } as unknown as ImageSource;
 
-  test("succeeded", () => {
-    expect(generateBlurredImage(baseSource)).resolves.toMatchInlineSnapshot(
+  test("succeeded", async () => {
+    await expect(
+      generateBlurredImage(baseSource),
+    ).resolves.toMatchInlineSnapshot(
       `"data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADMDOJaQAA3AA5EAA"`,
     );
   });
 
-  test("cache hit", () => {
+  test("cache hit", async () => {
     const source = {
       ...baseSource,
       db: {
@@ -46,12 +48,12 @@ describe("Unit/api/utils/generateBlurredImage", () => {
         renew: vi.fn(),
       },
     } as unknown as ImageSource;
-    expect(generateBlurredImage(source)).resolves.toMatchInlineSnapshot(
+    await expect(generateBlurredImage(source)).resolves.toMatchInlineSnapshot(
       `"data:image/webp;base64,mock-blurred-base64"`,
     );
   });
 
-  test("with source processor", () => {
+  test("with source processor", async () => {
     const source = {
       ...baseSource,
       options: {
@@ -60,18 +62,18 @@ describe("Unit/api/utils/generateBlurredImage", () => {
       },
     } as ImageSource;
 
-    expect(generateBlurredImage(source)).resolves.toMatchInlineSnapshot(
+    await expect(generateBlurredImage(source)).resolves.toMatchInlineSnapshot(
       `"data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADMDOJaQAA3AA5EAA"`,
     );
   });
 
-  test("throw", () => {
+  test("throw", async () => {
     const source = {
       ...baseSource,
       data: {},
     } as ImageSource;
 
-    expect(() => generateBlurredImage(source)).rejects.toThrowError(
+    await expect(() => generateBlurredImage(source)).rejects.toThrowError(
       "Source hash does not exist",
     );
   });

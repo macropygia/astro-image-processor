@@ -2,7 +2,7 @@ import http from "node:http";
 
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
-import { sleep } from "@mock/utils.js";
+import { sleep } from "#mock/utils.js";
 import { getBufferFromRemoteUrl } from "./getBufferFromRemoteUrl.js";
 
 describe("Unit/api/utils/getBufferFromRemoteUrl", () => {
@@ -40,16 +40,16 @@ describe("Unit/api/utils/getBufferFromRemoteUrl", () => {
     expect(expiresAt).toBeUndefined();
   });
 
-  test.concurrent("404", () => {
-    expect(
+  test.concurrent("404", async () => {
+    await expect(
       getBufferFromRemoteUrl("http://localhost:4320/status/404", 1000),
     ).rejects.toThrowError(
       "Failed to download: http://localhost:4320/status/404 (404)",
     );
   });
 
-  test.concurrent("timeout", () => {
-    expect(
+  test.concurrent("timeout", async () => {
+    await expect(
       getBufferFromRemoteUrl("http://localhost:4320/throw", 100),
     ).rejects.toThrowError("Fetch timeout");
   });

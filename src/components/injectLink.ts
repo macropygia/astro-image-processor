@@ -24,13 +24,13 @@ export const injectLink: InjectLink = async (linkAttributes) => {
         await Promise.all(
           linkAttributes.map((attr) =>
             generateHtmlByRender(
-              renderTemplate`<link${internalSpreadAttributes(attr)}>`,
+              renderTemplate`<link${internalSpreadAttributes(attr, false, "link")}>`,
             ),
           ),
         )
       ).join("")
     : await generateHtmlByRender(
-        renderTemplate`<link${internalSpreadAttributes(linkAttributes)}>`,
+        renderTemplate`<link${internalSpreadAttributes(linkAttributes, false, "link")}>`,
       );
 
   return createComponent({

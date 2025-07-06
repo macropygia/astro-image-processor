@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { mockOptions } from "@mock/mock.js";
+import { mockOptions } from "#mock/mock.js";
 import { defineConfig } from "./index.js";
 
 describe("defineConfig", () => {
