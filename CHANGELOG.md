@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.1.7
+
+### Patch Changes
+
+- f5b3c5d: Fix peerDependencies range to allow newer sharp 0.x versions
+
 ## 0.1.6
 
 ### Patch Changes

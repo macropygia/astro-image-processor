@@ -1,6 +1,6 @@
 {
   "name": "astro-image-processor",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Astro integartion for image optimization and art direction for static builds",
   "keywords": [
     "astro",
