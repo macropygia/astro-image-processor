@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.1.8
+
+### Patch Changes
+
+- fad506e: Add TypeScript global declaration for imageProcessorContext
+
 ## 0.1.7
 
 ### Patch Changes
