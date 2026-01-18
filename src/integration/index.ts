@@ -1,8 +1,12 @@
 import type { AstroIntegration } from "astro";
 
-import type { ImgProcUserOptions } from "../types.js";
+import type { ImgProcContext, ImgProcUserOptions } from "../types.js";
 import { initProcessor } from "./utils/initProcessor.js";
 import { pruneCache } from "./utils/pruneCache.js";
+
+declare global {
+  var imageProcessorContext: ImgProcContext;
+}
 
 /**
  * Astro Image Processor Integration
