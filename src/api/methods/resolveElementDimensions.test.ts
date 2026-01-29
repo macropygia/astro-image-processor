@@ -2,7 +2,7 @@
 import { describe, expect, test } from "vitest";
 
 import type { BaseSource } from "../BaseSource.js";
-import { resolveElementDimensions } from "./resolveElementDimensions";
+import { resolveElementDimensions } from "./resolveElementDimensions.js";
 
 describe("Unit/api/utils/resolveElementDimensions", () => {
   const baseSource = {

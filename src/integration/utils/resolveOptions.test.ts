@@ -7,7 +7,7 @@ import { getFilteredSharpOptions } from "../../api/utils/getFilteredSharpOptions
 import { defaultOptions } from "../../const.js";
 import { xxHash3Hasher } from "../../extras/xxHash3Hasher.js";
 import type { ImgProcFormatOptions } from "../../types.js";
-import { resolveOptions } from "./resolveOptions";
+import { resolveOptions } from "./resolveOptions.js";
 
 describe("Unit/intergration/resolveOptions", () => {
   test("default", () => {

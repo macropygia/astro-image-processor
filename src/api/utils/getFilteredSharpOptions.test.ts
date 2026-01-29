@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import type { SharpWithOptions } from "../../types.js";
-import { getFilteredSharpOptions } from "./getFilteredSharpOptions";
+import { getFilteredSharpOptions } from "./getFilteredSharpOptions.js";
 
 describe("Unit/api/utils/getFilteredSharpOptions", () => {
   test("default", () => {

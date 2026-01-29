@@ -1,5 +1,7 @@
 import path from "node:path";
 
+const LAST_SLASH_RE = /\/+$/;
+
 /**
  * Replaces backslashes to slash and normalize
  * - If `trailingSlash` is set to `true`, trailing slash is added.
@@ -17,7 +19,7 @@ export const normalizePath = (
   if (trailingSlash === true) {
     newPath = `${newPath}/`;
   } else if (trailingSlash === false) {
-    newPath.replace(/\/+$/, "");
+    newPath.replace(LAST_SLASH_RE, "");
   }
   return path.posix.normalize(newPath);
 };

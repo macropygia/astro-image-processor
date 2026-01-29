@@ -45,6 +45,9 @@ export interface BaseSourceArgs {
   options: Readonly<Partial<ImgProcProcessorOptions> & { src: string }>;
 }
 
+const HTTPS_RE = /^https?:\/\//;
+const ATFS_RE = /^\/@fs/;
+
 export class BaseSource {
   componentType: "img" | "picture" | "background";
   /** Component hash */
@@ -142,7 +145,7 @@ export class BaseSource {
 
     // Parse src
     this.localSourcePath = src;
-    if (/^https?:\/\//.test(src)) {
+    if (HTTPS_RE.test(src)) {
       this.type = "remote";
       this.data.source = src;
     } else if (src.startsWith("data:")) {
@@ -150,7 +153,7 @@ export class BaseSource {
       this.data.source = "data";
     } else if (src.startsWith("/@fs")) {
       this.type = "local";
-      this.localSourcePath = new URL(src.replace(/^\/@fs/, "file://")).pathname;
+      this.localSourcePath = new URL(src.replace(ATFS_RE, "file://")).pathname;
     } else if (src.length > 0) {
       this.type = "local";
       this.localSourcePath = normalizePath(
