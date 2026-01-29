@@ -10,7 +10,7 @@ import type {
   ImgProcContextDirectories,
   ImgProcUserOptions,
 } from "../../types.js";
-import { resolveOptions } from "./resolveOptions";
+import { resolveOptions } from "./resolveOptions.js";
 
 type InitProcessor = (args: {
   options: ImgProcUserOptions | undefined;

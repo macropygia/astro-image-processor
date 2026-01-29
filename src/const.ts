@@ -31,6 +31,7 @@ export const defaultOptions: Omit<ImgProcOptions, "scopedStyleStrategy"> = {
   downloadDirPattern: "[imageCacheDir]downloads/",
   imageAssetsDirPattern: "/[assetsDirName]/",
   imageOutDirPattern: "[outDir]",
+  devServerImageEndpoint: "/_aip",
   preserveDirectories: false,
   fileNamePattern: "[name]_[width]x[height]@[descriptor].[ext]?[hash8]",
   disableCopy: false,

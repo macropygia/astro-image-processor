@@ -334,7 +334,7 @@ describe("Unit/api/BaseSource", () => {
           ext: "avif",
           descriptor: "x1",
         }),
-      ).toBe("/_image?href=%2F%40fscache%2FmockHash.avif");
+      ).toBe("/_aip/mockHash.avif");
 
       import.meta.env.MODE = "production";
       (fs.existsSync as Mock).mockReturnValue(false);

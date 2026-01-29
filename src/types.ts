@@ -113,6 +113,11 @@ export interface ImgProcSettings {
    */
   imageOutDirPattern: string;
   /**
+   * Compressed image serving endpoint for dev server
+   * @default "/_aip"
+   */
+  devServerImageEndpoint: string;
+  /**
    * Preserve directory structure for image files
    * - Place images by root relative paths with `srcDir` as the document root
    * - Image filenames are resolved according to `fileNamePattern`

@@ -56,6 +56,7 @@ export const mockContext = {
     disableCopy: false,
     hasher: vi.fn(),
     scopedStyleStrategy: "attribute",
+    devServerImageEndpoint: "/_aip",
   },
   formatOptions: {},
   componentProps: {},

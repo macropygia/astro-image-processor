@@ -228,6 +228,7 @@ export class BaseSource {
       options: { src },
       settings: {
         imageOutDirPattern,
+        devServerImageEndpoint,
         disableCopy,
         preserveDirectories,
         fileNamePattern,
@@ -240,9 +241,7 @@ export class BaseSource {
 
     // Dev server
     if (import.meta.env.MODE === "development") {
-      return `/_image?href=${encodeURIComponent(
-        `/@fs${imageCacheDir}${filename}`,
-      )}`;
+      return `${devServerImageEndpoint}/${filename}`;
     }
 
     // Disable copy (fixed prefix)
