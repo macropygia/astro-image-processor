@@ -1,27 +1,28 @@
-import { type AstroInlineConfig, build } from "astro";
-import { astroImageProcessor } from "../src/integration/index.js";
+import { type AstroInlineConfig, build } from 'astro';
+
+import { astroImageProcessor } from '../src/integration/index.js';
 
 const baseConfig: AstroInlineConfig = {
-  root: "__test__",
-  output: "static",
-  mode: "production",
+  root: '__test__',
+  output: 'static',
+  mode: 'production',
 };
 
 const configs: AstroInlineConfig[] = [
   {
     ...baseConfig,
-    outDir: "dist/1",
+    outDir: 'dist/1',
     integrations: [
       astroImageProcessor({
-        imageOutDirPattern: "https://example.com/cdn/",
+        imageOutDirPattern: 'https://example.com/cdn/',
         disableCopy: true,
       }),
     ],
   },
   {
     ...baseConfig,
-    outDir: "dist/2",
-    scopedStyleStrategy: "class",
+    outDir: 'dist/2',
+    scopedStyleStrategy: 'class',
     integrations: [
       astroImageProcessor({
         preserveDirectories: true,

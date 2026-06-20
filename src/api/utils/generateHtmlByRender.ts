@@ -1,5 +1,5 @@
-import type { RenderTemplateResult } from "astro/runtime/server/render/astro/render-template.js";
-import type { RenderDestination } from "astro/runtime/server/render/common.js";
+import type { RenderTemplateResult } from 'astro/runtime/server/render/astro/render-template.js';
+import type { RenderDestination } from 'astro/runtime/server/render/common.js';
 
 type generateHtmlByRender = (result: RenderTemplateResult) => Promise<string>;
 
@@ -10,11 +10,11 @@ type generateHtmlByRender = (result: RenderTemplateResult) => Promise<string>;
  * @returns HTML string
  */
 export const generateHtmlByRender: generateHtmlByRender = async (result) => {
-  let html = "";
+  let html = '';
 
   const destination: RenderDestination = {
-    write(chunk) {
-      html += chunk;
+    write(chunk: string) {
+      html = `${html}${chunk}`;
     },
   };
 

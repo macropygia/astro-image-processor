@@ -1,12 +1,12 @@
-import path from "node:path";
+import path from 'node:path';
 
-import type { AstroIntegrationLogger } from "astro";
+import type { AstroIntegrationLogger } from 'astro';
+import type { Ora } from 'ora';
 
-import type { Ora } from "ora";
-import { extByFormat } from "../../const.js";
-import type { ImgProcDataAdapter, ImgProcVariant } from "../../types.js";
-import { pathExists } from "../utils/pathExists.js";
-import { isOutputFormat } from "../utils/typeGuards.js";
+import { extByFormat } from '../../const.js';
+import type { ImgProcDataAdapter, ImgProcVariant } from '../../types.js';
+import { pathExists } from '../utils/pathExists.js';
+import { isOutputFormat } from '../utils/typeGuards.js';
 
 type RetrieveVariant = (args: {
   src: string;
@@ -39,7 +39,7 @@ export const retrieveVariant: RetrieveVariant = async ({
 
   const { hash, format, width, height } = variantData;
   if (!isOutputFormat(format)) {
-    throw new Error("Invalid output format");
+    throw new Error('Invalid output format');
   }
   const ext = extByFormat[format];
   const imageCachePath = path.join(imageCacheDir, `${hash}.${ext}`);

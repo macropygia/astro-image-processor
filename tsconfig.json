@@ -3,10 +3,9 @@
   "extends": ["astro/tsconfigs/strictest"],
   "compilerOptions": {
     "lib": ["esnext", "DOM", "DOM.Iterable"], // Based on @tsconfig/node20
-    "baseUrl": ".",
     "paths": {
-      "#test/*": ["__test__/src/*"],
-      "#mock/*": ["__mock__/*"]
+      "#test/*": ["./__test__/src/*"],
+      "#mock/*": ["./__mock__/*"]
     },
     "moduleDetection": "force",
     "jsx": "preserve",

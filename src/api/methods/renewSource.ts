@@ -1,11 +1,11 @@
-import path from "node:path";
+import path from 'node:path';
 
-import { extByFormat } from "../../const.js";
-import type { ImgProcFile } from "../../types.js";
-import type { BaseSource } from "../BaseSource.js";
-import { getMetadataFromBuffer } from "../utils/getMetadataFromBuffer.js";
-import { normalizePath } from "../utils/normalizePath.js";
-import { isOutputFormat } from "../utils/typeGuards.js";
+import { extByFormat } from '../../const.js';
+import type { ImgProcFile } from '../../types.js';
+import type { BaseSource } from '../BaseSource.js';
+import { getMetadataFromBuffer } from '../utils/getMetadataFromBuffer.js';
+import { normalizePath } from '../utils/normalizePath.js';
+import { isOutputFormat } from '../utils/typeGuards.js';
 
 type RenewSource = (source: BaseSource) => Promise<void>;
 
@@ -22,18 +22,14 @@ export const renewSource: RenewSource = async (source) => {
 
   // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
   if (!data.hash || !data.format) {
-    throw new Error("Invalid data");
+    throw new Error('Invalid data');
   }
 
   let isDownloaded = false;
 
-  if (type === "remote") {
-    const ext = isOutputFormat(data.format)
-      ? extByFormat[data.format]
-      : data.format;
-    source.downloadPath = normalizePath(
-      path.join(dirs.downloadDir, `${data.hash}.${ext}`),
-    );
+  if (type === 'remote') {
+    const ext = isOutputFormat(data.format) ? extByFormat[data.format] : data.format;
+    source.downloadPath = normalizePath(path.join(dirs.downloadDir, `${data.hash}.${ext}`));
 
     if (!data.expiresAt || data.expiresAt < Date.now()) {
       // Expired or no-cache
@@ -45,10 +41,7 @@ export const renewSource: RenewSource = async (source) => {
   }
 
   // Get dominant color if needed
-  if (
-    isDownloaded ||
-    (placeholder === "dominantColor" && !placeholderColor && !data.r)
-  ) {
+  if (isDownloaded || (placeholder === 'dominantColor' && !placeholderColor && !data.r)) {
     logger?.info(`Re-download remote file or get dominant color: ${src}`);
     await updateMetadata(source);
   }
@@ -68,7 +61,7 @@ export async function updateMetadata(source: BaseSource) {
   // Update metadata
   const metadata = await getMetadataFromBuffer({
     buffer,
-    useDominant: placeholder === "dominantColor" && !placeholderColor,
+    useDominant: placeholder === 'dominantColor' && !placeholderColor,
     processor,
   });
 

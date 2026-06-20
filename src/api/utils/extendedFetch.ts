@@ -15,8 +15,8 @@ export const fetchWithTimeout = async (
   try {
     return await fetch(input, { ...init, signal: controller.signal });
   } catch (e) {
-    if (e instanceof DOMException && e.name === "AbortError") {
-      throw new Error("Fetch timeout");
+    if (e instanceof DOMException && e.name === 'AbortError') {
+      throw new Error('Fetch timeout');
     }
     throw e;
   }

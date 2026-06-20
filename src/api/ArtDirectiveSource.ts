@@ -1,22 +1,22 @@
-import type { HTMLAttributes } from "astro/types";
+import type { HTMLAttributes } from 'astro/types';
 
-import { replicateFitByBg } from "../const.js";
+import { replicateFitByBg } from '../const.js';
 import type {
   ImgProcContext,
   ImgProcCssObj,
   ImgProcFormatOptions,
   ImgProcProcessorOptions,
   ImgProcVariant,
-} from "../types.js";
-import { BaseSource } from "./BaseSource.js";
-import { generateImageSet } from "./methods/generateImageSet.js";
-import { CssObjBuilder } from "./utils/CssObjBuilder.js";
+} from '../types.js';
+import { BaseSource } from './BaseSource.js';
+import { generateImageSet } from './methods/generateImageSet.js';
+import { CssObjBuilder } from './utils/CssObjBuilder.js';
 
 export interface ArtDirectiveSourceArgs {
   /** Integration context */
   ctx: ImgProcContext;
   /** Component type */
-  componentType: "img" | "picture" | "background";
+  componentType: 'img' | 'picture' | 'background';
   /** Component hash (inherit from PictureSource/BackgroundSource) */
   componentHash: string;
   /** Component props (readonly) */
@@ -44,13 +44,13 @@ export class ArtDirectiveSource extends BaseSource {
     try {
       await instance.main();
     } catch (error) {
-      instance.spinner.fail("Failed");
+      instance.spinner.fail('Failed');
       throw error as Error;
     }
     return instance;
   }
 
-  public get sources(): HTMLAttributes<"source">[] {
+  public get sources(): HTMLAttributes<'source'>[] {
     const {
       options: { sizes, formats, media },
       variants,
@@ -60,22 +60,20 @@ export class ArtDirectiveSource extends BaseSource {
 
     // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
     if (!variants || !resolved.width || !resolved.height) {
-      throw new Error("Unresolved source");
+      throw new Error('Unresolved source');
     }
 
     if (!media) {
-      throw new Error("Media query does not exist");
+      throw new Error('Media query does not exist');
     }
 
     const sources = formats.map((format) => {
       const variant = variants[format];
       if (!variant) {
-        throw new Error("Format mismatch");
+        throw new Error('Format mismatch');
       }
       return {
-        srcset: variant
-          .map((item) => `${this.resolvePath(item)} ${item.descriptor}`)
-          .join(", "),
+        srcset: variant.map((item) => `${this.resolvePath(item)} ${item.descriptor}`).join(', '),
         sizes: sizes ? resolved.sizes : parentSizes,
         width: resolved.width,
         height: resolved.height,
@@ -104,63 +102,51 @@ export class ArtDirectiveSource extends BaseSource {
       backgroundCssObj,
     } = this;
 
-    if (componentType === "background") {
+    if (componentType === 'background') {
       return backgroundCssObj;
     }
 
     if (!media) {
-      throw new Error("Media query does not exist");
+      throw new Error('Media query does not exist');
     }
 
     const cssObj = new CssObjBuilder(media);
 
-    if (placeholder === "dominantColor") {
+    if (placeholder === 'dominantColor') {
       const value = placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`;
-      cssObj.add("picture[scope]::after", ["background-color", value]);
+      cssObj.add('picture[scope]::after', ['background-color', value]);
     }
 
-    if (placeholder === "blurred") {
-      cssObj.add("picture[scope]::after", [
-        "background-image",
-        `url("${blurredDataUrl}")`,
-      ]);
+    if (placeholder === 'blurred') {
+      cssObj.add('picture[scope]::after', ['background-image', `url("${blurredDataUrl}")`]);
 
       // Set the CSS prop `background-size` from the component prop `backgroundSize`
       // or replicate from component prop `objectFit`
       if (backgroundSize !== undefined) {
         if (backgroundSize !== null) {
-          cssObj.add("picture[scope]::after", [
-            "background-size",
-            backgroundSize,
-          ]);
+          cssObj.add('picture[scope]::after', ['background-size', backgroundSize]);
         }
       } else if (objectFit) {
-        cssObj.add("picture[scope]::after", replicateFitByBg[objectFit]);
+        cssObj.add('picture[scope]::after', replicateFitByBg[objectFit]);
       }
 
       // Set the CSS prop `background-position` from the component prop `backgroundPosition`
       // or replicate from component prop `objectPosition`
       if (backgroundPosition !== undefined) {
         if (backgroundPosition !== null) {
-          cssObj.add("picture[scope]::after", [
-            "background-position",
-            backgroundPosition,
-          ]);
+          cssObj.add('picture[scope]::after', ['background-position', backgroundPosition]);
         }
       } else {
-        cssObj.add("picture[scope]::after", [
-          "background-position",
-          objectPosition || "50% 50%",
-        ]);
+        cssObj.add('picture[scope]::after', ['background-position', objectPosition || '50% 50%']);
       }
     }
 
     if (objectFit) {
-      cssObj.add("img[scope]", ["object-fit", objectFit]);
+      cssObj.add('img[scope]', ['object-fit', objectFit]);
     }
 
     if (objectPosition) {
-      cssObj.add("img[scope]", ["object-position", objectPosition]);
+      cssObj.add('img[scope]', ['object-position', objectPosition]);
     }
 
     return cssObj.value;
@@ -186,22 +172,21 @@ export class ArtDirectiveSource extends BaseSource {
 
     // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
     if (!variants || !resolved.width || !resolved.height) {
-      throw new Error("Unresolved source");
+      throw new Error('Unresolved source');
     }
 
     if (!media) {
-      throw new Error("Media query does not exist");
+      throw new Error('Media query does not exist');
     }
 
     const variant = variants[formats.at(-1) as keyof ImgProcFormatOptions];
 
     if (!variant) {
-      throw new Error("Format mismatch");
+      throw new Error('Format mismatch');
     }
 
     const fallbackPath = `${this.resolvePath(
-      variant.find((v) => v.width === resolved.width) ||
-        (variant.at(-1) as ImgProcVariant),
+      variant.find((v) => v.width === resolved.width) || (variant.at(-1) as ImgProcVariant),
     )}`;
 
     const cssObj = new CssObjBuilder(media);
@@ -209,30 +194,27 @@ export class ArtDirectiveSource extends BaseSource {
 
     cssObj.add(
       selector,
-      ["background-image", `url("${fallbackPath}")`],
-      ["background-image", imageSet],
+      ['background-image', `url("${fallbackPath}")`],
+      ['background-image', imageSet],
     );
 
-    if (placeholder === "dominantColor") {
+    if (placeholder === 'dominantColor') {
       cssObj.add(selector, [
-        "background-color",
+        'background-color',
         placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
       ]);
     }
 
     if (enforceAspectRatio) {
-      cssObj.add(selector, [
-        "aspect-ratio",
-        `${resolved.width} / ${resolved.height}`,
-      ]);
+      cssObj.add(selector, ['aspect-ratio', `${resolved.width} / ${resolved.height}`]);
     }
 
     if (objectFit) {
-      cssObj.add("img[scope]", ["object-fit", objectFit]);
+      cssObj.add('img[scope]', ['object-fit', objectFit]);
     }
 
     if (objectPosition) {
-      cssObj.add("img[scope]", ["object-position", objectPosition]);
+      cssObj.add('img[scope]', ['object-position', objectPosition]);
     }
 
     return cssObj.value;

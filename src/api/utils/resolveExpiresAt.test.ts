@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { resolveExpiresAt } from "./resolveExpiresAt.js";
+import { resolveExpiresAt } from './resolveExpiresAt.js';
 
-describe("Unit/api/utils/resolveExpiresAt", () => {
+describe('Unit/api/utils/resolveExpiresAt', () => {
   const now = Date.now();
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe("Unit/api/utils/resolveExpiresAt", () => {
     vi.useRealTimers();
   });
 
-  test("undefined || undefined", () => {
+  test('undefined || undefined', () => {
     const result = resolveExpiresAt({
       expiresAt: undefined,
       minAge: undefined,
@@ -23,7 +23,7 @@ describe("Unit/api/utils/resolveExpiresAt", () => {
     expect(result).toBeUndefined();
   });
 
-  test("undefined || minExpiresAt", () => {
+  test('undefined || minExpiresAt', () => {
     const minAge = 1000; // 1 second
     const result = resolveExpiresAt({
       expiresAt: undefined,
@@ -33,7 +33,7 @@ describe("Unit/api/utils/resolveExpiresAt", () => {
     expect(result).toBe(now + minAge);
   });
 
-  test("minExpiresAt < expiresAt < maxExpiresAt", () => {
+  test('minExpiresAt < expiresAt < maxExpiresAt', () => {
     const expiresAt = now + 5000; // 5 seconds from now
     const minAge = 1000; // 1 second
     const maxAge = 10000; // 10 seconds
@@ -41,14 +41,14 @@ describe("Unit/api/utils/resolveExpiresAt", () => {
     expect(result).toBe(expiresAt);
   });
 
-  test("expiresAt < minExpiresAt", () => {
+  test('expiresAt < minExpiresAt', () => {
     const expiresAt = now + 500; // 0.5 seconds from now
     const minAge = 1000; // 1 second
     const result = resolveExpiresAt({ expiresAt, minAge, maxAge: undefined });
     expect(result).toBe(now + minAge);
   });
 
-  test("maxExpiresAt < expiresAt", () => {
+  test('maxExpiresAt < expiresAt', () => {
     const expiresAt = now + 15000; // 15 seconds from now
     const maxAge = 10000; // 10 seconds
     const result = resolveExpiresAt({ expiresAt, minAge: undefined, maxAge });

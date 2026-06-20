@@ -1,43 +1,34 @@
-import type { ImgProcCssObj } from "../../types.js";
+import type { ImgProcCssObj } from '../../types.js';
 
 type ParseCssObj = (args: {
   componentHash: string;
-  scopedStyleStrategy: "attribute" | "class" | "where";
+  scopedStyleStrategy: 'attribute' | 'class' | 'where';
   styles: (ImgProcCssObj | undefined)[];
 }) => string;
 
-export const parseCssObj: ParseCssObj = ({
-  componentHash,
-  scopedStyleStrategy,
-  styles,
-}) => {
+export const parseCssObj: ParseCssObj = ({ componentHash, scopedStyleStrategy, styles }) => {
   const scope =
-    scopedStyleStrategy === "attribute"
+    scopedStyleStrategy === 'attribute'
       ? `[data-astro-aip-${componentHash}]`
-      : scopedStyleStrategy === "class"
+      : scopedStyleStrategy === 'class'
         ? `.astro-aip-${componentHash}`
         : `:where(.astro-aip-${componentHash})`;
-  const css = (styles.filter(Boolean) as ImgProcCssObj[]).reduce(
-    (css, style) => {
-      // Wrap with selector
-      const innerCss = Object.entries(style.selectors).reduce(
-        (css, [selector, props]) =>
-          `${css}${selector.replace("[scope]", scope)}{${(
-            props.filter(Boolean) as [string, string][]
-          ) // NOTE: TypeScript issue
-            .map((prop) => prop.join(":"))
-            .join(";")}}`,
-        "",
-      );
-      if (style.media) {
-        // Wrap with media-query
-        return `${css}@media${style.media}{${innerCss}}`;
-      }
-      return `${css}${innerCss}`;
-    },
-    "",
-  );
-  return css.replaceAll(";}", "}");
+  const css = (styles.filter(Boolean) as ImgProcCssObj[]).reduce((css, style) => {
+    // Wrap with selector
+    const innerCss = Object.entries(style.selectors).reduce(
+      (css, [selector, props]) =>
+        `${css}${selector.replace('[scope]', scope)}{${(props.filter(Boolean) as [string, string][]) // NOTE: TypeScript issue
+          .map((prop) => prop.join(':'))
+          .join(';')}}`,
+      '',
+    );
+    if (style.media) {
+      // Wrap with media-query
+      return `${css}@media${style.media}{${innerCss}}`;
+    }
+    return `${css}${innerCss}`;
+  }, '');
+  return css.replaceAll(';}', '}');
 };
 
 /*

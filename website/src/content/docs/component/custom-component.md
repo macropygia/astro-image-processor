@@ -22,12 +22,12 @@ Define `CustomImageSource` class that extends the `ImageSource` class and overri
 
 ```ts
 // CustomImageSource.ts
-import { ImageSource } from "astro-image-processor/api/ImageSource.js";
+import { ImageSource } from 'astro-image-processor/api/ImageSource.js';
 
 export class CustomImageSource extends ImageSource {
-  public override get cssObj(): ImgProcCssObj | undefined {
-    // ...
-  }
+    public override get cssObj(): ImgProcCssObj | undefined {
+        // ...
+    }
 }
 ```
 

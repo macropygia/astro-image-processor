@@ -1,11 +1,11 @@
-import { deterministicString } from "deterministic-object-hash";
+import { deterministicString } from 'deterministic-object-hash';
 
 import type {
   ImgProcArtDirectiveSourceProps,
   ImgProcHasher,
   ImgProcProcessorOptions,
-} from "../../types.js";
-import { getFilteredSharpOptions } from "../utils/getFilteredSharpOptions.js";
+} from '../../types.js';
+import { getFilteredSharpOptions } from '../utils/getFilteredSharpOptions.js';
 
 type GenerateComponentHash = (
   options:
@@ -14,18 +14,8 @@ type GenerateComponentHash = (
   hasher: ImgProcHasher,
 ) => string;
 
-export const generateComponentHash: GenerateComponentHash = (
-  options,
-  hasher,
-) => {
-  const {
-    processor,
-    profile,
-    blurProcessor,
-    artDirectives,
-    pictureAttributes,
-    ...rest
-  } = options;
+export const generateComponentHash: GenerateComponentHash = (options, hasher) => {
+  const { processor, profile, blurProcessor, artDirectives, pictureAttributes, ...rest } = options;
 
   return hasher(
     deterministicString({
@@ -38,12 +28,8 @@ export const generateComponentHash: GenerateComponentHash = (
               .filter(Boolean)
               .map((proc) => getFilteredSharpOptions(proc))
           : undefined,
-      blurProfile: blurProcessor
-        ? getFilteredSharpOptions(blurProcessor)
-        : undefined,
-      artDirectives: artDirectives?.map((directive) =>
-        generateComponentHash(directive, hasher),
-      ),
+      blurProfile: blurProcessor ? getFilteredSharpOptions(blurProcessor) : undefined,
+      artDirectives: artDirectives?.map((directive) => generateComponentHash(directive, hasher)),
     }),
   ).slice(0, 8);
 };

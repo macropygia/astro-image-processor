@@ -1,23 +1,23 @@
-import type { HTMLAttributes } from "astro/types";
+import type { HTMLAttributes } from 'astro/types';
 
-import { defaultGlobalClassNames, replicateFitByBg } from "../const.js";
+import { defaultGlobalClassNames, replicateFitByBg } from '../const.js';
 import type {
   ImgProcContext,
   ImgProcCssObj,
   ImgProcProcessorOptions,
   ImgProcVariant,
-} from "../types.js";
-import type { ArtDirectiveSource } from "./ArtDirectiveSource.js";
-import { BaseSource } from "./BaseSource.js";
-import { generateComponentHash } from "./methods/generateComponentHash.js";
-import { CssObjBuilder } from "./utils/CssObjBuilder.js";
-import { parseCssObj } from "./utils/parseCssObj.js";
+} from '../types.js';
+import type { ArtDirectiveSource } from './ArtDirectiveSource.js';
+import { BaseSource } from './BaseSource.js';
+import { generateComponentHash } from './methods/generateComponentHash.js';
+import { CssObjBuilder } from './utils/CssObjBuilder.js';
+import { parseCssObj } from './utils/parseCssObj.js';
 
 export interface ImageSourceArgs {
   /** Integration context */
   ctx: ImgProcContext;
   /** Component type */
-  componentType?: "img" | "picture" | "background";
+  componentType?: 'img' | 'picture' | 'background';
   /** Container mode */
   asBackground?: boolean | undefined;
   /** Component props (readonly) */
@@ -37,7 +37,7 @@ export class ImageSource extends BaseSource {
     componentType,
     asBackground,
     options,
-  }: ImageSourceArgs & { componentType: "img" | "picture" | "background" }) {
+  }: ImageSourceArgs & { componentType: 'img' | 'picture' | 'background' }) {
     super({ ctx, componentType, options });
 
     const {
@@ -53,11 +53,11 @@ export class ImageSource extends BaseSource {
 
   /** Async constructor */
   static override async factory(args: ImageSourceArgs): Promise<ImageSource> {
-    const instance = new ImageSource({ ...args, componentType: "img" });
+    const instance = new ImageSource({ ...args, componentType: 'img' });
     try {
       await instance.main();
     } catch (error) {
-      instance.spinner.fail("Failed");
+      instance.spinner.fail('Failed');
       throw error as Error;
     }
     return instance;
@@ -73,7 +73,7 @@ export class ImageSource extends BaseSource {
 
     const classList: string[] = [globalClassNames.element.img];
 
-    if (scopedStyleStrategy !== "attribute") {
+    if (scopedStyleStrategy !== 'attribute') {
       classList.push(`astro-aip-${componentHash}`);
     }
 
@@ -88,7 +88,7 @@ export class ImageSource extends BaseSource {
     return classList;
   }
 
-  public get imageAttributes(): HTMLAttributes<"img"> {
+  public get imageAttributes(): HTMLAttributes<'img'> {
     const {
       options: { format, formats, placeholder },
       settings: { scopedStyleStrategy, globalClassNames },
@@ -100,31 +100,30 @@ export class ImageSource extends BaseSource {
 
     // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
     if (!variants || !width || !height) {
-      throw new Error("Unresolved source");
+      throw new Error('Unresolved source');
     }
 
     // const ext = extByFormat[format || formats.at(-1)];
     const variant = variants[format || formats.at(-1)];
 
     if (!variant) {
-      throw new Error("Format mismatch");
+      throw new Error('Format mismatch');
     }
 
     // src
     const src = `${this.resolvePath(
-      variant.find((v) => v.width === width) ||
-        (variant.at(-1) as ImgProcVariant),
+      variant.find((v) => v.width === width) || (variant.at(-1) as ImgProcVariant),
     )}`;
 
     // data-astro-aip-<hash>
     const dataIdentifier =
-      scopedStyleStrategy === "attribute"
+      scopedStyleStrategy === 'attribute'
         ? { [`data-astro-aip-${componentHash}`]: true }
         : undefined;
 
     // placeholder animation
     const onLoad =
-      componentType === "picture" && placeholder !== null
+      componentType === 'picture' && placeholder !== null
         ? {
             onload: `parentElement.style.setProperty('${globalClassNames.cssVariables.placeholderAnimationState}', 'running');`,
           }
@@ -132,9 +131,7 @@ export class ImageSource extends BaseSource {
 
     return {
       src,
-      srcset: variant
-        .map((item) => `${this.resolvePath(item)} ${item.descriptor}`)
-        .join(", "),
+      srcset: variant.map((item) => `${this.resolvePath(item)} ${item.descriptor}`).join(', '),
       width,
       height,
       sizes,
@@ -166,35 +163,35 @@ export class ImageSource extends BaseSource {
 
     const cssObj = new CssObjBuilder();
 
-    if (placeholder === "dominantColor") {
-      cssObj.add("img[scope]", [
-        "background-color",
+    if (placeholder === 'dominantColor') {
+      cssObj.add('img[scope]', [
+        'background-color',
         placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
       ]);
-      if (componentType === "picture") {
+      if (componentType === 'picture') {
         // Both overlay and img element have placeholder in the picture element
-        cssObj.add("picture[scope]::after", [
-          "background-color",
+        cssObj.add('picture[scope]::after', [
+          'background-color',
           placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
         ]);
       }
     }
 
-    if (placeholder === "blurred") {
+    if (placeholder === 'blurred') {
       cssObj.add(
-        "img[scope]",
-        ["background-size", "cover"],
+        'img[scope]',
+        ['background-size', 'cover'],
         // inherit from object-position (default: "50% 50%")
-        ["background-position", objectPosition || "50% 50%"],
+        ['background-position', objectPosition || '50% 50%'],
       );
-      if (componentType === "picture") {
+      if (componentType === 'picture') {
         // Both overlay and img element have placeholder in the picture element
-        cssObj.add("picture[scope]", [
+        cssObj.add('picture[scope]', [
           globalClassNames.cssVariables.blurredImage,
           `url("${blurredDataUrl}")`,
         ]);
-        cssObj.add("picture[scope]::after", [
-          "background-image",
+        cssObj.add('picture[scope]::after', [
+          'background-image',
           `var(${globalClassNames.cssVariables.blurredImage})`,
         ]);
 
@@ -202,66 +199,47 @@ export class ImageSource extends BaseSource {
         // or replicate from component prop `objectFit`
         if (backgroundSize !== undefined) {
           if (backgroundSize !== null) {
-            cssObj.add("picture[scope]::after", [
-              "background-size",
-              backgroundSize,
-            ]);
+            cssObj.add('picture[scope]::after', ['background-size', backgroundSize]);
           }
         } else if (objectFit) {
-          cssObj.add("picture[scope]::after", replicateFitByBg[objectFit]);
+          cssObj.add('picture[scope]::after', replicateFitByBg[objectFit]);
         }
 
         // Set the CSS prop `background-position` from the component prop `backgroundPosition`
         // or replicate from component prop `objectPosition`
         if (backgroundPosition !== undefined) {
           if (backgroundPosition !== null) {
-            cssObj.add("picture[scope]::after", [
-              "background-position",
-              backgroundPosition,
-            ]);
+            cssObj.add('picture[scope]::after', ['background-position', backgroundPosition]);
           }
         } else {
-          cssObj.add("picture[scope]::after", [
-            "background-position",
-            objectPosition || "50% 50%",
-          ]);
+          cssObj.add('picture[scope]::after', ['background-position', objectPosition || '50% 50%']);
         }
 
         // blurred image inherit from picture element in the picture component
-        cssObj.add("img[scope]", [
-          "background-image",
+        cssObj.add('img[scope]', [
+          'background-image',
           `var(${globalClassNames.cssVariables.blurredImage})`,
         ]);
       } else {
         // blurred image assign directly in the image component
-        cssObj.add("img[scope]", [
-          "background-image",
-          `url("${blurredDataUrl}")`,
-        ]);
+        cssObj.add('img[scope]', ['background-image', `url("${blurredDataUrl}")`]);
       }
     }
 
-    if (
-      asBackground &&
-      layout &&
-      (layout === "constrained" || layout === "fixed")
-    ) {
-      cssObj.add(`${tagName}[scope]`, ["width", `${resolved.width}px`]);
+    if (asBackground && layout && (layout === 'constrained' || layout === 'fixed')) {
+      cssObj.add(`${tagName}[scope]`, ['width', `${resolved.width}px`]);
     }
 
     if (objectFit) {
-      cssObj.add("img[scope]", ["object-fit", objectFit]);
+      cssObj.add('img[scope]', ['object-fit', objectFit]);
     }
 
     if (objectPosition) {
-      cssObj.add("img[scope]", ["object-position", objectPosition]);
+      cssObj.add('img[scope]', ['object-position', objectPosition]);
     }
 
     if (asBackground && enforceAspectRatio) {
-      cssObj.add(`${tagName}[scope]`, [
-        "aspect-ratio",
-        `${resolved.width} / ${resolved.height}`,
-      ]);
+      cssObj.add(`${tagName}[scope]`, ['aspect-ratio', `${resolved.width} / ${resolved.height}`]);
     }
 
     return cssObj.value;
@@ -309,7 +287,7 @@ export class ImageSource extends BaseSource {
 
     const classList: string[] = [globalClassNames.element.container];
 
-    if (scopedStyleStrategy !== "attribute") {
+    if (scopedStyleStrategy !== 'attribute') {
       classList.push(`astro-aip-${componentHash}`);
     }
 
@@ -333,7 +311,7 @@ export class ImageSource extends BaseSource {
 
     // data-astro-aip-<hash>
     const dataIdentifier =
-      scopedStyleStrategy === "attribute"
+      scopedStyleStrategy === 'attribute'
         ? { [`data-astro-aip-${componentHash}`]: true }
         : undefined;
 

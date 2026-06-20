@@ -1,16 +1,12 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import type { AstroConfig, AstroIntegrationLogger } from "astro";
+import type { AstroConfig, AstroIntegrationLogger } from 'astro';
 
-import { normalizePath } from "../../api/utils/normalizePath.js";
-import type {
-  ImgProcContext,
-  ImgProcContextDirectories,
-  ImgProcUserOptions,
-} from "../../types.js";
-import { resolveOptions } from "./resolveOptions.js";
+import { normalizePath } from '../../api/utils/normalizePath.js';
+import type { ImgProcContext, ImgProcContextDirectories, ImgProcUserOptions } from '../../types.js';
+import { resolveOptions } from './resolveOptions.js';
 
 type InitProcessor = (args: {
   options: ImgProcUserOptions | undefined;
@@ -22,15 +18,13 @@ type InitProcessor = (args: {
  * Astro integration `astro:config:setup` hook
  * - Init database, store directories and inject vite plugin
  */
-export const initProcessor: InitProcessor = async ({
-  options,
-  config,
-  logger,
-}) => {
-  const { componentProps, formatOptions, dataAdapter, ...settings } =
-    resolveOptions(options, config);
+export const initProcessor: InitProcessor = async ({ options, config, logger }) => {
+  const { componentProps, formatOptions, dataAdapter, ...settings } = resolveOptions(
+    options,
+    config,
+  );
 
-  logger?.info("Initializing integration...");
+  logger?.info('Initializing integration...');
 
   const dirs: ImgProcContextDirectories = {
     rootDir: fileURLToPath(config.root.href),
@@ -39,18 +33,18 @@ export const initProcessor: InitProcessor = async ({
     outDir: fileURLToPath(config.outDir.href),
     cacheDir: fileURLToPath(config.cacheDir.href),
     assetsDirName: config.build.assets,
-    imageCacheDir: "",
-    downloadDir: "",
-    imageOutDir: "",
-    imageAssetsDirName: "",
+    imageCacheDir: '',
+    downloadDir: '',
+    imageOutDir: '',
+    imageAssetsDirName: '',
   };
 
   // Replace placeholders in image cache directory
   dirs.imageCacheDir = normalizePath(
     path.resolve(
       settings.imageCacheDirPattern
-        .replaceAll("[root]", dirs.rootDir)
-        .replaceAll("[cacheDir]", dirs.cacheDir),
+        .replaceAll('[root]', dirs.rootDir)
+        .replaceAll('[cacheDir]', dirs.cacheDir),
     ),
     true,
   );
@@ -61,9 +55,9 @@ export const initProcessor: InitProcessor = async ({
   dirs.downloadDir = normalizePath(
     path.resolve(
       settings.downloadDirPattern
-        .replaceAll("[root]", dirs.rootDir)
-        .replaceAll("[cacheDir]", dirs.cacheDir)
-        .replaceAll("[imageCacheDir]", dirs.imageCacheDir),
+        .replaceAll('[root]', dirs.rootDir)
+        .replaceAll('[cacheDir]', dirs.cacheDir)
+        .replaceAll('[imageCacheDir]', dirs.imageCacheDir),
     ),
     true,
   );
@@ -74,20 +68,15 @@ export const initProcessor: InitProcessor = async ({
   dirs.imageOutDir = normalizePath(
     path.resolve(
       settings.imageOutDirPattern
-        .replaceAll("[root]", dirs.rootDir)
-        .replaceAll("[outDir]", dirs.outDir),
+        .replaceAll('[root]', dirs.rootDir)
+        .replaceAll('[outDir]', dirs.outDir),
     ),
     true,
   );
 
   // Replace placeholders in image assets directory
   dirs.imageAssetsDirName = normalizePath(
-    path.resolve(
-      settings.imageAssetsDirPattern.replaceAll(
-        "[assetsDirName]",
-        dirs.assetsDirName,
-      ),
-    ),
+    path.resolve(settings.imageAssetsDirPattern.replaceAll('[assetsDirName]', dirs.assetsDirName)),
     true,
   );
 
@@ -98,7 +87,7 @@ export const initProcessor: InitProcessor = async ({
     retentionCount: settings.retentionCount,
   });
 
-  logger?.info("Database initialized.");
+  logger?.info('Database initialized.');
 
   const ctx: ImgProcContext = {
     // DB

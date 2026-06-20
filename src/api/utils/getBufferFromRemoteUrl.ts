@@ -1,15 +1,12 @@
-import { fetchWithTimeout } from "./extendedFetch.js";
-import { getExpiresAtFromResponseHeader } from "./getExpiresAtFromResponseHeader.js";
+import { fetchWithTimeout } from './extendedFetch.js';
+import { getExpiresAtFromResponseHeader } from './getExpiresAtFromResponseHeader.js';
 
 type GetBufferFromRemoteUrl = (
   urlLike: string,
   timeout: number,
 ) => Promise<{ buffer: Buffer; expiresAt: number | undefined }>;
 
-export const getBufferFromRemoteUrl: GetBufferFromRemoteUrl = async (
-  urlLike,
-  timeout,
-) => {
+export const getBufferFromRemoteUrl: GetBufferFromRemoteUrl = async (urlLike, timeout) => {
   const url = new URL(urlLike);
 
   return await fetchWithTimeout(url, { timeoutDuration: timeout })

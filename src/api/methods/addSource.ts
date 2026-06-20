@@ -1,12 +1,12 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { extByFormat } from "../../const.js";
-import type { ImgProcFile } from "../../types.js";
-import type { BaseSource } from "../BaseSource.js";
-import { getMetadataFromBuffer } from "../utils/getMetadataFromBuffer.js";
-import { normalizePath } from "../utils/normalizePath.js";
-import { isOutputFormat } from "../utils/typeGuards.js";
+import { extByFormat } from '../../const.js';
+import type { ImgProcFile } from '../../types.js';
+import type { BaseSource } from '../BaseSource.js';
+import { getMetadataFromBuffer } from '../utils/getMetadataFromBuffer.js';
+import { normalizePath } from '../utils/normalizePath.js';
+import { isOutputFormat } from '../utils/typeGuards.js';
 
 type AddSource = (source: BaseSource) => Promise<void>;
 
@@ -25,7 +25,7 @@ export const addSource: AddSource = async (source) => {
   // Get metadata
   const metadata = await getMetadataFromBuffer({
     buffer,
-    useDominant: placeholder === "dominantColor" && !placeholderColor,
+    useDominant: placeholder === 'dominantColor' && !placeholderColor,
     processor,
   });
   const { format: inputFormat } = metadata;
@@ -33,13 +33,9 @@ export const addSource: AddSource = async (source) => {
   Object.assign(data, { ...metadata });
 
   // Resolve downloadPath
-  if (type === "remote") {
-    const ext = isOutputFormat(inputFormat)
-      ? extByFormat[inputFormat]
-      : inputFormat;
-    source.downloadPath = normalizePath(
-      path.join(dirs.downloadDir, `${data.hash}.${ext}`),
-    );
+  if (type === 'remote') {
+    const ext = isOutputFormat(inputFormat) ? extByFormat[inputFormat] : inputFormat;
+    source.downloadPath = normalizePath(path.join(dirs.downloadDir, `${data.hash}.${ext}`));
 
     // Save remote file cache
     await fs.promises.writeFile(source.downloadPath, buffer);

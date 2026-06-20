@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { getExpiresAtFromResponseHeader } from "./getExpiresAtFromResponseHeader.js";
+import { getExpiresAtFromResponseHeader } from './getExpiresAtFromResponseHeader.js';
 
 const toSec = (ms?: number) => (ms ? Math.floor(ms / 1000) : ms);
 
-describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
+describe('Unit/api/utils/getExpiresAtFromResponseHeader', () => {
   const now = Date.now();
 
   beforeEach(() => {
@@ -16,9 +16,9 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     vi.useRealTimers();
   });
 
-  test("s-maxage", () => {
+  test('s-maxage', () => {
     const headers: Headers = new Headers({
-      "cache-control": "max-age=1, s-maxage=2",
+      'cache-control': 'max-age=1, s-maxage=2',
       expires: new Date(Date.now() + 3000).toUTCString(),
     });
 
@@ -27,9 +27,9 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     expect(toSec(result)).toBe(toSec(Date.now() + 2000));
   });
 
-  test("max-age", () => {
+  test('max-age', () => {
     const headers: Headers = new Headers({
-      "cache-control": "max-age=1",
+      'cache-control': 'max-age=1',
       expires: new Date(Date.now() + 3000).toUTCString(),
     });
 
@@ -38,7 +38,7 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     expect(toSec(result)).toBe(toSec(Date.now() + 1000));
   });
 
-  test("expires", () => {
+  test('expires', () => {
     const headers: Headers = new Headers({
       expires: new Date(Date.now() + 3000).toUTCString(),
     });
@@ -48,7 +48,7 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     expect(toSec(result)).toBe(toSec(Date.now() + 3000));
   });
 
-  test("expires (expired)", () => {
+  test('expires (expired)', () => {
     const headers: Headers = new Headers({
       expires: new Date(Date.now() - 1000).toUTCString(),
     });
@@ -58,9 +58,9 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     expect(result).toBeUndefined();
   });
 
-  test("no-cache", () => {
+  test('no-cache', () => {
     const headers: Headers = new Headers({
-      "cache-control": "max-age=1, s-maxage=2, no-cache",
+      'cache-control': 'max-age=1, s-maxage=2, no-cache',
       expires: new Date(Date.now() + 3000).toUTCString(),
     });
 
@@ -69,9 +69,9 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     expect(result).toBeUndefined();
   });
 
-  test("no-store", () => {
+  test('no-store', () => {
     const headers: Headers = new Headers({
-      "cache-control": "max-age=1, s-maxage=2, no-store",
+      'cache-control': 'max-age=1, s-maxage=2, no-store',
       expires: new Date(Date.now() + 3000).toUTCString(),
     });
 
@@ -80,9 +80,9 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     expect(result).toBeUndefined();
   });
 
-  test("no-cache and no-store", () => {
+  test('no-cache and no-store', () => {
     const headers: Headers = new Headers({
-      "cache-control": "max-age=1, s-maxage=2, no-cache, no-store",
+      'cache-control': 'max-age=1, s-maxage=2, no-cache, no-store',
       expires: new Date(Date.now() + 3000).toUTCString(),
     });
 
@@ -91,9 +91,9 @@ describe("Unit/api/utils/getExpiresAtFromResponseHeader", () => {
     expect(result).toBeUndefined();
   });
 
-  test("nothing", () => {
+  test('nothing', () => {
     const headers: Headers = new Headers({
-      "content-length": "1024",
+      'content-length': '1024',
     });
 
     const result = getExpiresAtFromResponseHeader(headers);

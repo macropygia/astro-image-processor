@@ -1,5 +1,5 @@
-import type { BaseSource } from "../BaseSource.js";
-import { isFirstElementNumber } from "../utils/typeGuards.js";
+import type { BaseSource } from '../BaseSource.js';
+import { isFirstElementNumber } from '../utils/typeGuards.js';
 
 type ResolveWidths = (source: BaseSource) => void;
 
@@ -25,9 +25,10 @@ export const resolveWidths: ResolveWidths = (source) => {
 
   if (widths) {
     resolved.widths = filterWidths(widths, data.width, upscale);
-    resolved.densities = resolved.widths.map(
-      (w) => w / (width || (data.width as number)),
-    ) as [number, ...number[]];
+    resolved.densities = resolved.widths.map((w) => w / (width || (data.width as number))) as [
+      number,
+      ...number[],
+    ];
     return;
   }
 
@@ -54,8 +55,8 @@ export const resolveWidths: ResolveWidths = (source) => {
 export function convertDensitiesToWidths(
   densities: number[],
   dataWidth: number, // real width
-  upscale: "never" | "always" | "original",
-  width?: number | undefined, // width prop
+  upscale: 'never' | 'always' | 'original',
+  width?: number, // width prop
 ): {
   resolvedWidths: [number, ...number[]];
   resolvedDensities: [number, ...number[]];
@@ -68,29 +69,24 @@ export function convertDensitiesToWidths(
   const filteredDensities: number[] = [];
 
   for (const density of densities) {
-    if (upscale === "always" || baseWidth * density <= dataWidth) {
+    if (upscale === 'always' || baseWidth * density <= dataWidth) {
       widthsByDensities.push(baseWidth * density);
       filteredDensities.push(density);
     }
   }
-  if (upscale === "original" && widthsByDensities.at(-1) !== dataWidth) {
+  if (upscale === 'original' && widthsByDensities.at(-1) !== dataWidth) {
     widthsByDensities.push(dataWidth);
     filteredDensities.push(dataWidth / baseWidth);
   }
 
-  if (
-    isFirstElementNumber(widthsByDensities) &&
-    isFirstElementNumber(filteredDensities)
-  ) {
+  if (isFirstElementNumber(widthsByDensities) && isFirstElementNumber(filteredDensities)) {
     return {
       resolvedWidths: widthsByDensities,
       resolvedDensities: filteredDensities,
     };
   }
 
-  throw new Error(
-    "Nothing to output (minimum specified width is greater than real width)",
-  );
+  throw new Error('Nothing to output (minimum specified width is greater than real width)');
 }
 
 /**
@@ -99,13 +95,12 @@ export function convertDensitiesToWidths(
 export function filterWidths(
   widths: number[],
   dataWidth: number,
-  upscale: "never" | "always" | "original",
+  upscale: 'never' | 'always' | 'original',
 ): [number, ...number[]] {
   widths.sort((a, b) => a - b);
-  const filteredWidths =
-    upscale === "always" ? widths : widths.filter((w) => w <= dataWidth);
+  const filteredWidths = upscale === 'always' ? widths : widths.filter((w) => w <= dataWidth);
 
-  if (upscale === "original" && filteredWidths.at(-1) !== dataWidth) {
+  if (upscale === 'original' && filteredWidths.at(-1) !== dataWidth) {
     filteredWidths.push(dataWidth);
   }
 
@@ -113,7 +108,5 @@ export function filterWidths(
     return filteredWidths;
   }
 
-  throw new Error(
-    "Nothing to output (minimum specified width is greater than real width)",
-  );
+  throw new Error('Nothing to output (minimum specified width is greater than real width)');
 }

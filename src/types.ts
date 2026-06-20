@@ -1,22 +1,22 @@
-import type { AstroIntegrationLogger } from "astro";
-import type { HTMLAttributes, HTMLTag } from "astro/types";
+import type { AstroIntegrationLogger } from 'astro';
+import type { HTMLAttributes, HTMLTag } from 'astro/types';
 import type {
   AvifOptions,
+  FormatEnum,
   GifOptions,
   JpegOptions,
   PngOptions,
   Sharp,
   WebpOptions,
-} from "sharp";
-import type sharp from "sharp";
-import type { ConfigEnv, ResolvedConfig, Rollup, ViteDevServer } from "vite";
+} from 'sharp';
+import type { ConfigEnv, ResolvedConfig, Rollup, ViteDevServer } from 'vite';
 
-import type { ArtDirectiveSourceArgs } from "./api/ArtDirectiveSource.js";
-import type { BackgroundSourceArgs } from "./api/BackgroundSource.js";
-import type { BaseSourceArgs } from "./api/BaseSource.js";
-import type { ImageSourceArgs } from "./api/ImageSource.js";
-import type { PictureSourceArgs } from "./api/PictureSource.js";
-import type { defaultGlobalClassNames } from "./const.js";
+import type { ArtDirectiveSourceArgs } from './api/ArtDirectiveSource.js';
+import type { BackgroundSourceArgs } from './api/BackgroundSource.js';
+import type { BaseSourceArgs } from './api/BaseSource.js';
+import type { ImageSourceArgs } from './api/ImageSource.js';
+import type { PictureSourceArgs } from './api/PictureSource.js';
+import type { defaultGlobalClassNames } from './const.js';
 
 // ===============================
 // Configuration
@@ -32,23 +32,23 @@ export interface ImgProcUserOptions extends Partial<ImgProcSettings> {
   componentProps?: Partial<
     Pick<
       ImgProcProcessorOptions,
-      | "placeholder"
-      | "placeholderColor"
-      | "blurProcessor"
-      | "upscale"
-      | "layout"
-      | "objectFit"
-      | "objectPosition"
-      | "enforceAspectRatio"
-      | "backgroundSize"
-      | "backgroundPosition"
-      | "preload"
-      | "format"
-      | "formats"
-      | "tagName"
-      | "crossOrigin"
-      | "minAge"
-      | "maxAge"
+      | 'placeholder'
+      | 'placeholderColor'
+      | 'blurProcessor'
+      | 'upscale'
+      | 'layout'
+      | 'objectFit'
+      | 'objectPosition'
+      | 'enforceAspectRatio'
+      | 'backgroundSize'
+      | 'backgroundPosition'
+      | 'preload'
+      | 'format'
+      | 'formats'
+      | 'tagName'
+      | 'crossOrigin'
+      | 'minAge'
+      | 'maxAge'
     >
   >;
   /**
@@ -65,7 +65,7 @@ export interface ImgProcOptions extends ImgProcSettings {
   /**
    * Default component properties
    */
-  componentProps: Omit<ImgProcProcessorOptions, "formatOptions">;
+  componentProps: Omit<ImgProcProcessorOptions, 'formatOptions'>;
   /**
    * Default format options
    */
@@ -166,7 +166,7 @@ export interface ImgProcSettings {
    * @see [Astro Docs scopedStyleStrategy](https://docs.astro.build/en/reference/configuration-reference/#scopedstylestrategy)
    * @default Inherit Astro settings
    */
-  scopedStyleStrategy: "where" | "class" | "attribute";
+  scopedStyleStrategy: 'where' | 'class' | 'attribute';
   /**
    * Class names used in global CSS
    * - If change this, need to create and place the corresponding global CSS
@@ -235,7 +235,7 @@ export interface ImgProcFormatOptions {
 /**
  * Input format
  */
-export type ImgProcInputFormat = keyof sharp.FormatEnum;
+export type ImgProcInputFormat = FormatEnum;
 
 /**
  * Output format
@@ -286,9 +286,7 @@ export interface ImgProcProcessorOptions {
    * @see [MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/sizes)
    * @default  `(min-width: ${widths.at(-1)}px) ${widths.at(-1)}px, 100vw`
    */
-  sizes?:
-    | string
-    | ((resolvedWidths: number[], resolvedDensities: number[]) => string);
+  sizes?: string | ((resolvedWidths: number[], resolvedDensities: number[]) => string);
   /**
    * @see [MDN Reference](https://developer.mozilla.org/docs/Web/HTML/Element/source#media)
    */
@@ -307,7 +305,7 @@ export interface ImgProcProcessorOptions {
    * - `null` : Disable placeholder
    * @default "blurred"
    */
-  placeholder: "dominantColor" | "blurred" | null;
+  placeholder: 'dominantColor' | 'blurred' | null;
   /**
    * Background color
    * - If set, use for placeholder instead of dominant color.
@@ -333,7 +331,7 @@ export interface ImgProcProcessorOptions {
    *   - If image real width is `2500`, width prop is `1000` and densities prop is `[1, 2, 3]`, densities set to `[1, 2, 2.5]`.
    * @default "never"
    */
-  upscale: "never" | "always" | "original";
+  upscale: 'never' | 'always' | 'original';
   /**
    * Specify the layout of the image
    * - Apply by adding the global class `globalClassNames.layout[layout]` to the `<picture>` and `<img>` elements.
@@ -347,7 +345,7 @@ export interface ImgProcProcessorOptions {
    * @see [layout (Gatsby Image plugin)](https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-plugin-image/#layout)
    * @default "constrained"
    */
-  layout?: "constrained" | "fixed" | "fullWidth" | "fill" | null;
+  layout?: 'constrained' | 'fixed' | 'fullWidth' | 'fill' | null;
   /**
    * Set CSS property `object-fit` to the `<img>` element
    * - Apply by adding the global class `globalClassNames.objectFit[objectFit]` to the `<img>` element.
@@ -357,7 +355,7 @@ export interface ImgProcProcessorOptions {
    * @see [MDN Reference: object-fit](https://developer.mozilla.org/docs/Web/CSS/object-fit)
    * @default null
    */
-  objectFit?: "fill" | "contain" | "cover" | "none" | "scale-down" | null;
+  objectFit?: 'fill' | 'contain' | 'cover' | 'none' | 'scale-down' | null;
   /**
    * Set CSS property `object-position` to the `<img>` element
    * - If `placeholder` is `blurred` and `backgroundPosition` is `null`, the value uses for `background-position` property for blurred image.
@@ -374,7 +372,7 @@ export interface ImgProcProcessorOptions {
    * @see [MDN Reference: background-size](https://developer.mozilla.org/docs/Web/CSS/background-size)
    * @default "cover"
    */
-  backgroundSize?: "cover" | "contain" | "auto" | string | null;
+  backgroundSize?: string | null; // 'cover' | 'contain' | 'auto'
   /**
    * Set CSS property `background-position` to the container element or the blurred image
    * - For `<Background>` component, apply to the container element.
@@ -439,14 +437,11 @@ export interface ImgProcProcessorOptions {
   /**
    * Attributes for `<picture>` element
    */
-  pictureAttributes?: HTMLAttributes<"picture">;
+  pictureAttributes?: HTMLAttributes<'picture'>;
   /**
    * Attributes for container element
    */
-  containerAttributes?:
-    | HTMLAttributes<"div">
-    | HTMLAttributes<"a">
-    | Record<string, unknown>;
+  containerAttributes?: HTMLAttributes<'div'> | HTMLAttributes<'a'> | Record<string, unknown>;
   /**
    * Minimum value of cache expiration period for remote files (milliseconds)
    * - Overrides HTTP header specification.
@@ -461,7 +456,7 @@ export interface ImgProcProcessorOptions {
   /**
    * Cross origin for preload
    */
-  crossOrigin?: "anonymous" | "use-credentials" | "" | undefined | null;
+  crossOrigin?: 'anonymous' | 'use-credentials' | '' | undefined | null;
 }
 
 /**
@@ -480,7 +475,7 @@ export type ImgProcWidthsInProps =
 /**
  * Image component props
  */
-export type ImgProcImageComponentProps = Omit<HTMLAttributes<"img">, "sizes"> &
+export type ImgProcImageComponentProps = Omit<HTMLAttributes<'img'>, 'sizes'> &
   Partial<ImgProcProcessorOptions> & {
     src: string;
     alt: string;
@@ -493,10 +488,7 @@ export type ImgProcImageComponentProps = Omit<HTMLAttributes<"img">, "sizes"> &
 /**
  * Picture component props
  */
-export type ImgProcPictureComponentProps = Omit<
-  HTMLAttributes<"img">,
-  "sizes"
-> &
+export type ImgProcPictureComponentProps = Omit<HTMLAttributes<'img'>, 'sizes'> &
   Partial<ImgProcProcessorOptions> & {
     src: string;
     alt: string;
@@ -507,40 +499,38 @@ export type ImgProcPictureComponentProps = Omit<
 /**
  * Background component props
  */
-export type ImgProcBackgroundComponentProps =
-  Partial<ImgProcProcessorOptions> & {
-    src: string;
-    alt?: never;
-    media?: never;
-    widths?: never; // NOTE: https://drafts.csswg.org/css-images-4/#image-set-notation
-    sizes?: never;
-    placeholder?: "dominantColor" | null;
-    blurProcessor?: never;
-    objectFit?: never;
-    objectPosition?: never;
-    format?: never;
-    pictureAttributes?: never;
-    containerAttributes?: never;
-    asBackground?: never;
-  } & ImgProcWidthsInProps & {
-      // Inherit from img element
-      crossorigin?: "" | "anonymous" | "use-credentials" | null | undefined;
-    } & Record<string, unknown>; // Accept all props
+export type ImgProcBackgroundComponentProps = Partial<ImgProcProcessorOptions> & {
+  src: string;
+  alt?: never;
+  media?: never;
+  widths?: never; // NOTE: https://drafts.csswg.org/css-images-4/#image-set-notation
+  sizes?: never;
+  placeholder?: 'dominantColor' | null;
+  blurProcessor?: never;
+  objectFit?: never;
+  objectPosition?: never;
+  format?: never;
+  pictureAttributes?: never;
+  containerAttributes?: never;
+  asBackground?: never;
+} & ImgProcWidthsInProps & {
+    // Inherit from img element
+    crossorigin?: '' | 'anonymous' | 'use-credentials' | null | undefined;
+  } & Record<string, unknown>; // Accept all props
 
 /**
  * Art directive props
  */
-export type ImgProcArtDirectiveSourceProps =
-  Partial<ImgProcProcessorOptions> & {
-    src: string;
-    alt?: never;
-    media: string;
-    layout?: never;
-    tagName?: never;
-    format?: never;
-    pictureAttributes?: never;
-    asBackground?: never;
-  } & ImgProcWidthsInProps;
+export type ImgProcArtDirectiveSourceProps = Partial<ImgProcProcessorOptions> & {
+  src: string;
+  alt?: never;
+  media: string;
+  layout?: never;
+  tagName?: never;
+  format?: never;
+  pictureAttributes?: never;
+  asBackground?: never;
+} & ImgProcWidthsInProps;
 
 // ===============================
 // API
@@ -580,7 +570,7 @@ export type {
 /**
  * File category in cache
  */
-export type ImgProcFileCategory = "source" | "variant" | "placeholder";
+export type ImgProcFileCategory = 'source' | 'variant' | 'placeholder';
 
 /**
  * Data entry in the cache database
@@ -711,9 +701,7 @@ export interface ImgProcDataAdapter {
    * @param now Unixtime (milliseconds)
    * @returns Deleted hashes or null
    */
-  deleteExpiredRecords: (
-    now: number,
-  ) => null | Promise<null> | Set<string> | Promise<Set<string>>;
+  deleteExpiredRecords: (now: number) => null | Promise<null> | Set<string> | Promise<Set<string>>;
   /** Close database */
   close: () => void | Promise<void>;
 }
@@ -759,11 +747,11 @@ export interface ImgProcContext {
   dirs: ImgProcContextDirectories;
 
   /** Default component properties */
-  componentProps: Omit<ImgProcProcessorOptions, "formatOptions">;
+  componentProps: Omit<ImgProcProcessorOptions, 'formatOptions'>;
   /** Default format options */
   formatOptions: ImgProcFormatOptions;
   /** Processor general settings */
-  settings: Omit<ImgProcSettings, "dataAdapter">;
+  settings: Omit<ImgProcSettings, 'dataAdapter'>;
 
   /** Logger from Astro */
   logger?: AstroIntegrationLogger | undefined;

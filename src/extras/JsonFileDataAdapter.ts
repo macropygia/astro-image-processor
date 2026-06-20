@@ -1,5 +1,5 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'node:fs';
+import path from 'node:path';
 
 import type {
   ImgProcDataAdapter,
@@ -7,7 +7,7 @@ import type {
   ImgProcDataAdapterInitOptions,
   ImgProcFile,
   ImgProcFileRecord,
-} from "../../src/types.js";
+} from '../../src/types.js';
 
 export interface JsonFileDataAdapterOptions {
   /**
@@ -15,7 +15,7 @@ export interface JsonFileDataAdapterOptions {
    * - If set to `:memory:`, in-memory mode is used.
    * @default "cache.json"
    */
-  dbFile?: ":memory:" | string;
+  dbFile?: string;
   /**
    * Directory to place json file
    * - Support the following placeholders:
@@ -42,50 +42,38 @@ export class JsonFileDataAdapter implements ImgProcDataAdapter {
 
   public retentionPeriod: number | null = 10;
   public retentionCount: number | null = 1000 * 60 * 60 * 24 * 100;
-  public dbPath = ":memory:";
+  public dbPath = ':memory:';
 
   public files: ImgProcFileRecord[] = [];
 
-  // @ts-ignore Bun types are not available in Node.js environment
-  // biome-ignore lint/correctness/noUndeclaredVariables: Runtime matter
-  private saveTimer?: NodeJS.Timeout | Timer | undefined;
+  private saveTimer?: ReturnType<typeof setTimeout>;
 
   public constructor(options?: JsonFileDataAdapterOptions) {
-    const {
-      dbFile = "cache.json",
-      dbDir = "[imageCacheDir]",
-      debounce = 10000,
-    } = options || {};
+    const { dbFile = 'cache.json', dbDir = '[imageCacheDir]', debounce = 10000 } = options || {};
 
     this.dbFile = dbFile;
     this.dbDir = dbDir;
     this.debounce = debounce;
-    this.isInMemory = dbFile === ":memory:";
+    this.isInMemory = dbFile === ':memory:';
   }
 
   public initialize(options: ImgProcDataAdapterInitOptions) {
-    const {
-      rootDir,
-      cacheDir,
-      imageCacheDir,
-      retentionPeriod,
-      retentionCount,
-    } = options;
+    const { rootDir, cacheDir, imageCacheDir, retentionPeriod, retentionCount } = options;
     this.retentionPeriod = retentionPeriod;
     this.retentionCount = retentionCount;
 
     const replacedDbDir = this.dbDir
-      .replaceAll("[root]", rootDir)
-      .replaceAll("[cacheDir]", cacheDir)
-      .replaceAll("[imageCacheDir]", imageCacheDir);
+      .replaceAll('[root]', rootDir)
+      .replaceAll('[cacheDir]', cacheDir)
+      .replaceAll('[imageCacheDir]', imageCacheDir);
 
     if (this.isInMemory) {
-      this.dbPath = ":memory:";
+      this.dbPath = ':memory:';
       return;
     }
 
     this.dbPath = path.posix.normalize(
-      path.resolve(replacedDbDir, this.dbFile).replaceAll("\\", "/"),
+      path.resolve(replacedDbDir, this.dbFile).replaceAll('\\', '/'),
     );
     this.files = fs.existsSync(this.dbPath)
       ? JSON.parse(fs.readFileSync(this.dbPath).toString())
@@ -101,7 +89,7 @@ export class JsonFileDataAdapter implements ImgProcDataAdapter {
     }
     this.saveTimer = setTimeout(async () => {
       await fs.promises.writeFile(this.dbPath, JSON.stringify(this.files));
-      this.saveTimer = undefined;
+      delete this.saveTimer;
     }, this.debounce);
   }
 
@@ -110,9 +98,7 @@ export class JsonFileDataAdapter implements ImgProcDataAdapter {
 
     return hash
       ? this.files.find((file) => file.hash === hash) || null
-      : this.files.find(
-          (file) => file.source === source && file.profile === profile,
-        ) || null;
+      : this.files.find((file) => file.source === source && file.profile === profile) || null;
   }
 
   public list() {
@@ -154,9 +140,7 @@ export class JsonFileDataAdapter implements ImgProcDataAdapter {
 
     this.files = hash
       ? this.files.filter((file) => file.hash !== hash)
-      : this.files.filter(
-          (file) => file.source !== source && file.profile !== profile,
-        );
+      : this.files.filter((file) => file.source !== source && file.profile !== profile);
 
     this.save();
   }
@@ -204,16 +188,13 @@ export class JsonFileDataAdapter implements ImgProcDataAdapter {
     const beforeHashes = new Set(this.list());
 
     this.files = this.files.filter((file) => {
-      const periodCondition =
-        retentionPeriod === null || file.lastUsedAt >= now - retentionPeriod;
+      const periodCondition = retentionPeriod === null || file.lastUsedAt >= now - retentionPeriod;
       const countCondition = retentionCount === null || file.countdown >= 0;
       return periodCondition && countCondition;
     });
 
     const afterHashes = new Set(this.list());
-    const deletedHashes = [...beforeHashes].filter(
-      (hash) => !afterHashes.has(hash),
-    );
+    const deletedHashes = [...beforeHashes].filter((hash) => !afterHashes.has(hash));
 
     this.save();
 

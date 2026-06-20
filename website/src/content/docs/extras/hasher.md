@@ -17,14 +17,14 @@ Uses the `Crypto` module. Hash algorithm is `MD5`.
 
 ```ts ins={2, 7}
 // astro.config.js
-import { cryptoHasher } from "astro-image-processor/extras/cryptoHasher.js";
+import { cryptoHasher } from 'astro-image-processor/extras/cryptoHasher.js';
 
 export default defineConfig({
-  integrations: [
-    astroImageProcessor({
-      hasher: cryptoHasher,
-    })
-  ]
+    integrations: [
+        astroImageProcessor({
+            hasher: cryptoHasher,
+        }),
+    ],
 });
 ```
 
@@ -36,14 +36,14 @@ Requires [`xxhash-addon`](https://www.npmjs.com/package/xxhash-addon) and the to
 
 ```ts ins={2, 7}
 // astro.config.js
-import { xxHash3Hasher } from "astro-image-processor/extras/xxHash3Hasher.js";
+import { xxHash3Hasher } from 'astro-image-processor/extras/xxHash3Hasher.js';
 
 export default defineConfig({
-  integrations: [
-    astroImageProcessor({
-      hasher: xxHash3Hasher,
-    })
-  ]
+    integrations: [
+        astroImageProcessor({
+            hasher: xxHash3Hasher,
+        }),
+    ],
 });
 ```
 
@@ -52,12 +52,10 @@ export default defineConfig({
 Custom hasher for any algorithm can be created.
 
 ```ts
-import type { ImgProcHasher } from "astro-image-processor/types";
+import type { ImgProcHasher } from 'astro-image-processor/types';
 
-export const customHasher: ImgProcHasher = (
-  buffer: Buffer | string
-): string => {
-  // ...
-  return hash;
+export const customHasher: ImgProcHasher = (buffer: Buffer | string): string => {
+    // ...
+    return hash;
 };
 ```

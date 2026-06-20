@@ -8,39 +8,21 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 パッケージをインストールする。
 
 <Tabs syncKey="pkg">
-<TabItem label="pnpm">
-```sh
-pnpm add astro-image-processor
-```
-</TabItem>
-<TabItem label="Bun">
-```sh
-bun add astro-image-processor
-```
-</TabItem>
-<TabItem label="Yarn">
-```sh
-yarn add astro-image-processor
-```
-</TabItem>
-<TabItem label="npm">
-```sh
-npm install astro-image-processor
-```
-</TabItem>
+  <TabItem label="pnpm">```sh pnpm add astro-image-processor ```</TabItem>
+  <TabItem label="Bun">```sh bun add astro-image-processor ```</TabItem>
+  <TabItem label="Yarn">```sh yarn add astro-image-processor ```</TabItem>
+  <TabItem label="npm">```sh npm install astro-image-processor ```</TabItem>
 </Tabs>
 
 Astroの設定に追加する。
 
 ```ts ins={3,7}
 // astro.config.ts
-import { defineConfig } from "astro/config";
-import { astroImageProcessor } from "astro-image-processor";
+import { defineConfig } from 'astro/config';
+import { astroImageProcessor } from 'astro-image-processor';
 
 export default defineConfig({
-  integrations: [
-    astroImageProcessor(),
-  ],
+  integrations: [astroImageProcessor()],
 });
 ```
 
@@ -84,24 +66,8 @@ import Layout from '../layout/Layout.astro';
 ビルドする。
 
 <Tabs syncKey="pkg">
-<TabItem label="pnpm">
-```sh
-pnpm build
-```
-</TabItem>
-<TabItem label="Bun">
-```sh
-bun run build
-```
-</TabItem>
-<TabItem label="Yarn">
-```sh
-yarn build
-```
-</TabItem>
-<TabItem label="npm">
-```sh
-npm build
-```
-</TabItem>
+  <TabItem label="pnpm">```sh pnpm build ```</TabItem>
+  <TabItem label="Bun">```sh bun run build ```</TabItem>
+  <TabItem label="Yarn">```sh yarn build ```</TabItem>
+  <TabItem label="npm">```sh npm build ```</TabItem>
 </Tabs>

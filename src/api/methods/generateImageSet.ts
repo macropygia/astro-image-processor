@@ -1,4 +1,4 @@
-import type { BaseSource } from "../BaseSource.js";
+import type { BaseSource } from '../BaseSource.js';
 
 /**
  * Generate `image-set()` from the source
@@ -25,13 +25,13 @@ export function generateImageSet(this: BaseSource): string {
       .map(
         (item) =>
           `url("${this.resolvePath(item)}") ${
-            item.descriptor?.endsWith("w") ? "1x" : item.descriptor
+            item.descriptor?.endsWith('w') ? '1x' : item.descriptor
           } type("image/${format}")`,
       )
-      .join(",");
+      .join(',');
 
     imageSet.push(setByFormat);
   });
 
-  return `image-set(${imageSet.join(",")})`;
+  return `image-set(${imageSet.join(',')})`;
 }

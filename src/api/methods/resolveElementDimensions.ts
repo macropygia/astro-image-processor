@@ -1,5 +1,5 @@
-import type { ImgProcFormatOptions, ImgProcVariant } from "../../types.js";
-import type { BaseSource } from "../BaseSource.js";
+import type { ImgProcFormatOptions, ImgProcVariant } from '../../types.js';
+import type { BaseSource } from '../BaseSource.js';
 
 type ResolveElementDimensions = (source: BaseSource) => void;
 
@@ -24,7 +24,7 @@ export const resolveElementDimensions: ResolveElementDimensions = (source) => {
   }
 
   const fallbackFormat = (
-    componentType === "img" ? format : formats.at(-1)
+    componentType === 'img' ? format : formats.at(-1)
   ) as keyof ImgProcFormatOptions;
   const variant = variants[fallbackFormat] as ImgProcVariant[];
   const variantItem =
@@ -40,13 +40,9 @@ export const resolveElementDimensions: ResolveElementDimensions = (source) => {
     elementHeight = height;
   } else if (width && !height) {
     elementWidth = width;
-    elementHeight = Math.round(
-      width * (variantItem.height / variantItem.width),
-    );
+    elementHeight = Math.round(width * (variantItem.height / variantItem.width));
   } else if (!width && height) {
-    elementWidth = Math.round(
-      height * (variantItem.width / variantItem.height),
-    );
+    elementWidth = Math.round(height * (variantItem.width / variantItem.height));
     elementHeight = height;
   } else {
     elementWidth = variantItem.width;

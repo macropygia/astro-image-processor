@@ -1,4 +1,4 @@
-import type { BaseSource } from "../BaseSource.js";
+import type { BaseSource } from '../BaseSource.js';
 
 type GenerateSourceHash = (source: BaseSource) => Promise<string>;
 
@@ -7,7 +7,7 @@ export const generateSourceHash: GenerateSourceHash = async (source) => {
   const { src } = source.options;
   const { useSrcForHash, hasher } = source.settings;
 
-  if (source.type === "remote" || (source.type === "local" && useSrcForHash)) {
+  if (source.type === 'remote' || (source.type === 'local' && useSrcForHash)) {
     // From `src`
     return hasher(src);
   }

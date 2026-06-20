@@ -1,23 +1,23 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from 'vitest';
 
-import type { BaseSource } from "../BaseSource.js";
-import { generateImageSet } from "./generateImageSet.js";
+import type { BaseSource } from '../BaseSource.js';
+import { generateImageSet } from './generateImageSet.js';
 
-describe("Unit/api/methods/generateImageSet", () => {
-  test("default", () => {
+describe('Unit/api/methods/generateImageSet', () => {
+  test('default', () => {
     const mockSource = {
       variants: {
         jpeg: [
-          { descriptor: "1x", src: "image1.jpg" },
-          { descriptor: "2x", src: "image2.jpg" },
+          { descriptor: '1x', src: 'image1.jpg' },
+          { descriptor: '2x', src: 'image2.jpg' },
         ],
         webp: [
-          { descriptor: "1x", src: "image1.webp" },
-          { descriptor: "2x", src: "image2.webp" },
+          { descriptor: '1x', src: 'image1.webp' },
+          { descriptor: '2x', src: 'image2.webp' },
         ],
       },
       options: {
-        formats: ["jpeg", "webp"],
+        formats: ['jpeg', 'webp'],
       },
       resolvePath: (item: any) => `/resolved/path/${item.src}`,
     } as unknown as BaseSource;
@@ -28,35 +28,31 @@ describe("Unit/api/methods/generateImageSet", () => {
     );
   });
 
-  test("throw (unresolved)", () => {
+  test('throw (unresolved)', () => {
     const mockSource = {
       variants: null as any,
       options: {
-        src: "mock.jpg",
-        formats: ["jpeg"],
+        src: 'mock.jpg',
+        formats: ['jpeg'],
       },
       resolvePath: (item: any) => `/resolved/path/${item.src}`,
     } as unknown as BaseSource;
 
-    expect(() => generateImageSet.call(mockSource)).toThrow(
-      "Variants unresolved: mock.jpg",
-    );
+    expect(() => generateImageSet.call(mockSource)).toThrow('Variants unresolved: mock.jpg');
   });
 
-  test("throw (invalid format)", () => {
+  test('throw (invalid format)', () => {
     const mockSource = {
       variants: {
-        jpeg: [{ descriptor: "1x", src: "image1.jpg" }],
+        jpeg: [{ descriptor: '1x', src: 'image1.jpg' }],
       },
       options: {
-        src: "mock.jpg",
-        formats: ["jpeg", "webp"],
+        src: 'mock.jpg',
+        formats: ['jpeg', 'webp'],
       },
       resolvePath: (item: any) => `/resolved/path/${item.src}`,
     } as unknown as BaseSource;
 
-    expect(() => generateImageSet.call(mockSource)).toThrow(
-      "Format mismatch: mock.jpg",
-    );
+    expect(() => generateImageSet.call(mockSource)).toThrow('Format mismatch: mock.jpg');
   });
 });

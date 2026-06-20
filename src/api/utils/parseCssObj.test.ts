@@ -1,29 +1,29 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from 'vitest';
 
-import type { ImgProcCssObj } from "../../types.js";
-import { parseCssObj } from "./parseCssObj.js";
+import type { ImgProcCssObj } from '../../types.js';
+import { parseCssObj } from './parseCssObj.js';
 
 const mockStyles: ImgProcCssObj[] = [
   {
     selectors: {
-      "img[scope]": [["color", "red"]],
-      "img[scope]::after": [["color", "blue"]],
+      'img[scope]': [['color', 'red']],
+      'img[scope]::after': [['color', 'blue']],
     },
   },
   {
-    media: "(max-width: 959px)",
+    media: '(max-width: 959px)',
     selectors: {
-      "img[scope]": [["color", "green"]],
-      "img[scope]::after": [["color", "yellow"]],
+      'img[scope]': [['color', 'green']],
+      'img[scope]::after': [['color', 'yellow']],
     },
   },
 ];
 
-describe("Unit/api/utils/parseCss", () => {
-  test("attribute", () => {
+describe('Unit/api/utils/parseCss', () => {
+  test('attribute', () => {
     const css = parseCssObj({
-      componentHash: "mockhash",
-      scopedStyleStrategy: "attribute",
+      componentHash: 'mockhash',
+      scopedStyleStrategy: 'attribute',
       styles: mockStyles,
     });
     expect(css).toMatchInlineSnapshot(
@@ -31,10 +31,10 @@ describe("Unit/api/utils/parseCss", () => {
     );
   });
 
-  test("class", () => {
+  test('class', () => {
     const css = parseCssObj({
-      componentHash: "mockhash",
-      scopedStyleStrategy: "class",
+      componentHash: 'mockhash',
+      scopedStyleStrategy: 'class',
       styles: mockStyles,
     });
     expect(css).toMatchInlineSnapshot(
@@ -42,10 +42,10 @@ describe("Unit/api/utils/parseCss", () => {
     );
   });
 
-  test("where", () => {
+  test('where', () => {
     const css = parseCssObj({
-      componentHash: "mockhash",
-      scopedStyleStrategy: "where",
+      componentHash: 'mockhash',
+      scopedStyleStrategy: 'where',
       styles: mockStyles,
     });
     expect(css).toMatchInlineSnapshot(

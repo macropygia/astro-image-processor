@@ -1,7 +1,7 @@
-import path from "node:path";
+import path from 'node:path';
 
-import type { ImgProcContextDirectories } from "../../types.js";
-import { normalizePath } from "./normalizePath.js";
+import type { ImgProcContextDirectories } from '../../types.js';
+import { normalizePath } from './normalizePath.js';
 
 type ResolveRelativePath = (args: {
   dirs: ImgProcContextDirectories;
@@ -13,11 +13,7 @@ type ResolveRelativePath = (args: {
 /**
  * @experimental
  */
-export const resolveRelativePath: ResolveRelativePath = ({
-  dirs,
-  pathname,
-  src,
-}) => {
+export const resolveRelativePath: ResolveRelativePath = ({ dirs, pathname, src }) => {
   const { rootDir, srcDir } = dirs;
 
   const srcDirName = path.relative(rootDir, srcDir);
@@ -28,9 +24,7 @@ export const resolveRelativePath: ResolveRelativePath = ({
     return src;
   }
 
-  const resolvedSrc = normalizePath(
-    `/${path.join(srcDirName, "pages", pathname, src)}`,
-  );
+  const resolvedSrc = normalizePath(`/${path.join(srcDirName, 'pages', pathname, src)}`);
 
   return resolvedSrc;
 };

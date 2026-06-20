@@ -1,14 +1,14 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'node:fs';
+import path from 'node:path';
 
-import type { AstroIntegrationLogger } from "astro";
-import type { HTMLAttributes } from "astro/types";
-import { blue, dim, magenta } from "kleur/colors";
-import type { Ora } from "ora";
-import ora from "ora";
+import type { AstroIntegrationLogger } from 'astro';
+import type { HTMLAttributes } from 'astro/types';
+import { blue, dim, magenta } from 'kleur/colors';
+import type { Ora } from 'ora';
+import ora from 'ora';
 
-import { componentTypeToTag } from "../const.js";
-import { getTimeStat } from "../integration/utils/getTimeStat.js";
+import { componentTypeToTag } from '../const.js';
+import { getTimeStat } from '../integration/utils/getTimeStat.js';
 import type {
   ImgProcContext,
   ImgProcContextDirectories,
@@ -19,28 +19,28 @@ import type {
   ImgProcSettings,
   ImgProcVariant,
   ImgProcVariants,
-} from "../types.js";
-import { addSource } from "./methods/addSource.js";
-import { generateBlurredImage } from "./methods/generateBlurredImage.js";
-import { generateSourceHash } from "./methods/generateSourceHash.js";
-import { generateVariants } from "./methods/generateVariants.js";
-import { renewSource } from "./methods/renewSource.js";
-import { resolveElementDimensions } from "./methods/resolveElementDimensions.js";
-import { resolveSizes } from "./methods/resolveSizes.js";
-import { resolveWidths } from "./methods/resolveWidths.js";
-import { getBufferFromDataUrl } from "./utils/getBufferFromDataUrl.js";
-import { getBufferFromRemoteUrl } from "./utils/getBufferFromRemoteUrl.js";
-import { getFilteredSharpOptions } from "./utils/getFilteredSharpOptions.js";
-import { normalizePath } from "./utils/normalizePath.js";
-import { pathExists } from "./utils/pathExists.js";
-import { resolveExpiresAt } from "./utils/resolveExpiresAt.js";
-import { resolvePathPattern } from "./utils/resolvePathPattern.js";
+} from '../types.js';
+import { addSource } from './methods/addSource.js';
+import { generateBlurredImage } from './methods/generateBlurredImage.js';
+import { generateSourceHash } from './methods/generateSourceHash.js';
+import { generateVariants } from './methods/generateVariants.js';
+import { renewSource } from './methods/renewSource.js';
+import { resolveElementDimensions } from './methods/resolveElementDimensions.js';
+import { resolveSizes } from './methods/resolveSizes.js';
+import { resolveWidths } from './methods/resolveWidths.js';
+import { getBufferFromDataUrl } from './utils/getBufferFromDataUrl.js';
+import { getBufferFromRemoteUrl } from './utils/getBufferFromRemoteUrl.js';
+import { getFilteredSharpOptions } from './utils/getFilteredSharpOptions.js';
+import { normalizePath } from './utils/normalizePath.js';
+import { pathExists } from './utils/pathExists.js';
+import { resolveExpiresAt } from './utils/resolveExpiresAt.js';
+import { resolvePathPattern } from './utils/resolvePathPattern.js';
 
 export interface BaseSourceArgs {
   /** Integration context */
   ctx: ImgProcContext;
   /** Component type */
-  componentType: "img" | "picture" | "background";
+  componentType: 'img' | 'picture' | 'background';
   /** Component props (readonly) */
   options: Readonly<Partial<ImgProcProcessorOptions> & { src: string }>;
 }
@@ -49,7 +49,7 @@ const HTTPS_RE = /^https?:\/\//;
 const ATFS_RE = /^\/@fs/;
 
 export class BaseSource {
-  componentType: "img" | "picture" | "background";
+  componentType: 'img' | 'picture' | 'background';
   /** Component hash */
   componentHash: string | null = null;
   /** Art directive flag */
@@ -61,20 +61,17 @@ export class BaseSource {
   /** Sharp output options */
   formatOptions: ImgProcFormatOptions;
   /** Integration settings (incl. default options) */
-  settings: Omit<ImgProcSettings, "dataAdapter">;
+  settings: Omit<ImgProcSettings, 'dataAdapter'>;
   /** Global logger */
   logger?: AstroIntegrationLogger | undefined;
 
   /** Resolved component props */
-  options: Omit<
-    ImgProcProcessorOptions,
-    "width" | "height" | "formatOptions"
-  > & {
+  options: Omit<ImgProcProcessorOptions, 'width' | 'height' | 'formatOptions'> & {
     src: string;
     width?: number | undefined;
     height?: number | undefined;
   };
-  type: "local" | "remote" | "data";
+  type: 'local' | 'remote' | 'data';
 
   /** Resolved `src` to handle local file */
   localSourcePath: string;
@@ -85,7 +82,7 @@ export class BaseSource {
   buffer?: Buffer | undefined;
   /** Database record for the image */
   data: Partial<ImgProcFile> = {
-    category: "source",
+    category: 'source',
   };
   /** Data URL for blurred image */
   blurredDataUrl?: string;
@@ -122,8 +119,8 @@ export class BaseSource {
 
     // Spinner
     this.timeStart = performance.now();
-    this.spinner = ora("Processing...");
-    this.spinner.prefixText = blue("[astro-image-processor]");
+    this.spinner = ora('Processing...');
+    this.spinner.prefixText = blue('[astro-image-processor]');
     this.spinner.prefixText += magenta(` ${componentTypeToTag[componentType]}`);
     this.spinner.prefixText += dim(` ${options.src}`);
     this.spinner.start();
@@ -136,7 +133,7 @@ export class BaseSource {
     ) as Partial<ImgProcProcessorOptions>;
     this.options = {
       ...defaultComponentProps,
-      placeholder: componentType === "background" ? "dominantColor" : "blurred",
+      placeholder: componentType === 'background' ? 'dominantColor' : 'blurred',
       ...availableOptions,
       src,
       width: width ? Number(width) : undefined,
@@ -146,23 +143,23 @@ export class BaseSource {
     // Parse src
     this.localSourcePath = src;
     if (HTTPS_RE.test(src)) {
-      this.type = "remote";
+      this.type = 'remote';
       this.data.source = src;
-    } else if (src.startsWith("data:")) {
-      this.type = "data";
-      this.data.source = "data";
-    } else if (src.startsWith("/@fs")) {
-      this.type = "local";
-      this.localSourcePath = new URL(src.replace(ATFS_RE, "file://")).pathname;
+    } else if (src.startsWith('data:')) {
+      this.type = 'data';
+      this.data.source = 'data';
+    } else if (src.startsWith('/@fs')) {
+      this.type = 'local';
+      this.localSourcePath = new URL(src.replace(ATFS_RE, 'file://')).pathname;
     } else if (src.length > 0) {
-      this.type = "local";
+      this.type = 'local';
       this.localSourcePath = normalizePath(
         src.startsWith(`/${this.dirs.assetsDirName}/`)
           ? path.join(this.dirs.outDir, src)
           : path.join(this.dirs.rootDir, src),
       );
     } else {
-      throw new Error("Invalid src attribute");
+      throw new Error('Invalid src attribute');
     }
   }
 
@@ -172,7 +169,7 @@ export class BaseSource {
     try {
       await instance.main();
     } catch (error) {
-      instance.spinner.fail("Failed");
+      instance.spinner.fail('Failed');
       throw error as Error;
     }
     return instance;
@@ -185,7 +182,7 @@ export class BaseSource {
     } = this;
 
     if (data.hash) {
-      throw new Error("Do not initialize more than once");
+      throw new Error('Do not initialize more than once');
     }
 
     // Get hash
@@ -202,7 +199,7 @@ export class BaseSource {
     // await handleSource(this, currentData);
 
     // Generate blurred image
-    if (placeholder === "blurred") {
+    if (placeholder === 'blurred') {
       this.blurredDataUrl = await generateBlurredImage(this);
     }
 
@@ -218,9 +215,7 @@ export class BaseSource {
     // Resolve `resolved.sizes`
     this.resolved.sizes = resolveSizes(this);
 
-    this.spinner.succeed(
-      `Completed in ${getTimeStat(this.timeStart, performance.now())}`,
-    );
+    this.spinner.succeed(`Completed in ${getTimeStat(this.timeStart, performance.now())}`);
   }
 
   protected resolvePath(item: ImgProcVariant): string {
@@ -240,17 +235,17 @@ export class BaseSource {
     const filename = `${item.hash}.${item.ext}`;
 
     // Dev server
-    if (import.meta.env.MODE === "development") {
+    if (import.meta.env.MODE === 'development') {
       return `${devServerImageEndpoint}/${filename}`;
     }
 
     // Disable copy (fixed prefix)
-    if (import.meta.env.MODE === "production" && disableCopy) {
+    if (import.meta.env.MODE === 'production' && disableCopy) {
       return `${imageOutDirPattern}${filename}`;
     }
 
     // Preserve directories (fixed prefix)
-    if (import.meta.env.MODE === "production" && preserveDirectories) {
+    if (import.meta.env.MODE === 'production' && preserveDirectories) {
       const { from, to, toDir, toSrc } = resolvePathPattern({
         src,
         fileNamePattern,
@@ -268,7 +263,7 @@ export class BaseSource {
     }
 
     // Static build
-    if (import.meta.env.MODE === "production") {
+    if (import.meta.env.MODE === 'production') {
       const from = normalizePath(path.join(imageCacheDir, `${filename}`));
       const toDir = normalizePath(path.join(outDir, imageAssetsDirName), true);
       const to = path.join(toDir, `${filename}`);
@@ -302,24 +297,24 @@ export class BaseSource {
     // logger?.info(`Load: ${src}`);
     // this.spinner.text = "Loading...";
 
-    if (type === "local") {
+    if (type === 'local') {
       // Local file
       this.buffer = await fs.promises.readFile(localSourcePath);
-    } else if (type === "remote" && !downloadPath) {
+    } else if (type === 'remote' && !downloadPath) {
       // Remote file (new), called by `addSource`
       this.buffer = await this.download();
       // Save the file after `downloadPath` is resolved in the `addSource`
-    } else if (type === "remote" && downloadPath) {
+    } else if (type === 'remote' && downloadPath) {
       // Remote file (cached), called by `renewSource`
       if (!(await pathExists(downloadPath))) {
-        logger?.info("Remote file cache does not exist. Downloading...");
+        logger?.info('Remote file cache does not exist. Downloading...');
         this.buffer = await this.download();
         await fs.promises.writeFile(downloadPath, this.buffer);
       } else if (!data.expiresAt) {
         // Remote images with cache disabled will not be re-downloaded during that session.
         this.buffer = await fs.promises.readFile(downloadPath);
       } else if (data.expiresAt < Date.now()) {
-        logger?.info("Remote file expired. Downloading...");
+        logger?.info('Remote file expired. Downloading...');
         this.buffer = await this.download();
         await fs.promises.writeFile(downloadPath, this.buffer);
       } else {
@@ -334,11 +329,7 @@ export class BaseSource {
   }
 
   /** Profile from profile string or processor */
-  public get profile():
-    | string
-    | Record<string, unknown>
-    | Record<string, unknown>[]
-    | undefined {
+  public get profile(): string | Record<string, unknown> | Record<string, unknown>[] | undefined {
     const { processor, profile } = this.options;
 
     if (!processor) {
@@ -361,10 +352,7 @@ export class BaseSource {
       logger,
     } = this;
 
-    const { buffer, expiresAt: rawExpiresAt } = await getBufferFromRemoteUrl(
-      src,
-      timeoutDuration,
-    );
+    const { buffer, expiresAt: rawExpiresAt } = await getBufferFromRemoteUrl(src, timeoutDuration);
     const expiresAt = resolveExpiresAt({
       expiresAt: rawExpiresAt,
       minAge,
@@ -374,14 +362,14 @@ export class BaseSource {
 
     logger?.info(
       `Download completed: ${src} (Expires at: ${
-        expiresAt ? new Date(expiresAt).toLocaleString() : "N/A"
+        expiresAt ? new Date(expiresAt).toLocaleString() : 'N/A'
       })`,
     );
 
     return buffer;
   }
 
-  public get link(): HTMLAttributes<"link"> | null {
+  public get link(): HTMLAttributes<'link'> | null {
     const {
       options: { preload, media, crossOrigin },
       variants,
@@ -393,14 +381,14 @@ export class BaseSource {
       return null;
     }
     const attributes = {
-      rel: "preload",
-      as: "image",
+      rel: 'preload',
+      as: 'image',
       type: `image/${preload}`,
       ...(media ? { media } : undefined),
       imagesizes: resolved.sizes,
       imagesrcset: (variants[preload] as ImgProcVariant[])
         .map((item) => `${this.resolvePath(item)} ${item.descriptor}`)
-        .join(", "),
+        .join(', '),
       ...(crossOrigin ? { crossorigin: crossOrigin } : undefined),
     };
     return attributes;

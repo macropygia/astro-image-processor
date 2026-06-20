@@ -1,10 +1,10 @@
-import { type Mock, beforeEach, describe, expect, test, vi } from "vitest";
+import { type Mock, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { generateVariant } from "./generateVariant.js";
-import { generateVariants } from "./generateVariants.js";
-import { retrieveVariant } from "./retrieveVariant.js";
+import { generateVariant } from './generateVariant.js';
+import { generateVariants } from './generateVariants.js';
+import { retrieveVariant } from './retrieveVariant.js';
 
-vi.mock("sharp", () => ({
+vi.mock('sharp', () => ({
   __esModule: true,
   default: vi.fn(() => ({
     resize: vi.fn().mockReturnThis(),
@@ -12,7 +12,7 @@ vi.mock("sharp", () => ({
   })),
 }));
 
-vi.mock("p-queue", () => ({
+vi.mock('p-queue', () => ({
   __esModule: true,
   default: vi.fn(function () {
     return {
@@ -25,31 +25,31 @@ vi.mock("p-queue", () => ({
   }),
 }));
 
-vi.mock("./retrieveVariant.js", () => ({
+vi.mock('./retrieveVariant.js', () => ({
   retrieveVariant: vi.fn(),
 }));
 
-vi.mock("./generateVariant.js", () => ({
+vi.mock('./generateVariant.js', () => ({
   generateVariant: vi.fn(),
 }));
 
-vi.mock("../utils/deterministicHash.js", () => ({
+vi.mock('../utils/deterministicHash.js', () => ({
   deterministicHash: vi.fn(),
 }));
 
-vi.mock("../utils/getFilteredSharpOptions.js", () => ({
+vi.mock('../utils/getFilteredSharpOptions.js', () => ({
   getFilteredSharpOptions: vi.fn(),
 }));
 
-describe("Unit/api/methods/generateVariants", () => {
+describe('Unit/api/methods/generateVariants', () => {
   const sourceMock: any = {
     db: {},
-    dirs: { imageCacheDir: "cache/dir" },
-    data: { hash: "sourceHash" },
+    dirs: { imageCacheDir: 'cache/dir' },
+    data: { hash: 'sourceHash' },
     options: {
-      src: "test.png",
-      format: "webp",
-      formats: ["avif", "webp"],
+      src: 'test.png',
+      format: 'webp',
+      formats: ['avif', 'webp'],
       processor: undefined,
     },
     formatOptions: {
@@ -60,8 +60,8 @@ describe("Unit/api/methods/generateVariants", () => {
       widths: [800, 1600],
       densities: [1, 2],
     },
-    profile: "sourceProfile",
-    componentType: "img",
+    profile: 'sourceProfile',
+    componentType: 'img',
     settings: { hasher: vi.fn() },
     getBuffer: vi.fn(),
   };
@@ -70,30 +70,28 @@ describe("Unit/api/methods/generateVariants", () => {
     vi.clearAllMocks();
   });
 
-  test("should generate variants and retrieve from cache (componentType: img)", async () => {
+  test('should generate variants and retrieve from cache (componentType: img)', async () => {
     const cachedItem = {
-      hash: "cachedHash",
+      hash: 'cachedHash',
       width: 800,
       height: 600,
-      format: "webp",
-      ext: "webp",
-      descriptor: "1x",
+      format: 'webp',
+      ext: 'webp',
+      descriptor: '1x',
     };
 
     (retrieveVariant as Mock).mockResolvedValueOnce(cachedItem);
     (retrieveVariant as Mock).mockResolvedValueOnce(null);
 
-    (sourceMock.getBuffer as Mock).mockResolvedValue(
-      Buffer.from("test buffer"),
-    );
+    (sourceMock.getBuffer as Mock).mockResolvedValue(Buffer.from('test buffer'));
 
     const generatedItem = {
-      hash: "generatedHash",
+      hash: 'generatedHash',
       width: 1600,
       height: 1200,
-      format: "webp",
-      ext: "webp",
-      descriptor: "2x",
+      format: 'webp',
+      ext: 'webp',
+      descriptor: '2x',
     };
 
     (generateVariant as Mock).mockResolvedValue(generatedItem);
@@ -107,46 +105,46 @@ describe("Unit/api/methods/generateVariants", () => {
     expect(result.webp).toEqual([cachedItem, generatedItem]);
   });
 
-  test("should generate variants for multiple formats (componentType: picture)", async () => {
+  test('should generate variants for multiple formats (componentType: picture)', async () => {
     const sourceMockForMultipleFormats = {
       ...sourceMock,
-      componentType: "picture",
+      componentType: 'picture',
     };
 
     const cachedItemWebp = {
-      hash: "cachedHashWebp",
+      hash: 'cachedHashWebp',
       width: 800,
       height: 600,
-      format: "webp",
-      ext: "webp",
-      descriptor: "1x",
+      format: 'webp',
+      ext: 'webp',
+      descriptor: '1x',
     };
 
     const generatedItemWebp = {
-      hash: "generatedHashWebp",
+      hash: 'generatedHashWebp',
       width: 1600,
       height: 1200,
-      format: "webp",
-      ext: "webp",
-      descriptor: "2x",
+      format: 'webp',
+      ext: 'webp',
+      descriptor: '2x',
     };
 
     const cachedItemAvif = {
-      hash: "cachedHashAvif",
+      hash: 'cachedHashAvif',
       width: 800,
       height: 600,
-      format: "avif",
-      ext: "avif",
-      descriptor: "1x",
+      format: 'avif',
+      ext: 'avif',
+      descriptor: '1x',
     };
 
     const generatedItemAvif = {
-      hash: "generatedHashAvif",
+      hash: 'generatedHashAvif',
       width: 1600,
       height: 1200,
-      format: "avif",
-      ext: "avif",
-      descriptor: "2x",
+      format: 'avif',
+      ext: 'avif',
+      descriptor: '2x',
     };
 
     (retrieveVariant as Mock)
@@ -154,9 +152,7 @@ describe("Unit/api/methods/generateVariants", () => {
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(cachedItemWebp)
       .mockResolvedValueOnce(null);
-    (sourceMock.getBuffer as Mock).mockResolvedValue(
-      Buffer.from("test buffer"),
-    );
+    (sourceMock.getBuffer as Mock).mockResolvedValue(Buffer.from('test buffer'));
     (generateVariant as Mock)
       .mockResolvedValueOnce(generatedItemAvif)
       .mockResolvedValueOnce(generatedItemWebp);
@@ -171,18 +167,16 @@ describe("Unit/api/methods/generateVariants", () => {
     expect(result.avif).toEqual([cachedItemAvif, generatedItemAvif]);
   });
 
-  test("should throw an error if source hash does not exist", async () => {
+  test('should throw an error if source hash does not exist', async () => {
     const invalidSourceMock = {
       ...sourceMock,
       data: { hash: null },
     };
 
-    await expect(generateVariants(invalidSourceMock)).rejects.toThrow(
-      "Source hash does not exist",
-    );
+    await expect(generateVariants(invalidSourceMock)).rejects.toThrow('Source hash does not exist');
   });
 
-  test("should sort the generated variants by width", async () => {
+  test('should sort the generated variants by width', async () => {
     const widthsSourceMock = {
       ...sourceMock,
       resolved: {
@@ -192,27 +186,25 @@ describe("Unit/api/methods/generateVariants", () => {
     };
 
     const generatedItem1 = {
-      hash: "generatedHash1",
+      hash: 'generatedHash1',
       width: 1600,
       height: 1200,
-      format: "webp",
-      ext: "webp",
-      descriptor: "1600w",
+      format: 'webp',
+      ext: 'webp',
+      descriptor: '1600w',
     };
 
     const generatedItem2 = {
-      hash: "generatedHash2",
+      hash: 'generatedHash2',
       width: 800,
       height: 600,
-      format: "webp",
-      ext: "webp",
-      descriptor: "800w",
+      format: 'webp',
+      ext: 'webp',
+      descriptor: '800w',
     };
 
     (retrieveVariant as Mock).mockResolvedValue(null);
-    (widthsSourceMock.getBuffer as Mock).mockResolvedValue(
-      Buffer.from("test buffer"),
-    );
+    (widthsSourceMock.getBuffer as Mock).mockResolvedValue(Buffer.from('test buffer'));
     (generateVariant as Mock)
       .mockResolvedValueOnce(generatedItem1)
       .mockResolvedValueOnce(generatedItem2);

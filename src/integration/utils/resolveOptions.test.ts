@@ -1,16 +1,17 @@
-import type { Sharp } from "sharp";
-import { describe, expect, test } from "vitest";
+import type { Sharp } from 'sharp';
+import { describe, expect, test } from 'vitest';
 
-import { mockAstroConfig } from "#mock/mock.js";
-import { deterministicHash } from "../../api/utils/deterministicHash.js";
-import { getFilteredSharpOptions } from "../../api/utils/getFilteredSharpOptions.js";
-import { defaultOptions } from "../../const.js";
-import { xxHash3Hasher } from "../../extras/xxHash3Hasher.js";
-import type { ImgProcFormatOptions } from "../../types.js";
-import { resolveOptions } from "./resolveOptions.js";
+import { mockAstroConfig } from '#mock/mock.js';
 
-describe("Unit/intergration/resolveOptions", () => {
-  test("default", () => {
+import { deterministicHash } from '../../api/utils/deterministicHash.js';
+import { getFilteredSharpOptions } from '../../api/utils/getFilteredSharpOptions.js';
+import { defaultOptions } from '../../const.js';
+import { xxHash3Hasher } from '../../extras/xxHash3Hasher.js';
+import type { ImgProcFormatOptions } from '../../types.js';
+import { resolveOptions } from './resolveOptions.js';
+
+describe('Unit/intergration/resolveOptions', () => {
+  test('default', () => {
     const { componentProps, formatOptions, ...settings } = resolveOptions(
       undefined,
       mockAstroConfig,
@@ -23,10 +24,7 @@ describe("Unit/intergration/resolveOptions", () => {
     } = defaultOptions;
 
     expect(
-      deterministicHash(
-        getFilteredSharpOptions(componentProps.blurProcessor),
-        xxHash3Hasher,
-      ),
+      deterministicHash(getFilteredSharpOptions(componentProps.blurProcessor), xxHash3Hasher),
     ).toBe(
       deterministicHash(
         getFilteredSharpOptions(defaultComponentProps.blurProcessor),
@@ -40,7 +38,7 @@ describe("Unit/intergration/resolveOptions", () => {
     expect(settings).toMatchObject(defaultSettings);
   });
 
-  test("format options", () => {
+  test('format options', () => {
     const mockFormatOptions: ImgProcFormatOptions = {
       jpeg: { quality: 90 },
       png: { quality: 90 },

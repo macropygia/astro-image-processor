@@ -1,6 +1,6 @@
-import xxhash from "xxhash-addon";
+import xxhash from 'xxhash-addon';
 
-import type { ImgProcHasher } from "../types.js";
+import type { ImgProcHasher } from '../types.js';
 
 const { XXHash3 } = xxhash;
 
@@ -11,6 +11,4 @@ const { XXHash3 } = xxhash;
  * @returns Hash string
  */
 export const xxHash3Hasher: ImgProcHasher = (buffer) =>
-  XXHash3.hash(
-    typeof buffer === "string" ? Buffer.from(buffer) : buffer,
-  ).toString("hex");
+  XXHash3.hash(typeof buffer === 'string' ? Buffer.from(buffer) : buffer).toString('hex');

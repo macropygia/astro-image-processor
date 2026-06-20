@@ -1,5 +1,5 @@
-import { Database, type Statement } from "bun:sqlite";
-import path from "node:path";
+import { Database, type Statement } from 'bun:sqlite';
+import path from 'node:path';
 
 import type {
   ImgProcDataAdapter,
@@ -7,7 +7,7 @@ import type {
   ImgProcDataAdapterInitOptions,
   ImgProcFile,
   ImgProcFileRecord,
-} from "../types.js";
+} from '../types.js';
 
 export interface BunSqliteDataAdapterOptions {
   /**
@@ -15,7 +15,7 @@ export interface BunSqliteDataAdapterOptions {
    * - If set to `:memory:`, in-memory mode is used.
    * @default "cache.sqlite"
    */
-  dbFile?: ":memory:" | string;
+  dbFile?: string;
   /**
    * Directory to place json file
    * - Support the following placeholders:
@@ -37,10 +37,7 @@ export interface BunSqliteDataAdapterOptions {
   useWAL?: boolean;
 }
 
-export type BunSqliteDataAdapterRecord = Record<
-  keyof ImgProcFileRecord,
-  string | number | null
->;
+export type BunSqliteDataAdapterRecord = Record<keyof ImgProcFileRecord, string | number | null>;
 
 export type BunSqliteDataAdapterParams = Record<
   `$${keyof ImgProcFileRecord}`,
@@ -59,7 +56,7 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
 
   public retentionPeriod: number | null = 10;
   public retentionCount: number | null = 1000 * 60 * 60 * 24 * 100;
-  public dbPath = ":memory:";
+  public dbPath = ':memory:';
 
   public db!: Database;
   private fetchQuery!: Statement<BunSqliteDataAdapterRecord, [string]>;
@@ -86,10 +83,7 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
     ]
   >;
   private deleteQuery!: Statement<void, [string]>;
-  private deleteVariantQuery!: Statement<
-    void,
-    [{ $source: string; $profile: string }]
-  >;
+  private deleteVariantQuery!: Statement<void, [{ $source: string; $profile: string }]>;
   private renewQuery!: Statement<
     void,
     [{ $hash: string; $lastUsedAt: number; $countdown: number }]
@@ -113,9 +107,9 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
 
   public constructor(options?: BunSqliteDataAdapterOptions) {
     const {
-      dbFile = "cache.sqlite",
-      dbDir = "[imageCacheDir]",
-      table = "cache",
+      dbFile = 'cache.sqlite',
+      dbDir = '[imageCacheDir]',
+      table = 'cache',
       useWAL = false,
     } = options || {};
 
@@ -123,39 +117,33 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
     this.dbDir = dbDir;
     this.table = table;
     this.useWAL = useWAL;
-    this.isInMemory = dbFile === ":memory:";
+    this.isInMemory = dbFile === ':memory:';
   }
 
   public initialize(options: ImgProcDataAdapterInitOptions) {
-    const {
-      rootDir,
-      cacheDir,
-      imageCacheDir,
-      retentionPeriod,
-      retentionCount,
-    } = options;
+    const { rootDir, cacheDir, imageCacheDir, retentionPeriod, retentionCount } = options;
     this.retentionPeriod = retentionPeriod;
     this.retentionCount = retentionCount;
 
     const replacedDbDir = path.posix.normalize(
       this.dbDir
-        .replaceAll("[root]", rootDir)
-        .replaceAll("[cacheDir]", cacheDir)
-        .replaceAll("[imageCacheDir]", imageCacheDir)
-        .replaceAll("\\", "/"),
+        .replaceAll('[root]', rootDir)
+        .replaceAll('[cacheDir]', cacheDir)
+        .replaceAll('[imageCacheDir]', imageCacheDir)
+        .replaceAll('\\', '/'),
     );
     this.dbPath = path.posix.normalize(
-      path.resolve(replacedDbDir, this.dbFile).replaceAll("\\", "/"),
+      path.resolve(replacedDbDir, this.dbFile).replaceAll('\\', '/'),
     );
 
     if (this.isInMemory) {
-      this.dbPath = ":memory:";
+      this.dbPath = ':memory:';
     }
 
     const db = new Database(this.dbPath);
 
     if (this.useWAL && !this.isInMemory) {
-      db.exec("PRAGMA journal_mode = WAL;");
+      db.exec('PRAGMA journal_mode = WAL;');
     }
 
     db.exec(`
@@ -329,9 +317,7 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
     return fields as BunSqliteDataAdapterParams;
   }
 
-  protected recordToData(
-    record: BunSqliteDataAdapterRecord,
-  ): ImgProcFileRecord {
+  protected recordToData(record: BunSqliteDataAdapterRecord): ImgProcFileRecord {
     const data = {} as Record<keyof ImgProcFileRecord, string | number>;
     for (const [key, value] of Object.entries(record) as [
       keyof ImgProcFileRecord,
@@ -369,7 +355,7 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
         }),
       );
     } catch (_err: unknown) {
-      throw new Error("Insert failed");
+      throw new Error('Insert failed');
     }
   }
 
@@ -396,12 +382,14 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
   }
 
   public delete(criteria: ImgProcDataAdapterCriteria) {
-    hasHash(criteria)
-      ? this.deleteQuery.run(criteria.hash)
-      : this.deleteVariantQuery.run({
-          $source: criteria.source,
-          $profile: criteria.profile,
-        });
+    if (hasHash(criteria)) {
+      this.deleteQuery.run(criteria.hash);
+    } else {
+      this.deleteVariantQuery.run({
+        $source: criteria.source,
+        $profile: criteria.profile,
+      });
+    }
   }
 
   public renew(criteria: ImgProcDataAdapterCriteria) {
@@ -414,13 +402,15 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
       $countdown: this.retentionCount !== null ? this.retentionCount : 0,
     };
 
-    hasHash(criteria)
-      ? this.renewQuery.run({ $hash: criteria.hash, ...params })
-      : this.renewVariantQuery.run({
-          $source: criteria.source,
-          $profile: criteria.profile,
-          ...params,
-        });
+    if (hasHash(criteria)) {
+      this.renewQuery.run({ $hash: criteria.hash, ...params });
+    } else {
+      this.renewVariantQuery.run({
+        $source: criteria.source,
+        $profile: criteria.profile,
+        ...params,
+      });
+    }
   }
 
   public countdown() {
@@ -449,9 +439,7 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
     }
 
     const afterHashes = new Set(this.list());
-    const deletedHashes = [...beforeHashes].filter(
-      (hash) => !afterHashes.has(hash),
-    );
+    const deletedHashes = [...beforeHashes].filter((hash) => !afterHashes.has(hash));
     return deletedHashes.length > 0 ? new Set(deletedHashes) : null;
   }
 
@@ -460,8 +448,6 @@ export class BunSqliteDataAdapter implements ImgProcDataAdapter {
   }
 }
 
-function hasHash(
-  criteria: ImgProcDataAdapterCriteria,
-): criteria is { hash: string } {
-  return typeof (criteria as { hash: string }).hash === "string";
+function hasHash(criteria: ImgProcDataAdapterCriteria): criteria is { hash: string } {
+  return typeof (criteria as { hash: string }).hash === 'string';
 }

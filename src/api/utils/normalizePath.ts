@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from 'node:path';
 
 const LAST_SLASH_RE = /\/+$/;
 
@@ -11,15 +11,12 @@ const LAST_SLASH_RE = /\/+$/;
  * @param trailingSlash Boolean
  * @returns Path
  */
-export const normalizePath = (
-  pathLike: string,
-  trailingSlash?: boolean,
-): string => {
-  let newPath = pathLike.replaceAll("\\", "/");
+export const normalizePath = (pathLike: string, trailingSlash?: boolean): string => {
+  let newPath = pathLike.replaceAll('\\', '/');
   if (trailingSlash === true) {
     newPath = `${newPath}/`;
   } else if (trailingSlash === false) {
-    newPath.replace(LAST_SLASH_RE, "");
+    newPath.replace(LAST_SLASH_RE, '');
   }
   return path.posix.normalize(newPath);
 };

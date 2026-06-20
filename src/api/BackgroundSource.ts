@@ -4,28 +4,26 @@ import type {
   ImgProcFormatOptions,
   ImgProcProcessorOptions,
   ImgProcVariant,
-} from "../types.js";
-import { PictureSource } from "./PictureSource.js";
-import { generateImageSet } from "./methods/generateImageSet.js";
-import { CssObjBuilder } from "./utils/CssObjBuilder.js";
+} from '../types.js';
+import { generateImageSet } from './methods/generateImageSet.js';
+import { PictureSource } from './PictureSource.js';
+import { CssObjBuilder } from './utils/CssObjBuilder.js';
 
 export interface BackgroundSourceArgs {
   /** Integration context */
   ctx: ImgProcContext;
   /** Component type */
-  componentType?: "img" | "picture" | "background";
+  componentType?: 'img' | 'picture' | 'background';
   /** Component props (readonly) */
   options: Readonly<Partial<ImgProcProcessorOptions> & { src: string }>;
 }
 
 export class BackgroundSource extends PictureSource {
   /** Async constructor */
-  static override async factory(
-    args: BackgroundSourceArgs,
-  ): Promise<BackgroundSource> {
+  static override async factory(args: BackgroundSourceArgs): Promise<BackgroundSource> {
     const instance = new BackgroundSource({
       ...args,
-      componentType: "background",
+      componentType: 'background',
     });
     await instance.main();
     await instance.parseArtDirectives();
@@ -52,18 +50,17 @@ export class BackgroundSource extends PictureSource {
 
     // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
     if (!variants || !resolved.width || !resolved.height) {
-      throw new Error("Unresolved source");
+      throw new Error('Unresolved source');
     }
 
     const variant = variants[formats.at(-1) as keyof ImgProcFormatOptions];
 
     if (!variant) {
-      throw new Error("Format mismatch");
+      throw new Error('Format mismatch');
     }
 
     const fallbackPath = `${this.resolvePath(
-      variant.find((v) => v.width === resolved.width) ||
-        (variant.at(-1) as ImgProcVariant),
+      variant.find((v) => v.width === resolved.width) || (variant.at(-1) as ImgProcVariant),
     )}`;
 
     const cssObj = new CssObjBuilder();
@@ -71,23 +68,16 @@ export class BackgroundSource extends PictureSource {
     cssObj.add(
       `${tagName}[scope]`,
       placeholder !== null
-        ? [
-            "background-color",
-            placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
-          ]
+        ? ['background-color', placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`]
         : undefined,
-      ["background-image", `url("${fallbackPath}")`],
-      ["background-image", imageSet],
-      layout && (layout === "constrained" || layout === "fixed")
-        ? ["width", `${resolved.width}px`]
+      ['background-image', `url("${fallbackPath}")`],
+      ['background-image', imageSet],
+      layout && (layout === 'constrained' || layout === 'fixed')
+        ? ['width', `${resolved.width}px`]
         : undefined,
-      backgroundSize ? ["background-size", backgroundSize] : undefined,
-      backgroundPosition
-        ? ["background-position", backgroundPosition]
-        : undefined,
-      enforceAspectRatio
-        ? ["aspect-ratio", `${resolved.width} / ${resolved.height}`]
-        : undefined,
+      backgroundSize ? ['background-size', backgroundSize] : undefined,
+      backgroundPosition ? ['background-position', backgroundPosition] : undefined,
+      enforceAspectRatio ? ['aspect-ratio', `${resolved.width} / ${resolved.height}`] : undefined,
     );
 
     return cssObj.value;

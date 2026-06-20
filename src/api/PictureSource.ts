@@ -1,16 +1,16 @@
-import type { HTMLAttributes } from "astro/types";
+import type { HTMLAttributes } from 'astro/types';
 
-import { defaultGlobalClassNames } from "../const.js";
-import type { ImgProcContext, ImgProcProcessorOptions } from "../types.js";
-import { ArtDirectiveSource } from "./ArtDirectiveSource.js";
-import { ImageSource } from "./ImageSource.js";
-import { generateComponentHash } from "./methods/generateComponentHash.js";
+import { defaultGlobalClassNames } from '../const.js';
+import type { ImgProcContext, ImgProcProcessorOptions } from '../types.js';
+import { ArtDirectiveSource } from './ArtDirectiveSource.js';
+import { ImageSource } from './ImageSource.js';
+import { generateComponentHash } from './methods/generateComponentHash.js';
 
 export interface PictureSourceArgs {
   /** Integration context */
   ctx: ImgProcContext;
   /** Component type */
-  componentType?: "img" | "picture" | "background";
+  componentType?: 'img' | 'picture' | 'background';
   /** Container mode */
   asBackground?: boolean | undefined;
   /** Component props (readonly) */
@@ -26,7 +26,7 @@ export class PictureSource extends ImageSource {
     componentType,
     asBackground,
     options,
-  }: PictureSourceArgs & { componentType: "img" | "picture" | "background" }) {
+  }: PictureSourceArgs & { componentType: 'img' | 'picture' | 'background' }) {
     super({ ctx, componentType, asBackground, options });
 
     const {
@@ -40,15 +40,13 @@ export class PictureSource extends ImageSource {
   }
 
   /** Async constructor */
-  static override async factory(
-    args: PictureSourceArgs,
-  ): Promise<PictureSource> {
-    const instance = new PictureSource({ ...args, componentType: "picture" });
+  static override async factory(args: PictureSourceArgs): Promise<PictureSource> {
+    const instance = new PictureSource({ ...args, componentType: 'picture' });
     try {
       await instance.main();
       await instance.parseArtDirectives();
     } catch (error) {
-      instance.spinner.fail("Failed");
+      instance.spinner.fail('Failed');
       throw error as Error;
     }
     return instance;
@@ -66,7 +64,7 @@ export class PictureSource extends ImageSource {
           componentType: this.componentType,
           componentHash: this.componentHash,
           options: { ...artDirective, ...(tagName ? { tagName } : undefined) },
-          parentSizes: this.resolved.sizes || "",
+          parentSizes: this.resolved.sizes || '',
         }),
       ),
     );
@@ -83,7 +81,7 @@ export class PictureSource extends ImageSource {
 
     const classList: string[] = [globalClassNames.element[componentType]];
 
-    if (scopedStyleStrategy !== "attribute") {
+    if (scopedStyleStrategy !== 'attribute') {
       classList.push(`astro-aip-${componentHash}`);
     }
 
@@ -98,10 +96,10 @@ export class PictureSource extends ImageSource {
     return classList;
   }
 
-  public get pictureAttributes(): HTMLAttributes<"picture"> {
+  public get pictureAttributes(): HTMLAttributes<'picture'> {
     // data-astro-aip-<hash>
     const dataIdentifier =
-      this.settings.scopedStyleStrategy === "attribute"
+      this.settings.scopedStyleStrategy === 'attribute'
         ? { [`data-astro-aip-${this.componentHash}`]: true }
         : undefined;
 
@@ -110,7 +108,7 @@ export class PictureSource extends ImageSource {
     };
   }
 
-  public get sources(): HTMLAttributes<"source">[] {
+  public get sources(): HTMLAttributes<'source'>[] {
     const {
       options: { formats },
       variants,
@@ -120,20 +118,18 @@ export class PictureSource extends ImageSource {
 
     // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
     if (!variants || !resolved.width || !resolved.height) {
-      throw new Error("Unresolved source");
+      throw new Error('Unresolved source');
     }
 
     if (formats.length < 2) {
       return [];
     }
 
-    const sources: HTMLAttributes<"source">[] = [];
+    const sources: HTMLAttributes<'source'>[] = [];
 
     if (artDirectives) {
       // biome-ignore lint/complexity/noForEach: Not complex
-      artDirectives
-        .flatMap((ad) => ad.sources)
-        .forEach((ads) => sources.push(ads));
+      artDirectives.flatMap((ad) => ad.sources).forEach((ads) => sources.push(ads));
     }
 
     const additionalFormats = formats.slice(0, -1);
@@ -143,13 +139,11 @@ export class PictureSource extends ImageSource {
         const variant = variants[format];
 
         if (!variant) {
-          throw new Error("Format mismatch");
+          throw new Error('Format mismatch');
         }
 
         return {
-          srcset: variant
-            .map((item) => `${this.resolvePath(item)} ${item.descriptor}`)
-            .join(", "),
+          srcset: variant.map((item) => `${this.resolvePath(item)} ${item.descriptor}`).join(', '),
           sizes: resolved.sizes,
           width: resolved.width,
           height: resolved.height,
@@ -161,8 +155,8 @@ export class PictureSource extends ImageSource {
     return sources;
   }
 
-  public get links(): HTMLAttributes<"link">[] | null {
-    const links: HTMLAttributes<"link">[] = [];
+  public get links(): HTMLAttributes<'link'>[] | null {
+    const links: HTMLAttributes<'link'>[] = [];
     const { artDirectives, link } = this;
 
     if (link) {
@@ -173,11 +167,9 @@ export class PictureSource extends ImageSource {
 
     if (artDirectives) {
       // biome-ignore lint/complexity/noForEach: Not complex
-      (
-        artDirectives
-          .map((ad) => ad.link)
-          .filter(Boolean) as HTMLAttributes<"link">[]
-      ).forEach((link) => links.push(link));
+      (artDirectives.map((ad) => ad.link).filter(Boolean) as HTMLAttributes<'link'>[]).forEach(
+        (link) => links.push(link),
+      );
     }
 
     return links;

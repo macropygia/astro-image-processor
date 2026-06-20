@@ -1,8 +1,8 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { defineConfig } from "vite";
-import { coverageConfigDefaults, defaultExclude } from "vitest/config";
+import { defineConfig } from 'vite';
+import { coverageConfigDefaults, defaultExclude } from 'vitest/config';
 // import { getViteConfig } from "astro/config";
 
 // biome-ignore lint/style/noDefaultExport: Required
@@ -11,32 +11,25 @@ export default defineConfig({
     exclude: [
       ...defaultExclude,
       // Add
-      "**/bun*",
+      '**/bun*',
     ],
     coverage: {
-      provider: "v8",
-      extension: [".ts"],
-      include: ["src"],
+      provider: 'v8',
+      include: ['src/**/**.{ts}'],
       exclude: [
         ...coverageConfigDefaults.exclude,
         // Add
-        "**/Bun*",
-        "**/bun*",
-        "**/src/extras/index.ts", // only exports
-        "**/src/components/index.ts", // only exports
-        "**/src/components/exports.ts", // only exports
+        '**/Bun*',
+        '**/bun*',
+        '**/src/extras/index.ts', // only exports
+        '**/src/components/index.ts', // only exports
+        '**/src/components/exports.ts', // only exports
       ],
-      reporter: ["html", "json"],
+      reporter: ['html', 'json'],
     },
     alias: {
-      "#test": path.resolve(
-        path.dirname(fileURLToPath(import.meta.url)),
-        "./__test__/src",
-      ),
-      "#mock": path.resolve(
-        path.dirname(fileURLToPath(import.meta.url)),
-        "./__mock__/",
-      ),
+      '#test': path.resolve(path.dirname(fileURLToPath(import.meta.url)), './__test__/src'),
+      '#mock': path.resolve(path.dirname(fileURLToPath(import.meta.url)), './__mock__/'),
     },
   },
 });

@@ -1,13 +1,14 @@
-import path from "node:path";
+import path from 'node:path';
 
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
-import { mockLogger } from "#mock/mock.js";
-import type { BaseSource } from "../BaseSource.js";
+import { mockLogger } from '#mock/mock.js';
 
-vi.mock("../utils/getMetadataFromBuffer.js", () => ({
+import type { BaseSource } from '../BaseSource.js';
+
+vi.mock('../utils/getMetadataFromBuffer.js', () => ({
   getMetadataFromBuffer: vi.fn().mockResolvedValue({
-    format: "png",
+    format: 'png',
     width: 1024,
     height: 768,
     r: 1,
@@ -16,9 +17,9 @@ vi.mock("../utils/getMetadataFromBuffer.js", () => ({
   }),
 }));
 
-import { renewSource } from "./renewSource.js";
+import { renewSource } from './renewSource.js';
 
-describe("Unit/api/methods/renewSource", () => {
+describe('Unit/api/methods/renewSource', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -29,55 +30,49 @@ describe("Unit/api/methods/renewSource", () => {
       renew: vi.fn(),
     },
     dirs: {
-      downloadDir: "mock-download-dir",
+      downloadDir: 'mock-download-dir',
     },
-    type: "remote",
+    type: 'remote',
     options: {
-      src: "mockImage.jpg",
-      placeholder: "dominantColor",
+      src: 'mockImage.jpg',
+      placeholder: 'dominantColor',
       placeholderColor: undefined,
-      processor: "mock-processor",
+      processor: 'mock-processor',
     },
     data: {
-      hash: "mock-hash",
-      format: "png",
+      hash: 'mock-hash',
+      format: 'png',
       r: undefined,
       expiresAt: Date.now() + 10000,
     },
     downloadPath: undefined,
     logger: mockLogger,
-    getBuffer: vi.fn().mockResolvedValue(Buffer.from("mock-buffer")),
+    getBuffer: vi.fn().mockResolvedValue(Buffer.from('mock-buffer')),
   } as unknown as BaseSource;
 
-  test("hash missing", async () => {
+  test('hash missing', async () => {
     const invalidSource = {
       ...mockSource,
       data: { hash: undefined },
     } as unknown as BaseSource;
-    await expect(renewSource(invalidSource)).rejects.toThrowError(
-      "Invalid data",
-    );
+    await expect(renewSource(invalidSource)).rejects.toThrowError('Invalid data');
   });
 
-  test("format missing", async () => {
+  test('format missing', async () => {
     const invalidSource = {
       ...mockSource,
       data: { format: undefined },
     } as unknown as BaseSource;
-    await expect(renewSource(invalidSource)).rejects.toThrowError(
-      "Invalid data",
-    );
+    await expect(renewSource(invalidSource)).rejects.toThrowError('Invalid data');
   });
 
-  test("resolve downloadPath", async () => {
+  test('resolve downloadPath', async () => {
     const source = { ...mockSource } as unknown as BaseSource;
     await renewSource(source);
-    expect(source.downloadPath).toBe(
-      path.join("mock-download-dir", "mock-hash.png"),
-    );
+    expect(source.downloadPath).toBe(path.join('mock-download-dir', 'mock-hash.png'));
   });
 
-  test("read sharp().stat().dominant", async () => {
+  test('read sharp().stat().dominant', async () => {
     const source = { ...mockSource } as unknown as BaseSource;
     source.data.expiresAt = Date.now() - 10000;
     await renewSource(source);
@@ -85,13 +80,13 @@ describe("Unit/api/methods/renewSource", () => {
     expect(source.db.updateMetadata).toHaveBeenCalledWith(source.data); // TODO: check
   });
 
-  test("placeholder is not placeholderColor", async () => {
+  test('placeholder is not placeholderColor', async () => {
     const source = {
       ...mockSource,
-      options: { ...mockSource.options, placeholder: "blurred" },
+      options: { ...mockSource.options, placeholder: 'blurred' },
       data: {
-        hash: "mock-hash",
-        format: "png",
+        hash: 'mock-hash',
+        format: 'png',
         r: undefined,
         expiresAt: Date.now() + 10000,
       },
@@ -101,16 +96,16 @@ describe("Unit/api/methods/renewSource", () => {
     expect(source.getBuffer).not.toBeCalled();
   });
 
-  test("dominantColor is defined by user", async () => {
+  test('dominantColor is defined by user', async () => {
     const source = {
       ...mockSource,
       options: {
         ...mockSource.options,
-        placeholderColor: "mock-dominant-color",
+        placeholderColor: 'mock-dominant-color',
       },
       data: {
-        hash: "mock-hash",
-        format: "png",
+        hash: 'mock-hash',
+        format: 'png',
         r: undefined,
         expiresAt: Date.now() + 10000,
       },
@@ -120,13 +115,13 @@ describe("Unit/api/methods/renewSource", () => {
     expect(source.getBuffer).not.toBeCalled();
   });
 
-  test("dominantColor already exists", async () => {
+  test('dominantColor already exists', async () => {
     const source = {
       ...mockSource,
-      data: { ...mockSource.data, r: "mock-r", expiresAt: Date.now() + 10000 },
+      data: { ...mockSource.data, r: 'mock-r', expiresAt: Date.now() + 10000 },
     } as unknown as BaseSource;
     await renewSource(source);
-    expect(source.data.r).toBe("mock-r");
+    expect(source.data.r).toBe('mock-r');
     expect(source.getBuffer).not.toBeCalled();
   });
 });

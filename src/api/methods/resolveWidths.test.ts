@@ -1,18 +1,14 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from 'vitest';
 
-import type { ImageSource } from "../ImageSource.js";
-import {
-  convertDensitiesToWidths,
-  filterWidths,
-  resolveWidths,
-} from "./resolveWidths.js";
+import type { ImageSource } from '../ImageSource.js';
+import { convertDensitiesToWidths, filterWidths, resolveWidths } from './resolveWidths.js';
 
-describe("Unit/api/utils/resolveWidths", () => {
-  test.each<{ upscale: "never" | "always" | "original"; [x: string]: any }>([
+describe('Unit/api/utils/resolveWidths', () => {
+  test.each<{ upscale: 'never' | 'always' | 'original'; [x: string]: any }>([
     {
       densities: [1, 2, 3],
       realWidth: 2500,
-      upscale: "never",
+      upscale: 'never',
       propWidth: 1000,
       result: {
         resolvedWidths: [1000, 2000],
@@ -22,7 +18,7 @@ describe("Unit/api/utils/resolveWidths", () => {
     {
       densities: [1, 2, 3],
       realWidth: 2500,
-      upscale: "always",
+      upscale: 'always',
       propWidth: 1000,
       result: {
         resolvedWidths: [1000, 2000, 3000],
@@ -32,7 +28,7 @@ describe("Unit/api/utils/resolveWidths", () => {
     {
       densities: [1, 2, 3],
       realWidth: 2500,
-      upscale: "original",
+      upscale: 'original',
       propWidth: 1000,
       result: {
         resolvedWidths: [1000, 2000, 2500],
@@ -42,7 +38,7 @@ describe("Unit/api/utils/resolveWidths", () => {
     {
       densities: [1, 2, 3],
       realWidth: 3000,
-      upscale: "never",
+      upscale: 'never',
       result: {
         resolvedWidths: [1000, 2000, 3000],
         resolvedDensities: [1, 2, 3],
@@ -51,13 +47,13 @@ describe("Unit/api/utils/resolveWidths", () => {
     {
       densities: [1, 2],
       realWidth: 1000,
-      upscale: "never",
+      upscale: 'never',
       result: {
         resolvedWidths: [500, 1000],
         resolvedDensities: [1, 2],
       },
     },
-  ])("default", (args) => {
+  ])('default', (args) => {
     const result = convertDensitiesToWidths(
       args.densities,
       args.realWidth,
@@ -69,50 +65,48 @@ describe("Unit/api/utils/resolveWidths", () => {
     }
   });
 
-  test("throw", () => {
-    expect(() =>
-      convertDensitiesToWidths([1, 2, 3], 500, "never", 6000),
-    ).toThrowError(
-      "Nothing to output (minimum specified width is greater than real width)",
+  test('throw', () => {
+    expect(() => convertDensitiesToWidths([1, 2, 3], 500, 'never', 6000)).toThrowError(
+      'Nothing to output (minimum specified width is greater than real width)',
     );
   });
 });
 
-describe("Unit/api/utils/filterWidths", () => {
-  test.each<{ upscale: "never" | "always" | "original"; [x: string]: any }>([
+describe('Unit/api/utils/filterWidths', () => {
+  test.each<{ upscale: 'never' | 'always' | 'original'; [x: string]: any }>([
     {
       widths: [1000, 2000, 3000],
       realWidth: 2500,
-      upscale: "never",
+      upscale: 'never',
       result: [1000, 2000],
     },
     {
       widths: [1000, 2000, 3000],
       realWidth: 2500,
-      upscale: "always",
+      upscale: 'always',
       result: [1000, 2000, 3000],
     },
     {
       widths: [1000, 2000, 3000],
       realWidth: 2500,
-      upscale: "original",
+      upscale: 'original',
       result: [1000, 2000, 2500],
     },
-  ])("default", (args) => {
+  ])('default', (args) => {
     const result = filterWidths(args.widths, args.realWidth, args.upscale);
     if (args.result) {
       expect(result).toMatchObject(args.result);
     }
   });
 
-  test("throw", () => {
-    expect(() => filterWidths([1000, 2000], 500, "never")).toThrowError(
-      "Nothing to output (minimum specified width is greater than real width)",
+  test('throw', () => {
+    expect(() => filterWidths([1000, 2000], 500, 'never')).toThrowError(
+      'Nothing to output (minimum specified width is greater than real width)',
     );
   });
 });
 
-describe("Unit/api/utils/resolveWidths", () => {
+describe('Unit/api/utils/resolveWidths', () => {
   test.each([
     {
       source: {
@@ -155,7 +149,7 @@ describe("Unit/api/utils/resolveWidths", () => {
     },
     {
       source: {
-        options: { src: "src" },
+        options: { src: 'src' },
         data: { width: 2000, height: 1000 },
         resolved: {},
       },
@@ -192,31 +186,31 @@ describe("Unit/api/utils/resolveWidths", () => {
         },
       },
     },
-  ])("default", (args) => {
+  ])('default', (args) => {
     resolveWidths(args.source as unknown as ImageSource);
     expect(args.source).toMatchObject({ ...args.source, ...args.result });
   });
 
-  test("throw", () => {
+  test('throw', () => {
     expect(() =>
       resolveWidths({
         data: { width: 123 }, // height missing
-        options: { src: "src" },
+        options: { src: 'src' },
       } as ImageSource),
-    ).toThrowError("Invalid source demiensions: src");
+    ).toThrowError('Invalid source demiensions: src');
 
     expect(() =>
       resolveWidths({
         data: { height: 123 }, // width missing
-        options: { src: "src" },
+        options: { src: 'src' },
       } as ImageSource),
-    ).toThrowError("Invalid source demiensions: src");
+    ).toThrowError('Invalid source demiensions: src');
 
     expect(() =>
       resolveWidths({
         data: { width: 123, height: 123 },
-        options: { src: "src", widths: [0], densities: [0] },
+        options: { src: 'src', widths: [0], densities: [0] },
       } as ImageSource),
-    ).toThrowError("Both widths and densities exist: src");
+    ).toThrowError('Both widths and densities exist: src');
   });
 });

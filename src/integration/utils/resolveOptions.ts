@@ -1,7 +1,7 @@
-import type { AstroConfig } from "astro";
+import type { AstroConfig } from 'astro';
 
-import { defaultOptions } from "../../const.js";
-import type { ImgProcOptions, ImgProcUserOptions } from "../../types.js";
+import { defaultOptions } from '../../const.js';
+import type { ImgProcOptions, ImgProcUserOptions } from '../../types.js';
 
 type ResolveOptions = (
   options: ImgProcUserOptions | undefined,

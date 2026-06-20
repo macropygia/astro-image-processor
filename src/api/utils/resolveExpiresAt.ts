@@ -4,11 +4,7 @@ type ResolveExpiresAt = (args: {
   maxAge: number | undefined;
 }) => number | undefined;
 
-export const resolveExpiresAt: ResolveExpiresAt = ({
-  expiresAt,
-  minAge,
-  maxAge,
-}) => {
+export const resolveExpiresAt: ResolveExpiresAt = ({ expiresAt, minAge, maxAge }) => {
   const now = Date.now();
 
   const minExpiresAt = minAge ? now + minAge : undefined;

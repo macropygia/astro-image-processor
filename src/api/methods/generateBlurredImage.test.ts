@@ -1,12 +1,12 @@
-import { readFileSync } from "node:fs";
+import { readFileSync } from 'node:fs';
 
-import sharp from "sharp";
-import { afterEach, describe, expect, test, vi } from "vitest";
+import sharp from 'sharp';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
-import type { ImageSource } from "../ImageSource.js";
-import { generateBlurredImage } from "../methods/generateBlurredImage.js";
+import type { ImageSource } from '../ImageSource.js';
+import { generateBlurredImage } from '../methods/generateBlurredImage.js';
 
-describe("Unit/api/utils/generateBlurredImage", () => {
+describe('Unit/api/utils/generateBlurredImage', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -18,31 +18,29 @@ describe("Unit/api/utils/generateBlurredImage", () => {
       renew: vi.fn(),
     },
     data: {
-      hash: "mock-data-hash",
+      hash: 'mock-data-hash',
     },
     options: {
       blurProcessor: sharp().resize(1).webp({ quality: 1 }),
     },
-    getBuffer: () => readFileSync("__test__/src/assets/3000_gray.png"),
-    getSourceProfile: vi.fn().mockReturnValue(["mock-source-profile"]),
-    settings: { hasher: () => "mock-hash" },
+    getBuffer: () => readFileSync('__test__/src/assets/3000_gray.png'),
+    getSourceProfile: vi.fn().mockReturnValue(['mock-source-profile']),
+    settings: { hasher: () => 'mock-hash' },
   } as unknown as ImageSource;
 
-  test("succeeded", async () => {
-    await expect(
-      generateBlurredImage(baseSource),
-    ).resolves.toMatchInlineSnapshot(
+  test('succeeded', async () => {
+    await expect(generateBlurredImage(baseSource)).resolves.toMatchInlineSnapshot(
       `"data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADMDOJaQAA3AA5EAA"`,
     );
   });
 
-  test("cache hit", async () => {
+  test('cache hit', async () => {
     const source = {
       ...baseSource,
       db: {
         fetch: () => ({
-          format: "webp",
-          base64: "mock-blurred-base64",
+          format: 'webp',
+          base64: 'mock-blurred-base64',
         }),
         insert: vi.fn(),
         renew: vi.fn(),
@@ -53,7 +51,7 @@ describe("Unit/api/utils/generateBlurredImage", () => {
     );
   });
 
-  test("with source processor", async () => {
+  test('with source processor', async () => {
     const source = {
       ...baseSource,
       options: {
@@ -67,14 +65,14 @@ describe("Unit/api/utils/generateBlurredImage", () => {
     );
   });
 
-  test("throw", async () => {
+  test('throw', async () => {
     const source = {
       ...baseSource,
       data: {},
     } as ImageSource;
 
     await expect(() => generateBlurredImage(source)).rejects.toThrowError(
-      "Source hash does not exist",
+      'Source hash does not exist',
     );
   });
 });

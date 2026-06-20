@@ -1,6 +1,6 @@
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
 
-import type { ImgProcHasher } from "../types.js";
+import type { ImgProcHasher } from '../types.js';
 
 /**
  * File hasher using crypto
@@ -10,14 +10,14 @@ import type { ImgProcHasher } from "../types.js";
  */
 export const cryptoHasher: ImgProcHasher = (buffer) => {
   // Node.js >= 20.12.0
-  if ("hash" in crypto) {
+  if ('hash' in crypto) {
     // @ts-ignore
-    return crypto.hash("md5", buffer);
+    return crypto.hash('md5', buffer);
   }
   // Node.js < 20.12.0
-  if ("createHash" in crypto) {
+  if ('createHash' in crypto) {
     // @ts-ignore
-    return crypto.createHash("md5").update(buffer).digest("hex");
+    return crypto.createHash('md5').update(buffer).digest('hex');
   }
-  throw new Error("File hash generation failed");
+  throw new Error('File hash generation failed');
 };

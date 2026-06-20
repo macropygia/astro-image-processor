@@ -1,20 +1,16 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'node:fs';
+import path from 'node:path';
 
-import type { AstroIntegrationLogger } from "astro";
-import type { Sharp } from "sharp";
+import type { AstroIntegrationLogger } from 'astro';
+import type { Ora } from 'ora';
+import type { Sharp } from 'sharp';
 
-import type { Ora } from "ora";
-import { extByFormat } from "../../const.js";
-import type {
-  ImgProcDataAdapter,
-  ImgProcHasher,
-  ImgProcVariant,
-} from "../../types.js";
-import { applyProcessors } from "../utils/applyProcessors.js";
-import { getMetadataFromBuffer } from "../utils/getMetadataFromBuffer.js";
-import { normalizePath } from "../utils/normalizePath.js";
-import { isOutputFormat } from "../utils/typeGuards.js";
+import { extByFormat } from '../../const.js';
+import type { ImgProcDataAdapter, ImgProcHasher, ImgProcVariant } from '../../types.js';
+import { applyProcessors } from '../utils/applyProcessors.js';
+import { getMetadataFromBuffer } from '../utils/getMetadataFromBuffer.js';
+import { normalizePath } from '../utils/normalizePath.js';
+import { isOutputFormat } from '../utils/typeGuards.js';
 
 type GenerateVariant = (args: {
   src: string;
@@ -57,12 +53,10 @@ export const generateVariant: GenerateVariant = async ({
   const { format, width, height } = variantMetadata;
 
   if (!isOutputFormat(format)) {
-    throw new Error("Invalid output format");
+    throw new Error('Invalid output format');
   }
   const ext = extByFormat[format];
-  const imageCachePath = normalizePath(
-    path.join(imageCacheDir, `${variantHash}.${ext}`),
-  );
+  const imageCachePath = normalizePath(path.join(imageCacheDir, `${variantHash}.${ext}`));
 
   // logger?.info(`Generated (${ext}, ${width}x${height}): ${src}`);
 
@@ -70,7 +64,7 @@ export const generateVariant: GenerateVariant = async ({
 
   await db.insert({
     hash: variantHash,
-    category: "variant",
+    category: 'variant',
     format,
     width,
     height,

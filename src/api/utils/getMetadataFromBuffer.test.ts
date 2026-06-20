@@ -1,11 +1,11 @@
-import sharp from "sharp";
-import { afterAll, describe, expect, test, vi } from "vitest";
+import sharp from 'sharp';
+import { afterAll, describe, expect, test, vi } from 'vitest';
 
-import { getMetadataFromBuffer } from "./getMetadataFromBuffer.js";
+import { getMetadataFromBuffer } from './getMetadataFromBuffer.js';
 
 const mockSharpInstance = {
   metadata: vi.fn(() => ({
-    format: "jpeg",
+    format: 'jpeg',
     width: 1024,
     height: 768,
   })),
@@ -20,12 +20,12 @@ const mockSharpInstance = {
   toBuffer: vi.fn(),
 };
 
-vi.mock("sharp", () => ({
+vi.mock('sharp', () => ({
   __esModule: true,
   default: vi.fn(() => mockSharpInstance),
 }));
 
-vi.mock("./applyProcessors.js", () => ({
+vi.mock('./applyProcessors.js', () => ({
   __esModule: true,
   applyProcessors: vi.fn(() => ({
     stats: vi.fn(() => ({
@@ -38,28 +38,28 @@ vi.mock("./applyProcessors.js", () => ({
   })),
 }));
 
-const buffer = Buffer.from("test");
+const buffer = Buffer.from('test');
 
-describe("Unit/api/utils/getMetadataFromBuffer", () => {
+describe('Unit/api/utils/getMetadataFromBuffer', () => {
   afterAll(() => {
     vi.clearAllMocks();
   });
 
-  test("default", async () => {
+  test('default', async () => {
     const metadata = await getMetadataFromBuffer({ buffer });
 
     expect(metadata).toMatchObject({
-      format: "jpeg",
+      format: 'jpeg',
       width: 1024,
       height: 768,
     });
   });
 
-  test("dominant", async () => {
+  test('dominant', async () => {
     const metadata = await getMetadataFromBuffer({ buffer, useDominant: true });
 
     expect(metadata).toMatchObject({
-      format: "jpeg",
+      format: 'jpeg',
       width: 1024,
       height: 768,
       r: 1,
@@ -68,7 +68,7 @@ describe("Unit/api/utils/getMetadataFromBuffer", () => {
     });
   });
 
-  test("processor", async () => {
+  test('processor', async () => {
     const metadata = await getMetadataFromBuffer({
       buffer,
       useDominant: true,
@@ -76,7 +76,7 @@ describe("Unit/api/utils/getMetadataFromBuffer", () => {
     });
 
     expect(metadata).toMatchObject({
-      format: "jpeg",
+      format: 'jpeg',
       width: 1024,
       height: 768,
       r: 4,
@@ -85,26 +85,26 @@ describe("Unit/api/utils/getMetadataFromBuffer", () => {
     });
   });
 
-  test("throw metadata()", async () => {
+  test('throw metadata()', async () => {
     // @ts-ignore
-    mockSharpInstance.metadata.mockReturnValue({ format: "jpeg" });
+    mockSharpInstance.metadata.mockReturnValue({ format: 'jpeg' });
 
     await expect(() => getMetadataFromBuffer({ buffer })).rejects.toThrowError(
-      "Sharp could not retrieve metadata",
+      'Sharp could not retrieve metadata',
     );
   });
 
-  test("throw stats()", async () => {
+  test('throw stats()', async () => {
     mockSharpInstance.metadata.mockReturnValue({
-      format: "jpeg",
+      format: 'jpeg',
       width: 1024,
       height: 768,
     });
     // @ts-ignore
     mockSharpInstance.stats.mockResolvedValue({ dominant: { r: 1 } });
 
-    await expect(() =>
-      getMetadataFromBuffer({ buffer, useDominant: true }),
-    ).rejects.toThrowError("stats() failed");
+    await expect(() => getMetadataFromBuffer({ buffer, useDominant: true })).rejects.toThrowError(
+      'stats() failed',
+    );
   });
 });

@@ -1,10 +1,10 @@
-import sharp from "sharp";
+import sharp from 'sharp';
 
-import type { BaseSource } from "../BaseSource.js";
-import { applyProcessors } from "../utils/applyProcessors.js";
-import { deterministicHash } from "../utils/deterministicHash.js";
-import { getFilteredSharpOptions } from "../utils/getFilteredSharpOptions.js";
-import { getMetadataFromBuffer } from "../utils/getMetadataFromBuffer.js";
+import type { BaseSource } from '../BaseSource.js';
+import { applyProcessors } from '../utils/applyProcessors.js';
+import { deterministicHash } from '../utils/deterministicHash.js';
+import { getFilteredSharpOptions } from '../utils/getFilteredSharpOptions.js';
+import { getMetadataFromBuffer } from '../utils/getMetadataFromBuffer.js';
 
 type GenerateBlurredImage = (source: BaseSource) => Promise<string>;
 
@@ -23,14 +23,12 @@ export const generateBlurredImage: GenerateBlurredImage = async (source) => {
   } = source;
 
   if (!sourceHash) {
-    throw new Error("Source hash does not exist");
+    throw new Error('Source hash does not exist');
   }
 
   const sourceProfile = source.profile;
   const profile = deterministicHash(
-    [sourceProfile, getFilteredSharpOptions(blurProcessor)]
-      .flat()
-      .filter(Boolean),
+    [sourceProfile, getFilteredSharpOptions(blurProcessor)].flat().filter(Boolean),
     hasher,
   );
 
@@ -45,21 +43,19 @@ export const generateBlurredImage: GenerateBlurredImage = async (source) => {
   const sourceSharp = sourceProcessor
     ? applyProcessors({ processors: [sourceProcessor], buffer })
     : sharp(buffer);
-  const blurredBuffer = await sourceSharp
-    .pipe(blurProcessor.clone())
-    .toBuffer();
+  const blurredBuffer = await sourceSharp.pipe(blurProcessor.clone()).toBuffer();
   const metadata = await getMetadataFromBuffer({ buffer: blurredBuffer });
   const { format, width, height } = metadata;
 
   // logger?.info(`Generated (placeholder): ${source.options.src}`);
 
   const blurredHash = hasher(blurredBuffer);
-  const base64 = blurredBuffer.toString("base64");
+  const base64 = blurredBuffer.toString('base64');
 
   await db.insert({
     hash: blurredHash,
     base64,
-    category: "placeholder",
+    category: 'placeholder',
     format,
     width,
     height,

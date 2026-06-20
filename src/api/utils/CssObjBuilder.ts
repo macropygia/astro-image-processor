@@ -1,4 +1,4 @@
-import type { ImgProcCssObj } from "../../types.js";
+import type { ImgProcCssObj } from '../../types.js';
 
 export class CssObjBuilder {
   private selectors: Record<string, ([string, string] | undefined)[]> = {};
@@ -15,9 +15,7 @@ export class CssObjBuilder {
       this.selectors[selector] = [];
     }
     // biome-ignore lint/style/noNonNullAssertion: <explanation>
-    this.selectors[selector] = this.selectors[selector]!.concat(
-      styles.filter(Boolean),
-    );
+    this.selectors[selector] = this.selectors[selector]!.concat(styles.filter(Boolean));
   }
 
   public get value(): ImgProcCssObj | undefined {

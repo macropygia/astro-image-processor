@@ -1,6 +1,6 @@
-import path from "node:path";
+import path from 'node:path';
 
-import Loki, { LokiMemoryAdapter, type Collection } from "lokijs";
+import Loki, { LokiMemoryAdapter, type Collection } from 'lokijs';
 
 import type {
   ImgProcDataAdapter,
@@ -8,7 +8,7 @@ import type {
   ImgProcDataAdapterInitOptions,
   ImgProcFile,
   ImgProcFileRecord,
-} from "../types.js";
+} from '../types.js';
 
 export interface LokiDataAdapterOptions {
   /**
@@ -16,7 +16,7 @@ export interface LokiDataAdapterOptions {
    * - If set to `:memory:`, in-memory mode is used.
    * @default "cache.db"
    */
-  dbFile?: ":memory:" | string;
+  dbFile?: string;
   /**
    * Directory to place database file
    * - Support the following placeholders:
@@ -51,22 +51,22 @@ export class LokiDataAdapter implements ImgProcDataAdapter {
 
   public retentionPeriod: number | null = 10;
   public retentionCount: number | null = 1000 * 60 * 60 * 24 * 100;
-  public dbPath = ":memory:";
+  public dbPath = ':memory:';
 
   public db!: Loki;
   public files!: Collection<ImgProcFileRecord>;
 
   public constructor(options?: LokiDataAdapterOptions) {
     const {
-      dbFile = "cache.db",
-      dbDir = "[imageCacheDir]",
+      dbFile = 'cache.db',
+      dbDir = '[imageCacheDir]',
       autosave = true,
       autosaveInterval = 10000,
     } = options || {};
 
     this.dbFile = dbFile;
     this.dbDir = dbDir;
-    this.isInMemory = dbFile === ":memory:";
+    this.isInMemory = dbFile === ':memory:';
     this.autosave = autosave;
     this.autosaveInterval = autosaveInterval;
   }
@@ -75,40 +75,34 @@ export class LokiDataAdapter implements ImgProcDataAdapter {
    * Async part of constructor
    */
   public async initialize(options: ImgProcDataAdapterInitOptions) {
-    const {
-      rootDir,
-      cacheDir,
-      imageCacheDir,
-      retentionPeriod,
-      retentionCount,
-    } = options;
+    const { rootDir, cacheDir, imageCacheDir, retentionPeriod, retentionCount } = options;
     this.retentionPeriod = retentionPeriod;
     this.retentionCount = retentionCount;
 
     await new Promise<void>((resolve, _reject) => {
       if (this.isInMemory) {
-        this.db = new Loki("cache.db", {
+        this.db = new Loki('cache.db', {
           adapter: new LokiMemoryAdapter(),
         });
-        this.dbPath = ":memory:";
+        this.dbPath = ':memory:';
 
         this.files =
-          this.db.getCollection("files") ||
-          this.db.addCollection("files", {
-            indices: ["hash", "source", "category", "lastUsedAt", "countdown"],
+          this.db.getCollection('files') ||
+          this.db.addCollection('files', {
+            indices: ['hash', 'source', 'category', 'lastUsedAt', 'countdown'],
           });
 
         resolve();
       } else {
         const replacedDbDir = path.posix.normalize(
           this.dbDir
-            .replaceAll("[root]", rootDir)
-            .replaceAll("[cacheDir]", cacheDir)
-            .replaceAll("[imageCacheDir]", imageCacheDir)
-            .replaceAll("\\", "/"),
+            .replaceAll('[root]', rootDir)
+            .replaceAll('[cacheDir]', cacheDir)
+            .replaceAll('[imageCacheDir]', imageCacheDir)
+            .replaceAll('\\', '/'),
         );
         this.dbPath = path.posix.normalize(
-          path.resolve(replacedDbDir, this.dbFile).replaceAll("\\", "/"),
+          path.resolve(replacedDbDir, this.dbFile).replaceAll('\\', '/'),
         );
         this.db = new Loki(this.dbPath, {
           autoload: true,
@@ -118,15 +112,9 @@ export class LokiDataAdapter implements ImgProcDataAdapter {
             }
 
             this.files =
-              this.db.getCollection("files") ||
-              this.db.addCollection("files", {
-                indices: [
-                  "hash",
-                  "source",
-                  "category",
-                  "lastUsedAt",
-                  "countdown",
-                ],
+              this.db.getCollection('files') ||
+              this.db.addCollection('files', {
+                indices: ['hash', 'source', 'category', 'lastUsedAt', 'countdown'],
               });
 
             resolve();
@@ -258,9 +246,7 @@ export class LokiDataAdapter implements ImgProcDataAdapter {
     this.files.chain().find(query).remove();
 
     const afterHashes = new Set(this.list());
-    const deletedHashes = [...beforeHashes].filter(
-      (hash) => !afterHashes.has(hash),
-    );
+    const deletedHashes = [...beforeHashes].filter((hash) => !afterHashes.has(hash));
     return deletedHashes.length > 0 ? new Set(deletedHashes) : null;
   }
 

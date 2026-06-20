@@ -1,18 +1,18 @@
 // @ts-nocheck
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from 'vitest';
 
-import type { BaseSource } from "../BaseSource.js";
-import { resolveElementDimensions } from "./resolveElementDimensions.js";
+import type { BaseSource } from '../BaseSource.js';
+import { resolveElementDimensions } from './resolveElementDimensions.js';
 
-describe("Unit/api/utils/resolveElementDimensions", () => {
+describe('Unit/api/utils/resolveElementDimensions', () => {
   const baseSource = {
     data: { width: 1024, height: 768 },
     options: {
-      src: "/path/to/image.jpg",
+      src: '/path/to/image.jpg',
       width: 1024,
       height: 768,
-      format: "webp",
-      formats: ["avif", "webp"],
+      format: 'webp',
+      formats: ['avif', 'webp'],
     },
     variants: {
       webp: [
@@ -22,7 +22,7 @@ describe("Unit/api/utils/resolveElementDimensions", () => {
       ],
     },
     resolved: {},
-    componentType: "img",
+    componentType: 'img',
   } as unknown as BaseSource;
 
   test.each<{ source: BaseSource; result: any }>([
@@ -39,10 +39,10 @@ describe("Unit/api/utils/resolveElementDimensions", () => {
       source: {
         ...baseSource,
         options: {
-          src: "/path/to/image.jpg",
+          src: '/path/to/image.jpg',
           width: 512,
-          format: "webp",
-          formats: ["avif", "webp"],
+          format: 'webp',
+          formats: ['avif', 'webp'],
         },
         variants: {
           webp: [
@@ -62,10 +62,10 @@ describe("Unit/api/utils/resolveElementDimensions", () => {
       source: {
         ...baseSource,
         options: {
-          src: "/path/to/image.jpg",
+          src: '/path/to/image.jpg',
           height: 500,
-          format: "webp",
-          formats: ["avif", "webp"],
+          format: 'webp',
+          formats: ['avif', 'webp'],
         },
         variants: {
           webp: [
@@ -75,7 +75,7 @@ describe("Unit/api/utils/resolveElementDimensions", () => {
             },
           ],
         },
-        componentType: "picture",
+        componentType: 'picture',
       } as unknown as BaseSource,
       result: {
         width: 250,
@@ -86,9 +86,9 @@ describe("Unit/api/utils/resolveElementDimensions", () => {
       source: {
         ...baseSource,
         options: {
-          src: "/path/to/image.jpg",
-          format: "webp",
-          formats: ["avif", "webp"],
+          src: '/path/to/image.jpg',
+          format: 'webp',
+          formats: ['avif', 'webp'],
         },
         variants: {
           webp: [
@@ -98,39 +98,39 @@ describe("Unit/api/utils/resolveElementDimensions", () => {
             },
           ],
         },
-        componentType: "picture",
+        componentType: 'picture',
       } as unknown as BaseSource,
       result: {
         width: 500,
         height: 400,
       },
     },
-  ])("default", ({ source, result }) => {
+  ])('default', ({ source, result }) => {
     resolveElementDimensions(source);
     expect(source.resolved).toMatchObject(result);
   });
 
-  test("throw", () => {
-    expect(() =>
-      resolveElementDimensions({ options: { src: "/path/to/image.jpg" } }),
-    ).toThrowError("Variants unresolved: /path/to/image.jpg");
+  test('throw', () => {
+    expect(() => resolveElementDimensions({ options: { src: '/path/to/image.jpg' } })).toThrowError(
+      'Variants unresolved: /path/to/image.jpg',
+    );
 
     expect(() =>
       resolveElementDimensions({
         variants: true,
-        options: { src: "/path/to/image.jpg" },
+        options: { src: '/path/to/image.jpg' },
         data: {},
       }),
-    ).toThrowError("Invalid source demiensions: /path/to/image.jpg");
+    ).toThrowError('Invalid source demiensions: /path/to/image.jpg');
 
     expect(() =>
       resolveElementDimensions({
         variants: true,
-        options: { src: "/path/to/image.jpg" },
+        options: { src: '/path/to/image.jpg' },
         data: {
           width: 1024,
         },
       }),
-    ).toThrowError("Invalid source demiensions: /path/to/image.jpg");
+    ).toThrowError('Invalid source demiensions: /path/to/image.jpg');
   });
 });

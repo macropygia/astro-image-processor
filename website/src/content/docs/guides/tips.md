@@ -10,13 +10,13 @@ title: Tips
 import type { ImgProcPictureComponentProps } from 'astro-image-processor/types';
 
 export const templateObject: Pick<
-  ImgProcPictureComponentProps,
-  'formats' | 'placeholder' | 'layout' | 'densities'
+    ImgProcPictureComponentProps,
+    'formats' | 'placeholder' | 'layout' | 'densities'
 > = {
-  formats: ['avif', 'webp', 'png'],
-  placeholder: 'dominantColor',
-  layout: 'fullWidth',
-  densities: [1, 2, 3]
+    formats: ['avif', 'webp', 'png'],
+    placeholder: 'dominantColor',
+    layout: 'fullWidth',
+    densities: [1, 2, 3],
 };
 ```
 

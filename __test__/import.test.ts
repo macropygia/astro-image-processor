@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from 'vitest';
 
 import {
   ArtDirectiveSource,
@@ -6,22 +6,18 @@ import {
   BaseSource,
   ImageSource,
   PictureSource,
-} from "../src/api/index.js";
+} from '../src/api/index.js';
 // import { Picture } from "../src/components/index.js";
-import {
-  astroImageProcessor,
-  defaultGlobalClassNames,
-  defaultOptions,
-} from "../src/index.js";
+import { astroImageProcessor, defaultGlobalClassNames, defaultOptions } from '../src/index.js';
 
-describe("Misc/import", () => {
-  test("src/index.ts", () => {
+describe('Misc/import', () => {
+  test('src/index.ts', () => {
     expect(astroImageProcessor).toBeDefined();
     expect(defaultGlobalClassNames).toBeDefined();
     expect(defaultOptions).toBeDefined();
   });
 
-  test("src/api/index.ts", () => {
+  test('src/api/index.ts', () => {
     expect(ArtDirectiveSource).toBeDefined();
     expect(BackgroundSource).toBeDefined();
     expect(BaseSource).toBeDefined();

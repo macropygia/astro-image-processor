@@ -19,20 +19,20 @@ title: Data Adapter
 ```ts ins={2-9,14}
 // astro.config.ts
 import {
-  JsonFileDataAdapter,
-  type JsonFileDataAdapterOptions,
-} from "../src/extras/JsonFileDataAdapter.js";
+    JsonFileDataAdapter,
+    type JsonFileDataAdapterOptions,
+} from '../src/extras/JsonFileDataAdapter.js';
 
 const options: JsonFileDataAdapterOptions = {
-  // ...
-}
+    // ...
+};
 
 export default defineConfig({
-  integrations: [
-    astroImageProcessor({
-      dataAdapter: new JsonFileDataAdapter(options),
-    })
-  ]
+    integrations: [
+        astroImageProcessor({
+            dataAdapter: new JsonFileDataAdapter(options),
+        }),
+    ],
 });
 ```
 
@@ -45,21 +45,18 @@ JavaScript製の軽量ドキュメントデータベース[LokiJS](https://githu
 
 ```ts ins={2-9,14}
 // astro.config.ts
-import {
-  LokiDataAdapter,
-  type LokiDataAdapterOptions,
-} from "../src/extras/LokiDataAdapter.js";
+import { LokiDataAdapter, type LokiDataAdapterOptions } from '../src/extras/LokiDataAdapter.js';
 
 const options: LokiDataAdapterOptions = {
-  // ...
-}
+    // ...
+};
 
 export default defineConfig({
-  integrations: [
-    astroImageProcessor({
-      dataAdapter: new LokiDataAdapter(options),
-    })
-  ]
+    integrations: [
+        astroImageProcessor({
+            dataAdapter: new LokiDataAdapter(options),
+        }),
+    ],
 });
 ```
 
@@ -73,20 +70,20 @@ export default defineConfig({
 ```ts ins={2-9,14}
 // astro.config.ts
 import {
-  BunSqliteDataAdapter,
-  type BunSqliteDataAdapterOptions,
-} from "../src/extras/BunSqliteDataAdapter.js";
+    BunSqliteDataAdapter,
+    type BunSqliteDataAdapterOptions,
+} from '../src/extras/BunSqliteDataAdapter.js';
 
 const options: BunSqliteDataAdapterOptions = {
-  // ...
-}
+    // ...
+};
 
 export default defineConfig({
-  integrations: [
-    astroImageProcessor({
-      dataAdapter: new BunSqliteDataAdapter(options),
-    })
-  ]
+    integrations: [
+        astroImageProcessor({
+            dataAdapter: new BunSqliteDataAdapter(options),
+        }),
+    ],
 });
 ```
 
@@ -95,10 +92,10 @@ export default defineConfig({
 `ImgProcDataAdapter` インターフェースに従って独自のデータアダプターを作成可能。
 
 ```ts
-import { ImgProcDataAdapter } from "astro-image-processor/types";
+import { ImgProcDataAdapter } from 'astro-image-processor/types';
 
 export class CustomDataAdapter implements ImgProcDataAdapter {
-  // ...
+    // ...
 }
 ```
 

@@ -1,12 +1,12 @@
-import sharp from "sharp";
+import PQueue from 'p-queue';
+import sharp from 'sharp';
 
-import PQueue from "p-queue";
-import type { ImgProcVariant, ImgProcVariants } from "../../types.js";
-import type { BaseSource } from "../BaseSource.js";
-import { deterministicHash } from "../utils/deterministicHash.js";
-import { getFilteredSharpOptions } from "../utils/getFilteredSharpOptions.js";
-import { generateVariant } from "./generateVariant.js";
-import { retrieveVariant } from "./retrieveVariant.js";
+import type { ImgProcVariant, ImgProcVariants } from '../../types.js';
+import type { BaseSource } from '../BaseSource.js';
+import { deterministicHash } from '../utils/deterministicHash.js';
+import { getFilteredSharpOptions } from '../utils/getFilteredSharpOptions.js';
+import { generateVariant } from './generateVariant.js';
+import { retrieveVariant } from './retrieveVariant.js';
 
 type GenerateVariants = (source: BaseSource) => Promise<ImgProcVariants>;
 
@@ -27,23 +27,23 @@ export const generateVariants: GenerateVariants = async (source) => {
   } = source;
 
   if (!sourceHash) {
-    throw new Error("Source hash does not exist");
+    throw new Error('Source hash does not exist');
   }
 
   if (!resolved.widths) {
-    throw new Error("Widths unresolved");
+    throw new Error('Widths unresolved');
   }
 
   const variants: ImgProcVariants = {};
-  const formatsArray = componentType === "img" ? [format] : formats;
+  const formatsArray = componentType === 'img' ? [format] : formats;
 
   // const queue: Promise<ImgProcVariant>[] = [];
   const total = resolved.widths.length * formatsArray.length;
   const queue = new PQueue({ concurrency });
-  queue.on("add", () => {
+  queue.on('add', () => {
     spinner.text = `Processing... (${total - queue.size - queue.pending}/${total})`;
   });
-  queue.on("next", () => {
+  queue.on('next', () => {
     spinner.text = `Processing... (${total - queue.size - queue.pending}/${total})`;
   });
 
@@ -63,10 +63,7 @@ export const generateVariants: GenerateVariants = async (source) => {
         .resize(variantWidth)
         .toFormat(variantFormat, variantFormatOption);
 
-      const variantProfile = [
-        profile,
-        getFilteredSharpOptions(variantProcessor),
-      ]
+      const variantProfile = [profile, getFilteredSharpOptions(variantProcessor)]
         .flat()
         .filter(Boolean);
       const variantProfileHash = deterministicHash(variantProfile, hasher);

@@ -21,6 +21,10 @@ const InjectStyle = await injectStyle(css);
 
 ```html
 <head>
-  <style>.foo { color: red; }</style>
+    <style>
+        .foo {
+            color: red;
+        }
+    </style>
 </head>
 ```

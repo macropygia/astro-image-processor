@@ -26,10 +26,11 @@ const InjectLink = await injectLink(linkAttributes);
 
 ```html
 <head>
-  <link
-    rel="preload"
-    as="image"
-    type="image/webp"
-    imagesrcset="/path/to/image.webp 1x, /path/to/image_2x.webp 2x">
+    <link
+        rel="preload"
+        as="image"
+        type="image/webp"
+        imagesrcset="/path/to/image.webp 1x, /path/to/image_2x.webp 2x"
+    />
 </head>
 ```
