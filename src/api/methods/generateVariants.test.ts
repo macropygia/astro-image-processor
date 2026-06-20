@@ -14,7 +14,7 @@ vi.mock("sharp", () => ({
 
 vi.mock("p-queue", () => ({
   __esModule: true,
-  default: vi.fn().mockImplementation(() => {
+  default: vi.fn(function () {
     return {
       on: vi.fn(),
       add: vi.fn((arg) => arg()),

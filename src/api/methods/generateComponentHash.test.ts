@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import type { ImgProcProcessorOptions } from "../../types.js";
+
+vi.mock("../utils/getFilteredSharpOptions.js", () => ({
+  getFilteredSharpOptions: vi.fn((str: string) => str),
+}));
+
 import { generateComponentHash } from "./generateComponentHash.js";
 
 describe("Unit/api/methods/generateSourceHash", () => {
@@ -20,10 +25,6 @@ describe("Unit/api/methods/generateSourceHash", () => {
   } as unknown as Partial<ImgProcProcessorOptions>;
 
   const mockHasher = vi.fn().mockReturnValue("mockhash");
-
-  vi.mock("../utils/getFilteredSharpOptions.js", () => ({
-    getFilteredSharpOptions: vi.fn((str: string) => str),
-  }));
 
   test("generateComponentHash should generate hash from options", () => {
     const hash = generateComponentHash(mockOptions, mockHasher);

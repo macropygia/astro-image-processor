@@ -4,6 +4,18 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { mockLogger } from "#mock/mock.js";
 import type { BaseSource } from "../BaseSource.js";
+
+vi.mock("../utils/getMetadataFromBuffer.js", () => ({
+  getMetadataFromBuffer: vi.fn().mockResolvedValue({
+    format: "png",
+    width: 1024,
+    height: 768,
+    r: 1,
+    g: 2,
+    b: 3,
+  }),
+}));
+
 import { renewSource } from "./renewSource.js";
 
 describe("Unit/api/methods/renewSource", () => {
@@ -36,17 +48,6 @@ describe("Unit/api/methods/renewSource", () => {
     logger: mockLogger,
     getBuffer: vi.fn().mockResolvedValue(Buffer.from("mock-buffer")),
   } as unknown as BaseSource;
-
-  vi.mock("../utils/getMetadataFromBuffer.js", () => ({
-    getMetadataFromBuffer: vi.fn().mockResolvedValue({
-      format: "png",
-      width: 1024,
-      height: 768,
-      r: 1,
-      g: 2,
-      b: 3,
-    }),
-  }));
 
   test("hash missing", async () => {
     const invalidSource = {

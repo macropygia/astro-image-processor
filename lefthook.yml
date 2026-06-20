@@ -1,0 +1,32 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      run: pnpm lint
+      stage_fixed: true
+    - name: oxfmt
+      run: pnpm exec oxfmt --no-error-on-unmatched-pattern --write {staged_files}
+      stage_fixed: true
+    - name: oxlint
+      exclude:
+        - website/**
+      run: pnpm exec oxlint --no-error-on-unmatched-pattern --fix --tsconfig ./tsconfig.json --type-aware --type-check {staged_files}
+      stage_fixed: true
+
+pre-push:
+  parallel: true
+  jobs:
+    - name: typecheck
+      run: pnpm typecheck
+    # - name: build
+    #   run: pnpm build
+    # - name: unit-test
+    #   run: pnpm test:unit
+    # - name: e2e-test
+    #   run: pnpm test:e2e
+
+commit-msg:
+  parallel: false
+  jobs:
+    - name: commitlint
+      run: pnpm exec commitlint --edit {1}

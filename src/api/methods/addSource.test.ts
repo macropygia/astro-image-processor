@@ -13,6 +13,14 @@ vi.mock("node:fs", () => ({
   },
 }));
 
+vi.mock("../utils/getMetadataFromBuffer.js", () => ({
+  getMetadataFromBuffer: vi.fn((args) =>
+    args.useDominant
+      ? { format: "png", width: 1024, height: 768, r: 0, g: 0, b: 0 }
+      : { format: "png", width: 1024, height: 768 },
+  ),
+}));
+
 describe("Unit/api/utils/addSource", () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -40,15 +48,6 @@ describe("Unit/api/utils/addSource", () => {
       insert: vi.fn(),
     },
   } as unknown as BaseSource;
-
-  // getMetadataFromBufferをモック
-  vi.mock("../utils/getMetadataFromBuffer.js", () => ({
-    getMetadataFromBuffer: vi.fn((args) =>
-      args.useDominant
-        ? { format: "png", width: 1024, height: 768, r: 0, g: 0, b: 0 }
-        : { format: "png", width: 1024, height: 768 },
-    ),
-  }));
 
   test("get metadata from buffer", async () => {
     await addSource(mockSource);

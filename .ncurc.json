@@ -1,0 +1,5 @@
+{
+  "interactive": true,
+  "target": "minor",
+  "reject": "pnpm, @types/node, sharp"
+}

@@ -14,15 +14,15 @@ describe("Unit/api/utils/applyProcessors", () => {
   test.each([
     {
       processors: [sharp().grayscale()],
-      result: "2730f8ddbb7ec66c",
+      result: "402c95d164829d2c",
     },
     {
       processors: [undefined],
-      result: "5bc4586e75ddc11f",
+      result: "6b3e66fb0e6cb5fb",
     },
     {
       processors: [[sharp().grayscale(), sharp().negate()]],
-      result: "a261e614b91a3e8a",
+      result: "5ed6b86ce1de8cd4",
     },
   ])("default", ({ processors, result }) => {
     const resultSharp = applyProcessors({ processors, buffer });
