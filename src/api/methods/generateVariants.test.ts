@@ -12,19 +12,6 @@ vi.mock('sharp', () => ({
   })),
 }));
 
-vi.mock('p-queue', () => ({
-  __esModule: true,
-  default: vi.fn(function () {
-    return {
-      on: vi.fn(),
-      add: vi.fn((arg) => arg()),
-      onIdle: vi.fn().mockResolvedValue(undefined),
-      size: 0,
-      pending: 0,
-    };
-  }),
-}));
-
 vi.mock('./retrieveVariant.js', () => ({
   retrieveVariant: vi.fn(),
 }));
@@ -42,7 +29,12 @@ vi.mock('../utils/getFilteredSharpOptions.js', () => ({
 }));
 
 describe('Unit/api/methods/generateVariants', () => {
+  const variantQueueAdd = vi.fn((fn: () => unknown) => fn());
+
   const sourceMock: any = {
+    variantQueue: {
+      add: variantQueueAdd,
+    },
     db: {},
     dirs: { imageCacheDir: 'cache/dir' },
     data: { hash: 'sourceHash' },
@@ -63,11 +55,13 @@ describe('Unit/api/methods/generateVariants', () => {
     profile: 'sourceProfile',
     componentType: 'img',
     settings: { hasher: vi.fn() },
+    spinner: { text: '', setVariantProgress: vi.fn(), succeed: vi.fn(), fail: vi.fn() },
     getBuffer: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    variantQueueAdd.mockImplementation((fn: () => unknown) => fn());
   });
 
   test('should generate variants and retrieve from cache (componentType: img)', async () => {
@@ -98,6 +92,7 @@ describe('Unit/api/methods/generateVariants', () => {
 
     const result = await generateVariants(sourceMock);
 
+    expect(variantQueueAdd).toHaveBeenCalledTimes(1);
     expect(retrieveVariant).toHaveBeenCalledTimes(2);
     expect(sourceMock.getBuffer).toHaveBeenCalledTimes(1);
     expect(generateVariant).toHaveBeenCalledTimes(1);
@@ -159,6 +154,7 @@ describe('Unit/api/methods/generateVariants', () => {
 
     const result = await generateVariants(sourceMockForMultipleFormats);
 
+    expect(variantQueueAdd).toHaveBeenCalledTimes(2);
     expect(retrieveVariant).toHaveBeenCalledTimes(4);
     expect(sourceMock.getBuffer).toHaveBeenCalledTimes(2);
     expect(generateVariant).toHaveBeenCalledTimes(2);
@@ -211,6 +207,7 @@ describe('Unit/api/methods/generateVariants', () => {
 
     const result = await generateVariants(widthsSourceMock);
 
+    expect(variantQueueAdd).toHaveBeenCalledTimes(2);
     expect(result.webp).toEqual([generatedItem2, generatedItem1]);
   });
 });

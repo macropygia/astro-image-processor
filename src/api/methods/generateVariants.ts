@@ -1,4 +1,3 @@
-import PQueue from 'p-queue';
 import sharp from 'sharp';
 
 import type { ImgProcVariant, ImgProcVariants } from '../../types.js';
@@ -14,13 +13,14 @@ type GenerateVariants = (source: BaseSource) => Promise<ImgProcVariants>;
 export const generateVariants: GenerateVariants = async (source) => {
   const {
     componentType,
+    variantQueue,
     db,
     dirs: { imageCacheDir },
     data: { hash: sourceHash },
     options: { src, densities, format, formats, processor },
     formatOptions,
     resolved,
-    settings: { concurrency, hasher },
+    settings: { hasher },
     logger,
     spinner,
     profile,
@@ -37,15 +37,8 @@ export const generateVariants: GenerateVariants = async (source) => {
   const variants: ImgProcVariants = {};
   const formatsArray = componentType === 'img' ? [format] : formats;
 
-  // const queue: Promise<ImgProcVariant>[] = [];
-  const total = resolved.widths.length * formatsArray.length;
-  const queue = new PQueue({ concurrency });
-  queue.on('add', () => {
-    spinner.text = `Processing... (${total - queue.size - queue.pending}/${total})`;
-  });
-  queue.on('next', () => {
-    spinner.text = `Processing... (${total - queue.size - queue.pending}/${total})`;
-  });
+  let completed = 0;
+  let toGenerate = 0;
 
   // biome-ignore lint/suspicious/noConfusingVoidType: p-queue issue
   const results: Promise<void | ImgProcVariant>[] = [];
@@ -88,8 +81,9 @@ export const generateVariants: GenerateVariants = async (source) => {
 
       // New file
       const buffer = await source.getBuffer();
-      const result = queue.add(() =>
-        generateVariant({
+      toGenerate++;
+      const result = variantQueue.add(async () => {
+        const item = await generateVariant({
           src,
           buffer,
           db,
@@ -103,13 +97,15 @@ export const generateVariants: GenerateVariants = async (source) => {
           variantDensity,
           logger,
           spinner,
-        }),
-      );
+        });
+        completed++;
+        spinner.setVariantProgress(completed, toGenerate);
+        return item;
+      });
       results.push(result);
     }
   }
 
-  await queue.onIdle();
   const generatedItems = await Promise.all(results);
   for (const item of generatedItems) {
     if (!item) {

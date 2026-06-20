@@ -124,10 +124,10 @@ title: Configuration Reference
 
 ### `concurrency`
 
-画像処理の最大同時実行数
+ビルドセッション全体で同時実行するバリアント生成（Sharp 変換）の上限
 
-- Type: `number`
-- Default: `Math.max(os.cpus().length, 1)`
+- 型: `number`
+- 既定値: `Math.max(os.cpus().length, 1)`
 
 ### `timeoutDuration`
 

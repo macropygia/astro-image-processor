@@ -1,11 +1,11 @@
 import path from 'node:path';
 
 import type { AstroIntegrationLogger } from 'astro';
-import type { Ora } from 'ora';
 
 import { extByFormat } from '../../const.js';
 import type { ImgProcDataAdapter, ImgProcVariant } from '../../types.js';
 import { pathExists } from '../utils/pathExists.js';
+import type { ImgProcSpinnerHandle } from '../utils/SharedSpinner.js';
 import { isOutputFormat } from '../utils/typeGuards.js';
 
 type RetrieveVariant = (args: {
@@ -17,7 +17,7 @@ type RetrieveVariant = (args: {
   variantWidth: number;
   variantDensity?: number | undefined;
   logger?: AstroIntegrationLogger | undefined;
-  spinner: Ora;
+  spinner: ImgProcSpinnerHandle;
 }) => Promise<ImgProcVariant | null>;
 
 export const retrieveVariant: RetrieveVariant = async ({

@@ -1,6 +1,7 @@
 import type { AstroConfig, AstroIntegrationLogger } from 'astro';
 import { vi } from 'vitest';
 
+import { SharedSpinner } from '../src/api/utils/SharedSpinner.js';
 import type {
   ImgProcContext,
   ImgProcDataAdapter,
@@ -60,6 +61,10 @@ export const mockContext = {
   },
   formatOptions: {},
   componentProps: {},
+  variantQueue: {
+    add: vi.fn((fn: () => unknown) => fn()),
+  },
+  sharedSpinner: new SharedSpinner(),
 } as unknown as ImgProcContext;
 
 export const mockOptions: ImgProcUserOptions = {};

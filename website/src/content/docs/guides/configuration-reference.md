@@ -123,7 +123,7 @@ Class names used in global CSS.
 
 ### `concurrency`
 
-Maximum concurrent image processing limit
+Maximum number of variant generations (Sharp transforms) that run concurrently across the entire build session.
 
 - Type: `number`
 - Default: `Math.max(os.cpus().length, 1)`

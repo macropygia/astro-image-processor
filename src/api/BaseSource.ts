@@ -3,11 +3,8 @@ import path from 'node:path';
 
 import type { AstroIntegrationLogger } from 'astro';
 import type { HTMLAttributes } from 'astro/types';
-import { blue, dim, magenta } from 'kleur/colors';
-import type { Ora } from 'ora';
-import ora from 'ora';
+import type PQueue from 'p-queue';
 
-import { componentTypeToTag } from '../const.js';
 import { getTimeStat } from '../integration/utils/getTimeStat.js';
 import type {
   ImgProcContext,
@@ -35,6 +32,7 @@ import { normalizePath } from './utils/normalizePath.js';
 import { pathExists } from './utils/pathExists.js';
 import { resolveExpiresAt } from './utils/resolveExpiresAt.js';
 import { resolvePathPattern } from './utils/resolvePathPattern.js';
+import type { ImgProcSpinnerHandle } from './utils/SharedSpinner.js';
 
 export interface BaseSourceArgs {
   /** Integration context */
@@ -50,6 +48,8 @@ const ATFS_RE = /^\/@fs/;
 
 export class BaseSource {
   componentType: 'img' | 'picture' | 'background';
+  /** Integration context */
+  protected ctx: ImgProcContext;
   /** Component hash */
   componentHash: string | null = null;
   /** Art directive flag */
@@ -62,6 +62,8 @@ export class BaseSource {
   formatOptions: ImgProcFormatOptions;
   /** Integration settings (incl. default options) */
   settings: Omit<ImgProcSettings, 'dataAdapter'>;
+  /** Shared variant generation queue */
+  variantQueue: PQueue;
   /** Global logger */
   logger?: AstroIntegrationLogger | undefined;
 
@@ -98,7 +100,7 @@ export class BaseSource {
     sizes?: string;
   } = {};
 
-  spinner: Ora;
+  spinner: ImgProcSpinnerHandle;
   timeStart: number;
 
   protected constructor({ ctx, componentType, options }: BaseSourceArgs) {
@@ -111,19 +113,17 @@ export class BaseSource {
       componentProps: defaultComponentProps,
     } = ctx;
 
+    this.ctx = ctx;
     this.componentType = componentType;
     this.db = db;
     this.dirs = dirs;
     this.settings = settings;
+    this.variantQueue = ctx.variantQueue;
     this.logger = logger;
 
     // Spinner
     this.timeStart = performance.now();
-    this.spinner = ora('Processing...');
-    this.spinner.prefixText = blue('[astro-image-processor]');
-    this.spinner.prefixText += magenta(` ${componentTypeToTag[componentType]}`);
-    this.spinner.prefixText += dim(` ${options.src}`);
-    this.spinner.start();
+    ({ spinner: this.spinner } = ctx.sharedSpinner.create(componentType, options.src));
 
     // Parse component options and set default
     const { src, width, height, formatOptions, ...rest } = options;

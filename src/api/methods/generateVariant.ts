@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import type { AstroIntegrationLogger } from 'astro';
-import type { Ora } from 'ora';
 import type { Sharp } from 'sharp';
 
 import { extByFormat } from '../../const.js';
@@ -10,6 +9,7 @@ import type { ImgProcDataAdapter, ImgProcHasher, ImgProcVariant } from '../../ty
 import { applyProcessors } from '../utils/applyProcessors.js';
 import { getMetadataFromBuffer } from '../utils/getMetadataFromBuffer.js';
 import { normalizePath } from '../utils/normalizePath.js';
+import type { ImgProcSpinnerHandle } from '../utils/SharedSpinner.js';
 import { isOutputFormat } from '../utils/typeGuards.js';
 
 type GenerateVariant = (args: {
@@ -25,7 +25,7 @@ type GenerateVariant = (args: {
   variantWidth: number;
   variantDensity?: number | undefined;
   logger?: AstroIntegrationLogger | undefined;
-  spinner: Ora;
+  spinner: ImgProcSpinnerHandle;
 }) => Promise<ImgProcVariant>;
 
 export const generateVariant: GenerateVariant = async ({

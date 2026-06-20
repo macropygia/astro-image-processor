@@ -31,6 +31,10 @@ describe('Unit/intergration/initProcessor', () => {
     expect(existsSync(imageCacheDir)).toBeTruthy();
     expect(existsSync(downloadDir)).toBeTruthy();
 
+    expect(ctx.variantQueue).toBeDefined();
+    expect(ctx.variantQueue.concurrency).toBeGreaterThan(0);
+    expect(ctx.sharedSpinner).toBeDefined();
+
     rmdirSync(imageCacheDir);
     rmdirSync(downloadDir);
   });

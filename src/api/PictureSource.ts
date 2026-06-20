@@ -18,9 +18,6 @@ export interface PictureSourceArgs {
 }
 
 export class PictureSource extends ImageSource {
-  /** For art directives */
-  ctx: ImgProcContext;
-
   protected constructor({
     ctx,
     componentType,
@@ -32,7 +29,6 @@ export class PictureSource extends ImageSource {
     const {
       settings: { hasher },
     } = ctx;
-    this.ctx = ctx;
     this.componentHash = generateComponentHash(
       { componentType, ...(asBackground ? { asBackground } : {}), ...options },
       hasher,
