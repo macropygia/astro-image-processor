@@ -1,5 +1,13 @@
 # astro-image-processor
 
+## 0.1.9
+
+### Patch Changes
+
+- 08f7ec1: Optimize variant generations
+- b4c7838: Add dedicated image serving endpoint for dev server (default: `/_aip`, customizable via `devServerImageEndpoint` option)
+- e4f2a26: Bump dependencies (Add Astro 6 to peerDependencies)
+
 ## 0.1.8
 
 ### Patch Changes
