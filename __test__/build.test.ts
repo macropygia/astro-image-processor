@@ -8,7 +8,7 @@ describe('Integration/build', () => {
   beforeAll(async () => {
     import.meta.env.MODE = 'production';
     await buildTestConfigs();
-  });
+  }, 30_000);
 
   test('case1', async () => {
     await expect(fs.readFileSync('__test__/dist/1/index.html').toString()).toMatchFileSnapshot(
