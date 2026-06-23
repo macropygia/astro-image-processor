@@ -15,18 +15,18 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: corepack enable
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'pnpm'
       - run: pnpm install
       - run: |
           pnpm install
           pnpm run build
         working-directory: ./website
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: ./website/dist
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5

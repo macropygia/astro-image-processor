@@ -18,11 +18,13 @@ jobs:
       pull-requests: write
       pages: write
     steps:
-      - uses: actions/checkout@v4
-      - run: corepack enable
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
-          node-version: 20
+          version: 11
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm run lint:fix
@@ -47,8 +49,8 @@ jobs:
           pnpm run build
         working-directory: ./website
       - if: steps.changesets.outputs.published == 'true'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./website/dist
       - if: steps.changesets.outputs.published == 'true'
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

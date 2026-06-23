@@ -1,6 +1,7 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
-import starlightTypeDoc, { typeDocSidebarGroup } from 'starlight-typedoc';
+// import starlightTypeDoc, { typeDocSidebarGroup } from 'starlight-typedoc';
+import { typeDocSidebarGroup } from 'starlight-typedoc';
 
 // biome-ignore lint/style/noDefaultExport: Required
 export default defineConfig({
@@ -28,25 +29,25 @@ export default defineConfig({
       ],
       customCss: ['./src/styles/custom.css'],
       plugins: [
-        starlightTypeDoc({
-          entryPoints: [
-            '../src/index.ts',
-            '../src/types.ts',
-            '../src/api/index.ts',
-            '../src/components/exports.ts',
-            // "../src/components/injectLink.ts",
-            // "../src/components/injectStyle.ts",
-            '../src/extras/index.ts',
-            // "../src/integration/**/*.ts",
-          ],
-          tsconfig: '../tsconfig.json',
-          typeDoc: {
-            exclude: ['../**/*.test.ts', '../**/*.d.ts'],
-          },
-          sidebar: {
-            label: 'TypeDoc',
-          },
-        }),
+        // starlightTypeDoc({
+        //   entryPoints: [
+        //     '../src/index.ts',
+        //     '../src/types.ts',
+        //     '../src/api/index.ts',
+        //     '../src/components/exports.ts',
+        //     // "../src/components/injectLink.ts",
+        //     // "../src/components/injectStyle.ts",
+        //     '../src/extras/index.ts',
+        //     // "../src/integration/**/*.ts",
+        //   ],
+        //   tsconfig: '../tsconfig.json',
+        //   typeDoc: {
+        //     exclude: ['../**/*.test.ts', '../**/*.d.ts'],
+        //   },
+        //   sidebar: {
+        //     label: 'TypeDoc',
+        //   },
+        // }),
       ],
       sidebar: [
         {
@@ -108,7 +109,7 @@ export default defineConfig({
             { label: 'BaseSource', link: '/reference/base-source/' },
           ],
         },
-        typeDocSidebarGroup,
+        // typeDocSidebarGroup,
       ],
     }),
   ],

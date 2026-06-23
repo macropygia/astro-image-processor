@@ -31,3 +31,17 @@ minimumReleaseAgeExclude:
   - '@img/sharp-win32-ia32@0.35.2'
   - '@img/sharp-win32-x64@0.35.2'
   - sharp@0.35.2
+  - '@commitlint/cli@21.1.0'
+  - '@commitlint/config-conventional@21.1.0'
+  - '@commitlint/config-validator@21.1.0'
+  - '@commitlint/ensure@21.1.0'
+  - '@commitlint/format@21.1.0'
+  - '@commitlint/is-ignored@21.1.0'
+  - '@commitlint/lint@21.1.0'
+  - '@commitlint/load@21.1.0'
+  - '@commitlint/parse@21.1.0'
+  - '@commitlint/read@21.1.0'
+  - '@commitlint/resolve-extends@21.1.0'
+  - '@commitlint/rules@21.1.0'
+  - '@commitlint/types@21.1.0'
+  - vite@8.1.0
