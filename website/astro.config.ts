@@ -1,7 +1,6 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 // import starlightTypeDoc, { typeDocSidebarGroup } from 'starlight-typedoc';
-import { typeDocSidebarGroup } from 'starlight-typedoc';
 
 // biome-ignore lint/style/noDefaultExport: Required
 export default defineConfig({
