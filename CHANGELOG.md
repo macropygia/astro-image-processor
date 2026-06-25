@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.2.2
+
+### Patch Changes
+
+- 253327f: Fix Piscina worker failing in published packages by bundling `compressionWorker.js` for Node without `--experimental-strip-types` on `node_modules` paths.
+
 ## 0.2.1
 
 ### Patch Changes
