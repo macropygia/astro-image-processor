@@ -19,7 +19,7 @@ describe('Unit/integration/injectLink', () => {
       locals,
     );
     render({}, {}, {});
-    expect(locals.__aipHead?.links.map((item) => item.html)).toEqual([
+    expect(locals.__aipHead?.links).toEqual([
       `<link rel="stylesheet" href="https://example.com/styles.css">`,
     ]);
   });
@@ -41,7 +41,7 @@ describe('Unit/integration/injectLink', () => {
       locals,
     );
     render({}, {}, {});
-    expect(locals.__aipHead?.links.map((item) => item.html)).toEqual([
+    expect(locals.__aipHead?.links).toEqual([
       `<link rel="stylesheet" href="https://example.com/styles1.css">`,
       `<link rel="stylesheet" href="https://example.com/styles2.css">`,
     ]);

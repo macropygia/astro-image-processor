@@ -15,9 +15,6 @@ export async function injectLink(
   linkAttributes: HTMLAttributes<'link'> | HTMLAttributes<'link'>[],
   locals?: App.Locals,
 ) {
-  const head = getAipHeadStorage(locals ?? ({} as App.Locals));
-  const sequence = head && import.meta.env.PROD ? head.nextSequence++ : undefined;
-
   if (!import.meta.env.PROD) {
     return createComponent({
       factory() {
@@ -43,9 +40,10 @@ export async function injectLink(
 
   return createComponent({
     factory() {
-      if (head && sequence !== undefined) {
+      const head = getAipHeadStorage(locals ?? ({} as App.Locals));
+      if (head) {
         for (const link of links) {
-          head.links.push({ sequence, html: link });
+          head.links.push(link);
         }
       }
       return renderTemplate``;

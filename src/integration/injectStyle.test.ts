@@ -14,9 +14,7 @@ describe('Unit/integration/injectStyle', () => {
     const locals: App.Locals = { [AIP_HEAD_KEY]: createAipHeadStorage() };
     const render = injectStyle('.test{color:red}', locals);
     render({}, {}, {});
-    expect(locals.__aipHead?.styles.map((item) => item.html)).toEqual([
-      '<style>.test{color:red}</style>',
-    ]);
+    expect(locals.__aipHead?.styles).toEqual(['<style>.test{color:red}</style>']);
   });
 
   test('array in production', () => {
@@ -24,7 +22,7 @@ describe('Unit/integration/injectStyle', () => {
     const locals: App.Locals = { [AIP_HEAD_KEY]: createAipHeadStorage() };
     const render = injectStyle(['.test1{color:red}', '.test2{color:blue}'], locals);
     render({}, {}, {});
-    expect(locals.__aipHead?.styles.map((item) => item.html)).toEqual([
+    expect(locals.__aipHead?.styles).toEqual([
       '<style>.test1{color:red}.test2{color:blue}</style>',
     ]);
   });
