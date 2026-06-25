@@ -12,6 +12,14 @@ pre-commit:
         - website/**
       run: pnpm exec oxlint --no-error-on-unmatched-pattern --fix --tsconfig ./tsconfig.json --type-aware --type-check {staged_files}
       stage_fixed: true
+    - name: build-compression-worker
+      glob:
+        - src/api/workers/compressionWorker.ts
+        - src/api/workers/applySharpProfiles.ts
+        - src/api/utils/normalizePath.ts
+        - src/api/utils/resolveSharpFormat.ts
+        - scripts/build-compression-worker.mjs
+      run: pnpm build:worker && git add src/api/workers/compressionWorker.js
 
 pre-push:
   parallel: true

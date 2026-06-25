@@ -23,13 +23,8 @@ export class CompressionPool {
     if (options?.maxThreads !== undefined) {
       this.maxThreads = options.maxThreads;
     }
-    const execArgv = process.execArgv.includes('--experimental-strip-types')
-      ? process.execArgv
-      : [...process.execArgv, '--experimental-strip-types'];
-
     this.#pool = new Piscina({
-      filename: fileURLToPath(new URL('./compressionWorker.ts', import.meta.url)),
-      execArgv,
+      filename: fileURLToPath(new URL('./compressionWorker.js', import.meta.url)),
       ...(options?.maxThreads !== undefined ? { maxThreads: options.maxThreads } : {}),
     });
   }
