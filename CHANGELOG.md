@@ -1,5 +1,15 @@
 # astro-image-processor
 
+## 0.2.0
+
+### Minor Changes
+
+- 9fc3a30: Add non-blocking dev rendering with provisional placeholders and background compression. Introduces `devConcurrency`, `devPlaceholder`, and `devReloadOnCompressComplete` integration settings.
+
+### Patch Changes
+
+- ca391eb: Replace p-queue with Piscina
+
 ## 0.1.10
 
 ### Patch Changes
