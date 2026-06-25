@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, test } from 'vitest';
 
+import { normalizeBuildHtml } from './normalizeBuildHtml.js';
+
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(rootDir, '..');
 
@@ -39,10 +41,13 @@ describe('Integration/build', () => {
       env: cleanEnv,
     });
 
-    await expect(fs.readFileSync('__test__/dist/1/index.html').toString()).toMatchFileSnapshot(
+    const readNormalized = (distPath: string) =>
+      normalizeBuildHtml(fs.readFileSync(distPath, 'utf8'));
+
+    await expect(readNormalized('__test__/dist/1/index.html')).toMatchFileSnapshot(
       './__snapshots__/1.html',
     );
-    await expect(fs.readFileSync('__test__/dist/2/index.html').toString()).toMatchFileSnapshot(
+    await expect(readNormalized('__test__/dist/2/index.html')).toMatchFileSnapshot(
       './__snapshots__/2.html',
     );
   }, 60_000);
