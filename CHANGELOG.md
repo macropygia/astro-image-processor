@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.1.10
+
+### Patch Changes
+
+- 74b91bb: Restore style/link elements injection
+
 ## 0.1.9
 
 ### Patch Changes
