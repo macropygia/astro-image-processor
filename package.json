@@ -59,7 +59,7 @@
     "hooks:pre-commit": "lint-staged",
     "hooks:pre-push": "tsc --noEmit && vitest run",
     "hooks:commit-msg": "commitlint -e",
-    "postinstall": "lefthook install"
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "piscina": "^5.2.0"
