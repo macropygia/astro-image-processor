@@ -8,8 +8,20 @@ import { describe, expect, test } from 'vitest';
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(rootDir, '..');
 
+const cleanBuildArtifacts = () => {
+  const paths = [
+    path.join(rootDir, 'dist'),
+    path.join(rootDir, '.astro'),
+    path.join(rootDir, 'node_modules/.astro/astro-image-processor'),
+  ];
+  for (const target of paths) {
+    fs.rmSync(target, { recursive: true, force: true });
+  }
+};
+
 describe('Integration/build', () => {
   test('build output matches snapshots', async () => {
+    cleanBuildArtifacts();
     const cleanEnv = {
       PATH: process.env.PATH ?? '',
       HOME: process.env.HOME ?? '',
