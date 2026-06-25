@@ -5,6 +5,7 @@ import type { ImgProcContext, ImgProcProcessorOptions } from '../types.js';
 import { ArtDirectiveSource } from './ArtDirectiveSource.js';
 import { ImageSource } from './ImageSource.js';
 import { generateComponentHash } from './methods/generateComponentHash.js';
+import { prepareSourceDeduped } from './methods/prepareSourceDeduped.js';
 
 export interface PictureSourceArgs {
   /** Integration context */
@@ -35,12 +36,19 @@ export class PictureSource extends ImageSource {
     );
   }
 
+  /** Create instance without running prepare/finalize */
+  static buildPicture(
+    args: PictureSourceArgs & { componentType: 'img' | 'picture' | 'background' },
+  ) {
+    return new PictureSource(args);
+  }
+
   /** Async constructor */
   static override async factory(args: PictureSourceArgs): Promise<PictureSource> {
     const instance = new PictureSource({ ...args, componentType: 'picture' });
     try {
-      await instance.main();
-      await instance.parseArtDirectives();
+      await instance.prepare();
+      await instance.finalize();
     } catch (error) {
       instance.spinner.fail('Failed');
       throw error as Error;
@@ -48,21 +56,50 @@ export class PictureSource extends ImageSource {
     return instance;
   }
 
-  protected async parseArtDirectives() {
+  public override async prepare(options?: { signal?: AbortSignal }) {
+    await super.prepare(options);
+    await this.prepareArtDirectives(options?.signal);
+  }
+
+  public async ensureDevArtDirectivesPrepared(signal?: AbortSignal) {
+    if (!this.options.artDirectives) {
+      return;
+    }
+    await this.prepareArtDirectives(signal);
+  }
+
+  public override async finalize() {
+    await Promise.all([
+      ...(this.artDirectives?.map((ad) => ad.finalize()) ?? []),
+      super.finalize(),
+    ]);
+    if (this.artDirectives) {
+      const parentSizes = this.resolved.sizes || '';
+      for (const ad of this.artDirectives) {
+        ad.parentSizes = parentSizes;
+      }
+    }
+  }
+
+  protected async prepareArtDirectives(signal?: AbortSignal) {
     const { artDirectives, tagName } = this.options;
     if (!artDirectives) {
       return;
     }
-    this.artDirectives = await Promise.all(
-      artDirectives.map((artDirective) =>
-        ArtDirectiveSource.factory({
-          ctx: this.ctx,
-          componentType: this.componentType,
-          componentHash: this.componentHash,
-          options: { ...artDirective, ...(tagName ? { tagName } : undefined) },
-          parentSizes: this.resolved.sizes || '',
-        }),
-      ),
+    this.artDirectives = artDirectives.map((artDirective) =>
+      ArtDirectiveSource.buildArtDirective({
+        ctx: this.ctx,
+        componentType: this.componentType,
+        componentHash: this.componentHash,
+        options: { ...artDirective, ...(tagName ? { tagName } : undefined) },
+        parentSizes: '',
+      }),
+    );
+    await Promise.all(
+      this.artDirectives.map((ad) => {
+        ad.attachSharedDevSpinner(this.spinner);
+        return prepareSourceDeduped(ad, signal);
+      }),
     );
   }
 
@@ -101,6 +138,12 @@ export class PictureSource extends ImageSource {
 
     return {
       ...dataIdentifier,
+    };
+  }
+
+  public get placeholderPictureAttributes(): HTMLAttributes<'picture'> {
+    return {
+      ...this.pictureAttributes,
     };
   }
 

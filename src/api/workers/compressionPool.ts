@@ -2,7 +2,6 @@ import { fileURLToPath } from 'node:url';
 
 import Piscina from 'piscina';
 
-import { waitForDevCompressionAllowed } from '../../integration/utils/devPageStaticIdleGate.js';
 import type {
   BlurCompressionJob,
   BlurCompressionResult,
@@ -66,7 +65,6 @@ export class CompressionPool {
   async #run<T extends CompressionJob>(
     job: T,
   ): Promise<T extends { type: 'blur' } ? BlurCompressionResult : VariantCompressionResult> {
-    await waitForDevCompressionAllowed();
     this.#inFlight++;
     try {
       return (await this.#pool.run(job)) as T extends { type: 'blur' }

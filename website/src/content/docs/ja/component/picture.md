@@ -129,6 +129,16 @@ import Picture from 'astro-image-processor/components';
 - この項目を設定しない場合、sharpの `stats().dominant` が使用される
 - 参照: [color (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/color_value)
 
+### `devPlaceholder`
+
+dev サーバーでバリアントのキャッシュがまだないときに表示する暫定画像の指定
+
+- 型: `"source" | "empty"`
+- 既定値: `source`
+- `source`: 圧縮完了までコンポーネントの元の `src` を暫定 `<img>`（および関連プレースホルダー）に使用する
+- `empty`: 圧縮完了まで透明な 1×1 ピクセルを使用する
+- `astro dev` 時のみ有効
+
 ### `blurProcessor`
 
 プレースホルダー（ぼかし画像）の生成に使用するsharpインスタンス

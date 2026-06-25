@@ -18,6 +18,7 @@ describe('Unit/integration/astroImageProcessor', () => {
   let astroBuildDoneHook: any;
 
   beforeEach(() => {
+    delete globalThis.imageProcessorContext;
     options = undefined;
     const integration: AstroIntegration = astroImageProcessor(options);
     astroConfigSetupHook = integration.hooks['astro:config:setup'];
@@ -59,6 +60,7 @@ describe('Unit/integration/astroImageProcessor', () => {
       options,
       config: mockConfig,
       logger: mockLogger,
+      command: 'build',
     });
 
     expect(globalThis.imageProcessorContext).toBe(mockContext);

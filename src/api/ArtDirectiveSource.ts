@@ -11,6 +11,11 @@ import type {
 import { BaseSource } from './BaseSource.js';
 import { generateImageSet } from './methods/generateImageSet.js';
 import { CssObjBuilder } from './utils/CssObjBuilder.js';
+import {
+  resolveDominantPlaceholderColor,
+  usesBlurredPlaceholderCss,
+  usesDominantColorPlaceholderCss,
+} from './utils/resolveProvisionalPlaceholder.js';
 
 export interface ArtDirectiveSourceArgs {
   /** Integration context */
@@ -28,7 +33,7 @@ export interface ArtDirectiveSourceArgs {
 export class ArtDirectiveSource extends BaseSource {
   /** Component hash */
   override readonly componentHash: string;
-  readonly parentSizes: string;
+  parentSizes: string;
 
   protected constructor(args: ArtDirectiveSourceArgs) {
     super(args);
@@ -38,11 +43,17 @@ export class ArtDirectiveSource extends BaseSource {
     this.parentSizes = args.parentSizes;
   }
 
+  /** Create instance without running prepare/finalize */
+  static buildArtDirective(args: ArtDirectiveSourceArgs) {
+    return new ArtDirectiveSource(args);
+  }
+
   /** Async constructor */
   static override async factory(args: ArtDirectiveSourceArgs) {
     const instance = new ArtDirectiveSource(args);
     try {
-      await instance.main();
+      await instance.prepare();
+      await instance.finalize();
     } catch (error) {
       instance.spinner.fail('Failed');
       throw error as Error;
@@ -86,6 +97,10 @@ export class ArtDirectiveSource extends BaseSource {
   }
 
   public get cssObj(): ImgProcCssObj | undefined {
+    if (this.componentType === 'background') {
+      return this.backgroundCssObj;
+    }
+
     const {
       options: {
         placeholder,
@@ -96,15 +111,9 @@ export class ArtDirectiveSource extends BaseSource {
         backgroundSize,
         backgroundPosition,
       },
-      componentType,
       data,
       blurredDataUrl,
-      backgroundCssObj,
     } = this;
-
-    if (componentType === 'background') {
-      return backgroundCssObj;
-    }
 
     if (!media) {
       throw new Error('Media query does not exist');
@@ -112,12 +121,12 @@ export class ArtDirectiveSource extends BaseSource {
 
     const cssObj = new CssObjBuilder(media);
 
-    if (placeholder === 'dominantColor') {
-      const value = placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`;
+    if (usesDominantColorPlaceholderCss(placeholder)) {
+      const value = resolveDominantPlaceholderColor(placeholder, placeholderColor, data);
       cssObj.add('picture[scope]::after', ['background-color', value]);
     }
 
-    if (placeholder === 'blurred') {
+    if (usesBlurredPlaceholderCss(placeholder, blurredDataUrl)) {
       cssObj.add('picture[scope]::after', ['background-image', `url("${blurredDataUrl}")`]);
 
       // Set the CSS prop `background-size` from the component prop `backgroundSize`

@@ -6,6 +6,31 @@ import { afterEach, describe, expect, test, vi } from 'vitest';
 import type { ImageSource } from '../ImageSource.js';
 import { generateBlurredImage } from '../methods/generateBlurredImage.js';
 
+const runBlurFromSharp = async ({
+  buffer,
+  sourceProfiles,
+  resizeWidth,
+}: {
+  buffer: Buffer;
+  sourceProfiles: Record<string, unknown>[];
+  resizeWidth: number;
+  format: string;
+  formatOptions: Record<string, unknown>;
+}) => {
+  let pipeline = sharp(buffer);
+  if (sourceProfiles.length) {
+    pipeline = pipeline.grayscale();
+  }
+  const blurredBuffer = await pipeline.resize(resizeWidth).webp({ quality: 1 }).toBuffer();
+  return {
+    hash: 'mock-blur-hash',
+    base64: blurredBuffer.toString('base64'),
+    format: 'webp' as const,
+    width: resizeWidth,
+    height: resizeWidth,
+  };
+};
+
 describe('Unit/api/utils/generateBlurredImage', () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -23,8 +48,11 @@ describe('Unit/api/utils/generateBlurredImage', () => {
     options: {
       blurProcessor: sharp().resize(1).webp({ quality: 1 }),
     },
+    compressionPool: {
+      runBlur: vi.fn(runBlurFromSharp),
+    },
     getBuffer: () => readFileSync('__test__/src/assets/3000_gray.png'),
-    getSourceProfile: vi.fn().mockReturnValue(['mock-source-profile']),
+    profile: ['mock-source-profile'],
     settings: { hasher: () => 'mock-hash' },
   } as unknown as ImageSource;
 

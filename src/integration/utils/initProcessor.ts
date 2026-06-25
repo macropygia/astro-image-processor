@@ -14,13 +14,27 @@ type InitProcessor = (args: {
   options: ImgProcUserOptions | undefined;
   config: AstroConfig;
   logger?: AstroIntegrationLogger;
+  command?: 'build' | 'dev' | 'preview' | 'sync';
 }) => Promise<ImgProcContext>;
+
+const resolvePoolMaxThreads = (
+  settings: { concurrency: number; devConcurrency: number },
+  command: 'dev' | 'build' | 'preview' | 'sync' | undefined,
+): number | undefined => {
+  if (command === 'dev') {
+    return settings.devConcurrency;
+  }
+  if (command === 'build') {
+    return settings.concurrency;
+  }
+  return undefined;
+};
 
 /**
  * Astro integration `astro:config:setup` hook
  * - Init database, store directories and inject vite plugin
  */
-export const initProcessor: InitProcessor = async ({ options, config, logger }) => {
+export const initProcessor: InitProcessor = async ({ options, config, logger, command }) => {
   const { componentProps, formatOptions, dataAdapter, ...settings } = resolveOptions(
     options,
     config,
@@ -91,7 +105,10 @@ export const initProcessor: InitProcessor = async ({ options, config, logger }) 
 
   logger?.info('Database initialized.');
 
-  const compressionPool = new CompressionPool({ maxThreads: settings.concurrency });
+  const maxThreads = resolvePoolMaxThreads(settings, command);
+  const compressionPool = new CompressionPool(
+    maxThreads !== undefined ? { maxThreads } : undefined,
+  );
   const sharedSpinner = new SharedSpinner();
 
   const ctx: ImgProcContext = {

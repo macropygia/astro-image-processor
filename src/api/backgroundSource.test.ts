@@ -13,7 +13,11 @@ vi.mock('./BaseSource.js', () => {
     BaseSource: class {
       constructor(args: ImageSourceArgs) {
         this.options = args.options;
+        this.spinner = { fail: vi.fn(), succeed: vi.fn(), resetVariantProgress: vi.fn() };
       }
+      async prepare() {}
+      async finalize() {}
+      ensureDevSpinner() {}
       main() {}
       resolvePath(item: any) {
         return `${item.hash}.${item.ext}`;

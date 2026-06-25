@@ -6,7 +6,7 @@ import type {
 } from '../types';
 import { injectStyle } from '../integration/injectStyle';
 import { injectLink } from '../integration/injectLink';
-import { BackgroundSource } from '../api/BackgroundSource';
+import { resolveBackgroundDevOutput } from './utils/resolveDevComponent';
 
 type Props = ImgProcBackgroundComponentProps;
 
@@ -20,6 +20,7 @@ const {
   tagName,
   placeholder,
   placeholderColor,
+  devPlaceholder,
   upscale,
   layout,
   backgroundSize,
@@ -47,6 +48,7 @@ const options = Object.fromEntries(
     tagName,
     placeholder,
     placeholderColor,
+    devPlaceholder,
     upscale,
     layout,
     backgroundSize,
@@ -82,16 +84,13 @@ const classByAstro = (className as string)
   ?.split(' ')
   .filter((cls) => cls.startsWith('astro-'));
 
-// Run image processor
-const {
-  pictureAttributes: containerAttributes,
-  pictureClassList: containerClassList,
-  css,
-  links,
-} = await BackgroundSource.factory({
+const out = await resolveBackgroundDevOutput({
   ctx: globalThis.imageProcessorContext,
   options,
 });
+
+const { pictureAttributes: containerAttributes, pictureClassList: containerClassList, css, links } =
+  out;
 
 // Generate <style> and <link> elements for injection
 const [InjectStyle, InjectLink] = await Promise.all([

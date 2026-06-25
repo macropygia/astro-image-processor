@@ -129,6 +129,16 @@ Sets the color to use when `placeholder` is `dominantColor`.
 - If this is not set, `sharp().stats().dominant` is used.
 - Reference: [color (MDN)](https://developer.mozilla.org/en/docs/Web/CSS/color_value)
 
+### `devPlaceholder`
+
+Controls the provisional image shown in the dev server when variant cache entries are not yet available.
+
+- Type: `"source" | "empty"`
+- Default: `source`
+- `source`: Use the component's original `src` for the provisional `<img>` (and related placeholder styling) until compression finishes.
+- `empty`: Use a transparent 1×1 pixel until compression finishes.
+- Only applies during `astro dev`.
+
 ### `blurProcessor`
 
 Sharp instance used to generate the blurred placeholder image.

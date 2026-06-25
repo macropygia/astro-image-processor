@@ -191,13 +191,14 @@ describe('Unit/api/ImageSource', () => {
       placeholder: 'blurred',
     };
     instance.resolved = { width: 1024, height: 768 };
+    instance.blurredDataUrl = 'data:image/webp;base64,mock-blurred';
 
     expect(instance.cssObj).toEqual({
       selectors: {
         'img[scope]': [
           ['background-size', 'cover'],
           ['background-position', '50% 50%'],
-          ['background-image', 'url("undefined")'],
+          ['background-image', 'url("data:image/webp;base64,mock-blurred")'],
           ['object-fit', 'cover'],
         ],
       },
@@ -210,7 +211,7 @@ describe('Unit/api/ImageSource', () => {
         'img[scope]': [
           ['background-size', 'cover'],
           ['background-position', '60% 40%'],
-          ['background-image', 'url("undefined")'],
+          ['background-image', 'url("data:image/webp;base64,mock-blurred")'],
           ['object-fit', 'cover'],
           ['object-position', '60% 40%'],
         ],

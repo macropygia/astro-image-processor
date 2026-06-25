@@ -82,6 +82,16 @@ import Background from 'astro-image-processor/components';
 - この項目を設定しない場合、sharpの `stats().dominant` が使用される
 - 参照: [color (MDN)](https://developer.mozilla.org/ja/docs/Web/CSS/color_value)
 
+### `devPlaceholder`
+
+dev サーバーでバリアントのキャッシュがまだないときに表示する暫定背景の指定
+
+- 型: `"source" | "empty"`
+- 既定値: `source`
+- `source`: 圧縮完了まで元の `src` をコンテナのインライン `background-image` として表示する
+- `empty`: 圧縮完了までレイアウトとドミナントカラーのプレースホルダーのみ表示する
+- `astro dev` 時のみ有効
+
 ### `upscale`
 
 `densities` `widths` の指定により画像の拡大が必要な場合の処理方法の指定

@@ -6,7 +6,7 @@ import type {
 } from '../types';
 import { injectStyle } from '../integration/injectStyle';
 import { injectLink } from '../integration/injectLink';
-import { ImageSource } from '../api/ImageSource';
+import { resolveImageDevOutput } from './utils/resolveDevComponent';
 
 type Props = ImgProcImageComponentProps;
 
@@ -19,6 +19,7 @@ const {
   sizes,
   placeholder,
   placeholderColor,
+  devPlaceholder,
   blurProcessor,
   upscale,
   layout,
@@ -49,6 +50,7 @@ const options = Object.fromEntries(
     sizes,
     placeholder,
     placeholderColor,
+    devPlaceholder,
     blurProcessor,
     upscale,
     layout,
@@ -85,7 +87,12 @@ const classByAstro = className
   ?.split(' ')
   .filter((cls) => cls.startsWith('astro-'));
 
-// Run image processor
+const out = await resolveImageDevOutput({
+  ctx: globalThis.imageProcessorContext,
+  asBackground,
+  options,
+});
+
 const {
   imageAttributes,
   imageClassList,
@@ -93,11 +100,7 @@ const {
   containerAttributes,
   css,
   link,
-} = await ImageSource.factory({
-  ctx: globalThis.imageProcessorContext,
-  asBackground,
-  options,
-});
+} = out;
 
 // Generate <style> and <link> elements for injection
 const [InjectStyle, InjectLink] = await Promise.all([

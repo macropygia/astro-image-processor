@@ -6,7 +6,7 @@ import type {
 } from '../types';
 import { injectStyle } from '../integration/injectStyle';
 import { injectLink } from '../integration/injectLink';
-import { PictureSource } from '../api/PictureSource';
+import { resolvePictureDevOutput } from './utils/resolveDevComponent';
 
 type Props = ImgProcPictureComponentProps;
 
@@ -19,6 +19,7 @@ const {
   sizes,
   placeholder,
   placeholderColor,
+  devPlaceholder,
   blurProcessor,
   upscale,
   layout,
@@ -51,6 +52,7 @@ const options = Object.fromEntries(
     sizes,
     placeholder,
     placeholderColor,
+    devPlaceholder,
     blurProcessor,
     upscale,
     layout,
@@ -93,7 +95,12 @@ const classByAstro = className
   ?.split(' ')
   .filter((cls) => cls.startsWith('astro-'));
 
-// Run image processor
+const out = await resolvePictureDevOutput({
+  ctx: globalThis.imageProcessorContext,
+  asBackground,
+  options,
+});
+
 const {
   imageAttributes,
   imageClassList,
@@ -104,11 +111,7 @@ const {
   containerAttributes,
   css,
   links,
-} = await PictureSource.factory({
-  ctx: globalThis.imageProcessorContext,
-  asBackground,
-  options,
-});
+} = out;
 
 // Generate <style> and <link> elements for injection
 const [InjectStyle, InjectLink] = await Promise.all([
@@ -131,7 +134,9 @@ const [InjectStyle, InjectLink] = await Promise.all([
         {...additionalPictureAttributes}
         {...(cid && { [cid]: true })}
       >
-        {sources && sources.map((attr) => <source {...attr} />)}
+        {sources.map((source) => (
+          <source {...source} />
+        ))}
         <img
           class:list={[className, imageClassList]}
           {...restProps}
@@ -147,7 +152,9 @@ const [InjectStyle, InjectLink] = await Promise.all([
       {...additionalPictureAttributes}
       {...(cid && { [cid]: true })}
     >
-      {sources && sources.map((attr) => <source {...attr} />)}
+      {sources.map((source) => (
+        <source {...source} />
+      ))}
       <img
         class:list={[className, imageClassList]}
         {...restProps}

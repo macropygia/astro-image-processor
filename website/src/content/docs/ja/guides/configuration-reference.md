@@ -124,10 +124,38 @@ title: Configuration Reference
 
 ### `concurrency`
 
-ビルドセッション全体で同時実行するバリアント生成（Sharp 変換）の上限
+`astro build` 時の圧縮ワーカー（Piscina）の同時実行スレッド数の上限
 
 - 型: `number`
 - 既定値: `Math.max(os.cpus().length, 1)`
+- インテグレーションが `command: 'build'` で動作するときの Piscina `maxThreads` として使用される
+- dev サーバーでは `devConcurrency` を参照
+
+### `devConcurrency`
+
+`astro dev` 時の圧縮ワーカー（Piscina）の同時実行スレッド数の上限
+
+- 型: `number`
+- 既定値: `3`
+- インテグレーションが `command: 'dev'` で動作するときの Piscina `maxThreads` として使用される
+- 値を小さくすると dev サーバーの応答性が上がりやすく、大きくするとキャッシュミス後のバックグラウンド圧縮が速くなりやすい
+
+### `devReloadOnCompressComplete`
+
+dev で起動したバックグラウンド圧縮がすべて完了したあと、ページを full-reload するかどうか
+
+- 型: `boolean`
+- 既定値: `false`
+- `false` のときはログ出力のみ。最終画像を見るには手動でリロードする
+- `true` のとき、圧縮プールと追跡中の in-flight 作業がアイドルになった時点で Vite HMR の `full-reload` を 1 回送る
+
+### `devServerImageEndpoint`
+
+dev サーバーでキャッシュディレクトリ内の圧縮画像を配信する URL パスのプレフィックス
+
+- 型: `string`
+- 既定値: `/_aip`
+- このパス以下へのリクエストは Vite dev サーバーの middleware 経由で `imageCacheDir` から配信される
 
 ### `timeoutDuration`
 
@@ -184,6 +212,7 @@ Bufferおよび文字列用ハッシュ生成器（関数）
 
 - `componentProps.placeholder`
 - `componentProps.placeholderColor`
+- `componentProps.devPlaceholder`
 - `componentProps.blurProcessor`
 - `componentProps.upscale`
 - `componentProps.layout`

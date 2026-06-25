@@ -26,6 +26,13 @@ export const defaultGlobalClassNames = {
   },
 };
 
+/** 1x1 transparent GIF for provisional placeholders */
+export const transparentPixelSrc =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+/** Duration of placeholder fade animation in milliseconds */
+export const placeholderFadeDurationMs = 1000;
+
 export const defaultOptions: Omit<ImgProcOptions, 'scopedStyleStrategy'> = {
   imageCacheDirPattern: '[cacheDir]astro-image-processor/',
   downloadDirPattern: '[imageCacheDir]downloads/',
@@ -43,9 +50,12 @@ export const defaultOptions: Omit<ImgProcOptions, 'scopedStyleStrategy'> = {
   hasher: cryptoHasher,
   globalClassNames: defaultGlobalClassNames,
   concurrency: Math.max(os.cpus().length, 1),
+  devConcurrency: 3,
   dataAdapter: new JsonFileDataAdapter(),
+  devReloadOnCompressComplete: false,
   componentProps: {
     placeholder: 'blurred',
+    devPlaceholder: 'source',
     blurProcessor: sharp().resize(20).webp({ quality: 1 }),
     upscale: 'never',
     layout: 'constrained',

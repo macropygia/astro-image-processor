@@ -13,12 +13,19 @@ vi.mock('./BaseSource.js', () => {
     BaseSource: class {
       constructor(args: ImageSourceArgs) {
         this.options = args.options;
+        this.spinner = { fail: vi.fn(), succeed: vi.fn(), resetVariantProgress: vi.fn() };
       }
+      async prepare() {}
+      async finalize() {}
+      ensureDevSpinner() {}
       main() {}
     },
   };
 });
 vi.mock('./ArtDirectiveSource.js');
+vi.mock('./methods/prepareSourceDeduped.js', () => ({
+  prepareSourceDeduped: vi.fn().mockResolvedValue(undefined),
+}));
 
 vi.mock('./methods/generateComponentHash.js');
 vi.mock('./utils/parseCssObj.js');
@@ -61,18 +68,21 @@ describe('Unit/api/PictureSource', () => {
     );
   });
 
-  test('parseArtDirectives', async () => {
+  test('prepareArtDirectives', async () => {
     const instance = await PictureSource.factory(args);
+    instance.ctx = args.ctx;
     instance.options = { tagName: 'section' };
     instance.resolved = { sizes: 'resolved.sizes' };
 
-    const empty = await instance.parseArtDirectives();
-    expect(empty).toBeUndefined();
+    await instance.prepareArtDirectives();
+    expect(instance.artDirectives).toBeFalsy();
 
-    instance.options.artDirectives = [1, 2];
-    (ArtDirectiveSource.factory as Mock).mockImplementation(async () => 'directive');
-    await instance.parseArtDirectives();
-    expect(instance.artDirectives).toEqual(['directive', 'directive']);
+    instance.options.artDirectives = [{ src: 'a.jpg' }, { src: 'b.jpg' }];
+    const directive = { attachSharedDevSpinner: vi.fn() };
+    (ArtDirectiveSource.buildArtDirective as Mock).mockReturnValue(directive);
+
+    await instance.prepareArtDirectives();
+    expect(instance.artDirectives).toEqual([directive, directive]);
   });
 
   test('pictureClassList', async () => {
@@ -279,6 +289,7 @@ describe('Unit/api/PictureSource', () => {
       globalClassNames: defaultGlobalClassNames,
     };
     instance.resolved = { width: 1024, height: 768 };
+    instance.blurredDataUrl = 'data:image/webp;base64,mock-blurred';
 
     expect(instance.cssObj).toEqual({
       selectors: {
@@ -288,7 +299,7 @@ describe('Unit/api/PictureSource', () => {
           ['background-image', 'var(--aip-blurred-image)'],
           ['object-fit', 'cover'],
         ],
-        'picture[scope]': [['--aip-blurred-image', `url("undefined")`]],
+        'picture[scope]': [['--aip-blurred-image', `url("data:image/webp;base64,mock-blurred")`]],
         'picture[scope]::after': [
           ['background-image', 'var(--aip-blurred-image)'],
           ['background-size', 'cover'],
@@ -308,7 +319,7 @@ describe('Unit/api/PictureSource', () => {
           ['object-fit', 'cover'],
           ['object-position', '60% 40%'],
         ],
-        'picture[scope]': [['--aip-blurred-image', `url("undefined")`]],
+        'picture[scope]': [['--aip-blurred-image', `url("data:image/webp;base64,mock-blurred")`]],
         'picture[scope]::after': [
           ['background-image', 'var(--aip-blurred-image)'],
           ['background-size', 'cover'],

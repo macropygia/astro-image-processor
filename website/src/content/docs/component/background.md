@@ -82,6 +82,16 @@ Sets the color to use when `placeholder` is `dominantColor`.
 - If this is not set, `sharp().stats().dominant` is used.
 - Reference: [color (MDN)](https://developer.mozilla.org/en/docs/Web/CSS/color_value)
 
+### `devPlaceholder`
+
+Controls the provisional background shown in the dev server when variant cache entries are not yet available.
+
+- Type: `"source" | "empty"`
+- Default: `source`
+- `source`: Apply the original `src` as inline `background-image` on the container until compression finishes.
+- `empty`: Show layout and dominant-color placeholder only until compression finishes.
+- Only applies during `astro dev`.
+
 ### `upscale`
 
 Selects how to handle image upscaling required by `densities` or `widths`.

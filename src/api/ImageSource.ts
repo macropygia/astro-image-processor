@@ -1,6 +1,7 @@
 import type { HTMLAttributes } from 'astro/types';
 
-import { defaultGlobalClassNames, replicateFitByBg } from '../const.js';
+import { defaultGlobalClassNames, replicateFitByBg, transparentPixelSrc } from '../const.js';
+import { placeholderFadeDurationMs } from '../const.js';
 import type {
   ImgProcContext,
   ImgProcCssObj,
@@ -10,8 +11,16 @@ import type {
 import type { ArtDirectiveSource } from './ArtDirectiveSource.js';
 import { BaseSource } from './BaseSource.js';
 import { generateComponentHash } from './methods/generateComponentHash.js';
+import { resolveProvisionalLayout } from './methods/prepareDevProvisionalState.js';
+import { resolveProvisionalImageSrc } from './methods/resolveProvisionalImageSrc.js';
+import { createPicturePlaceholderOnload } from './utils/createPicturePlaceholderOnload.js';
 import { CssObjBuilder } from './utils/CssObjBuilder.js';
 import { parseCssObj } from './utils/parseCssObj.js';
+import {
+  resolveDominantPlaceholderColor,
+  usesBlurredPlaceholderCss,
+  usesDominantColorPlaceholderCss,
+} from './utils/resolveProvisionalPlaceholder.js';
 
 export interface ImageSourceArgs {
   /** Integration context */
@@ -51,11 +60,17 @@ export class ImageSource extends BaseSource {
     );
   }
 
+  /** Create instance without running prepare/finalize */
+  static buildImage(args: ImageSourceArgs) {
+    return new ImageSource({ ...args, componentType: 'img' });
+  }
+
   /** Async constructor */
   static override async factory(args: ImageSourceArgs): Promise<ImageSource> {
     const instance = new ImageSource({ ...args, componentType: 'img' });
     try {
-      await instance.main();
+      await instance.prepare();
+      await instance.finalize();
     } catch (error) {
       instance.spinner.fail('Failed');
       throw error as Error;
@@ -125,7 +140,9 @@ export class ImageSource extends BaseSource {
     const onLoad =
       componentType === 'picture' && placeholder !== null
         ? {
-            onload: `parentElement.style.setProperty('${globalClassNames.cssVariables.placeholderAnimationState}', 'running');`,
+            onload: createPicturePlaceholderOnload(
+              globalClassNames.cssVariables.placeholderAnimationState,
+            ),
           }
         : undefined;
 
@@ -138,6 +155,96 @@ export class ImageSource extends BaseSource {
       ...dataIdentifier,
       ...onLoad,
     };
+  }
+
+  public get placeholderImageAttributes(): HTMLAttributes<'img'> {
+    const isDevProvisional = import.meta.env.MODE === 'development' && !this.prepared;
+    if (!this.prepared && !isDevProvisional) {
+      throw new Error('prepare() must be called before placeholderImageAttributes');
+    }
+
+    if (isDevProvisional) {
+      if (!this.resolved.width || !this.resolved.height) {
+        resolveProvisionalLayout(this);
+      }
+    } else {
+      this.ensureProvisionalResolution();
+    }
+
+    const {
+      options: { placeholder },
+      settings: { scopedStyleStrategy, globalClassNames },
+      resolved: { width, height, sizes },
+      componentHash,
+      componentType,
+      blurredDataUrl,
+    } = this;
+
+    // biome-ignore lint/complexity/useSimplifiedLogicExpression: Biome issue
+    if (!width || !height) {
+      throw new Error('Unresolved provisional dimensions');
+    }
+
+    const dataIdentifier =
+      scopedStyleStrategy === 'attribute'
+        ? { [`data-astro-aip-${componentHash}`]: true }
+        : undefined;
+
+    const onLoad =
+      componentType === 'picture' && placeholder !== null
+        ? {
+            onload: createPicturePlaceholderOnload(
+              globalClassNames.cssVariables.placeholderAnimationState,
+              import.meta.env.MODE === 'development'
+                ? { removeOnComplete: true, scheduleCleanupMs: placeholderFadeDurationMs }
+                : {},
+            ),
+          }
+        : undefined;
+
+    const placeholderSrc =
+      import.meta.env.MODE === 'development'
+        ? resolveProvisionalImageSrc(this)
+        : placeholder === 'blurred' && blurredDataUrl
+          ? blurredDataUrl
+          : transparentPixelSrc;
+
+    return {
+      src: placeholderSrc,
+      width,
+      height,
+      sizes,
+      ...dataIdentifier,
+      ...onLoad,
+    };
+  }
+
+  public get devProvisionalCss(): string {
+    if (!this.resolved.width || !this.resolved.height) {
+      resolveProvisionalLayout(this);
+    }
+
+    const {
+      settings: { scopedStyleStrategy },
+      componentHash,
+      artDirectives,
+    } = this;
+
+    const styles: (ImgProcCssObj | undefined)[] = [this.cssObj];
+
+    if (artDirectives) {
+      for (const ad of artDirectives) {
+        if (ad.componentType !== 'background') {
+          styles.push(ad.cssObj);
+        }
+      }
+    }
+
+    return parseCssObj({
+      componentHash,
+      scopedStyleStrategy,
+      styles,
+    });
   }
 
   public get cssObj(): ImgProcCssObj | undefined {
@@ -163,21 +270,16 @@ export class ImageSource extends BaseSource {
 
     const cssObj = new CssObjBuilder();
 
-    if (placeholder === 'dominantColor') {
-      cssObj.add('img[scope]', [
-        'background-color',
-        placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
-      ]);
+    if (usesDominantColorPlaceholderCss(placeholder)) {
+      const dominantColor = resolveDominantPlaceholderColor(placeholder, placeholderColor, data);
+      cssObj.add('img[scope]', ['background-color', dominantColor]);
       if (componentType === 'picture') {
         // Both overlay and img element have placeholder in the picture element
-        cssObj.add('picture[scope]::after', [
-          'background-color',
-          placeholderColor || `rgb(${data.r} ${data.g} ${data.b})`,
-        ]);
+        cssObj.add('picture[scope]::after', ['background-color', dominantColor]);
       }
     }
 
-    if (placeholder === 'blurred') {
+    if (usesBlurredPlaceholderCss(placeholder, blurredDataUrl)) {
       cssObj.add(
         'img[scope]',
         ['background-size', 'cover'],
@@ -243,6 +345,36 @@ export class ImageSource extends BaseSource {
     }
 
     return cssObj.value;
+  }
+
+  public get placeholderCss(): string {
+    if (!this.prepared) {
+      throw new Error('prepare() must be called before placeholderCss');
+    }
+
+    this.ensureProvisionalResolution();
+
+    const {
+      settings: { scopedStyleStrategy },
+      componentHash,
+      artDirectives,
+    } = this;
+
+    const styles: (ImgProcCssObj | undefined)[] = [this.cssObj];
+
+    if (artDirectives) {
+      for (const ad of artDirectives) {
+        if (ad.componentType !== 'background') {
+          styles.push(ad.cssObj);
+        }
+      }
+    }
+
+    return parseCssObj({
+      componentHash,
+      scopedStyleStrategy,
+      styles,
+    });
   }
 
   public get css(): string {

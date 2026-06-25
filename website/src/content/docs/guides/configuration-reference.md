@@ -123,10 +123,38 @@ Class names used in global CSS.
 
 ### `concurrency`
 
-Maximum number of variant generations (Sharp transforms) that run concurrently across the entire build session.
+Maximum number of concurrent compression worker threads during `astro build`.
 
 - Type: `number`
 - Default: `Math.max(os.cpus().length, 1)`
+- Used as Piscina `maxThreads` when the integration runs with `command: 'build'`.
+- For the dev server, see `devConcurrency`.
+
+### `devConcurrency`
+
+Maximum number of concurrent compression worker threads during `astro dev`.
+
+- Type: `number`
+- Default: `3`
+- Used as Piscina `maxThreads` when the integration runs with `command: 'dev'`.
+- Lower values can improve dev server responsiveness; higher values can speed up background variant generation after a cache miss.
+
+### `devReloadOnCompressComplete`
+
+Whether to trigger a full page reload after all background compression jobs started in the current dev session have finished.
+
+- Type: `boolean`
+- Default: `false`
+- When `false`, completion is logged only; reload the page manually to see final optimized images.
+- When `true`, uses Vite HMR `full-reload` once after the compression pool and tracked in-flight work are idle.
+
+### `devServerImageEndpoint`
+
+URL path prefix for serving compressed images from the cache directory in the dev server.
+
+- Type: `string`
+- Default: `/_aip`
+- Requests under this path are served from `imageCacheDir` via a Vite dev-server middleware.
 
 ### `timeoutDuration`
 
@@ -183,6 +211,7 @@ See each component reference for details.
 
 - `componentProps.placeholder`
 - `componentProps.placeholderColor`
+- `componentProps.devPlaceholder`
 - `componentProps.blurProcessor`
 - `componentProps.upscale`
 - `componentProps.layout`

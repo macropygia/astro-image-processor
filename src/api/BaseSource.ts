@@ -19,18 +19,22 @@ import type {
 import { addSource } from './methods/addSource.js';
 import { generateBlurredImage } from './methods/generateBlurredImage.js';
 import { generateSourceHash } from './methods/generateSourceHash.js';
-import { generateVariants } from './methods/generateVariants.js';
+import { enqueueVariants, awaitVariants } from './methods/generateVariants.js';
 import { renewSource } from './methods/renewSource.js';
 import { resolveElementDimensions } from './methods/resolveElementDimensions.js';
+import { resolveProvisionalElementDimensions } from './methods/resolveProvisionalElementDimensions.js';
+import { resolveProvisionalSizes } from './methods/resolveProvisionalSizes.js';
 import { resolveSizes } from './methods/resolveSizes.js';
 import { resolveWidths } from './methods/resolveWidths.js';
 import { getBufferFromDataUrl } from './utils/getBufferFromDataUrl.js';
 import { getBufferFromRemoteUrl } from './utils/getBufferFromRemoteUrl.js';
 import { getFilteredSharpOptions } from './utils/getFilteredSharpOptions.js';
+import { noopSpinner } from './utils/noopSpinner.js';
 import { normalizePath } from './utils/normalizePath.js';
 import { pathExists } from './utils/pathExists.js';
 import { resolveExpiresAt } from './utils/resolveExpiresAt.js';
 import { resolvePathPattern } from './utils/resolvePathPattern.js';
+import { shouldGenerateBlurredPlaceholder } from './utils/resolveProvisionalPlaceholder.js';
 import type { ImgProcSpinnerHandle } from './utils/SharedSpinner.js';
 import type { CompressionPool } from './workers/compressionPool.js';
 
@@ -102,6 +106,11 @@ export class BaseSource {
 
   spinner: ImgProcSpinnerHandle;
   timeStart: number;
+  private devSpinnerInitialized = false;
+  /** Whether prepare() has completed */
+  prepared = false;
+  /** Whether finalize() has completed */
+  finalized = false;
 
   protected constructor({ ctx, componentType, options }: BaseSourceArgs) {
     const {
@@ -120,10 +129,11 @@ export class BaseSource {
     this.settings = settings;
     this.compressionPool = ctx.compressionPool;
     this.logger = logger;
-
-    // Spinner
     this.timeStart = performance.now();
-    ({ spinner: this.spinner } = ctx.sharedSpinner.create(componentType, options.src));
+    this.spinner =
+      import.meta.env.MODE === 'development'
+        ? noopSpinner
+        : ctx.sharedSpinner.create(componentType, options.src).spinner;
 
     // Parse component options and set default
     const { src, width, height, formatOptions, ...rest } = options;
@@ -176,19 +186,65 @@ export class BaseSource {
   }
 
   public async main() {
+    await this.prepare();
+    await this.finalize();
+  }
+
+  public ensureDevSpinner(dedupeKey?: string): void {
+    if (import.meta.env.MODE !== 'development' || this.devSpinnerInitialized) {
+      return;
+    }
+
+    ({ spinner: this.spinner } = this.ctx.sharedSpinner.create(
+      this.componentType,
+      this.options.src,
+      dedupeKey,
+    ));
+    this.devSpinnerInitialized = true;
+  }
+
+  public attachSharedDevSpinner(spinner: ImgProcSpinnerHandle): void {
+    if (import.meta.env.MODE !== 'development') {
+      return;
+    }
+    this.spinner = spinner;
+    this.devSpinnerInitialized = true;
+  }
+
+  public hasDevSpinner(): boolean {
+    return this.devSpinnerInitialized;
+  }
+
+  public async prepare(options?: { signal?: AbortSignal }) {
+    const signal = options?.signal;
     const {
       options: { placeholder },
       data,
     } = this;
 
+    if (this.prepared) {
+      return;
+    }
+
+    if (signal?.aborted) {
+      if (import.meta.env.MODE !== 'development') {
+        this.spinner.cancel();
+      }
+      return;
+    }
+
     if (data.hash) {
       throw new Error('Do not initialize more than once');
     }
 
-    // Get hash
     data.hash = await generateSourceHash(this);
+    if (signal?.aborted) {
+      if (import.meta.env.MODE !== 'development') {
+        this.spinner.cancel();
+      }
+      return;
+    }
 
-    // Find cache
     const currentData = await this.db.fetch({ hash: data.hash });
     if (currentData) {
       Object.assign(data, currentData);
@@ -196,26 +252,59 @@ export class BaseSource {
     } else {
       await addSource(this);
     }
-    // await handleSource(this, currentData);
-
-    // Generate blurred image
-    if (placeholder === 'blurred') {
-      this.blurredDataUrl = await generateBlurredImage(this);
+    if (signal?.aborted) {
+      if (import.meta.env.MODE !== 'development') {
+        this.spinner.cancel();
+      }
+      return;
     }
 
-    // Resolve `resolved.widths` and `resolved.densities`
+    if (shouldGenerateBlurredPlaceholder(placeholder)) {
+      this.blurredDataUrl = await generateBlurredImage(this);
+    }
+    if (signal?.aborted) {
+      if (import.meta.env.MODE !== 'development') {
+        this.spinner.cancel();
+      }
+      return;
+    }
+
     resolveWidths(this);
 
-    // Generate variants
-    this.variants = await generateVariants(this);
+    await enqueueVariants(this);
 
-    // Resolve `resolved.width` and `resolved.height`
+    this.prepared = true;
+  }
+
+  public async finalize() {
+    if (this.finalized) {
+      return;
+    }
+
+    if (!this.prepared) {
+      throw new Error('prepare() must be called before finalize()');
+    }
+
+    this.variants = await awaitVariants(this);
+
     resolveElementDimensions(this);
 
-    // Resolve `resolved.sizes`
     this.resolved.sizes = resolveSizes(this);
 
-    this.spinner.succeed(`Completed in ${getTimeStat(this.timeStart, performance.now())}`);
+    if (import.meta.env.MODE !== 'development') {
+      this.spinner.succeed(`Completed in ${getTimeStat(this.timeStart, performance.now())}`);
+    }
+
+    this.finalized = true;
+  }
+
+  /** Set resolved width/height/sizes from source metadata (before variants). */
+  public ensureProvisionalResolution(): void {
+    if (!this.prepared) {
+      throw new Error('prepare() must be called before ensureProvisionalResolution()');
+    }
+    resolveProvisionalElementDimensions(this);
+    this.resolved.sizes = resolveProvisionalSizes(this);
   }
 
   protected resolvePath(item: ImgProcVariant): string {

@@ -39,7 +39,7 @@ describe('Unit/intergration/initProcessor', () => {
     expect(existsSync(downloadDir)).toBeTruthy();
 
     expect(ctx.compressionPool).toBeDefined();
-    expect(ctx.compressionPool.maxThreads).toBe(ctx.settings.concurrency);
+    expect(ctx.compressionPool.maxThreads).toBeUndefined();
     expect(ctx.sharedSpinner).toBeDefined();
 
     createdPools.push(ctx.compressionPool);
@@ -48,15 +48,57 @@ describe('Unit/intergration/initProcessor', () => {
     rmdirSync(downloadDir);
   });
 
-  test('uses concurrency as pool maxThreads', async () => {
+  test('uses default devConcurrency of 3 during dev', async () => {
     const ctx = await initProcessor({
       options: {
-        imageCacheDirPattern: '__test__/image_cache_dir_concurrency',
-        downloadDirPattern: '__test__/download_dir_concurrency',
+        imageCacheDirPattern: '__test__/image_cache_dir_dev_default',
+        downloadDirPattern: '__test__/download_dir_dev_default',
+      },
+      config: mockAstroConfig,
+      logger: mockLogger,
+      command: 'dev',
+    });
+
+    expect(ctx.compressionPool.maxThreads).toBe(3);
+
+    createdPools.push(ctx.compressionPool);
+
+    rmdirSync(ctx.dirs.imageCacheDir);
+    rmdirSync(ctx.dirs.downloadDir);
+  });
+
+  test('uses devConcurrency during dev', async () => {
+    const ctx = await initProcessor({
+      options: {
+        imageCacheDirPattern: '__test__/image_cache_dir_dev',
+        downloadDirPattern: '__test__/download_dir_dev',
+        devConcurrency: 4,
         concurrency: 8,
       },
       config: mockAstroConfig,
       logger: mockLogger,
+      command: 'dev',
+    });
+
+    expect(ctx.compressionPool.maxThreads).toBe(4);
+
+    createdPools.push(ctx.compressionPool);
+
+    rmdirSync(ctx.dirs.imageCacheDir);
+    rmdirSync(ctx.dirs.downloadDir);
+  });
+
+  test('uses concurrency during build', async () => {
+    const ctx = await initProcessor({
+      options: {
+        imageCacheDirPattern: '__test__/image_cache_dir_build',
+        downloadDirPattern: '__test__/download_dir_build',
+        devConcurrency: 2,
+        concurrency: 8,
+      },
+      config: mockAstroConfig,
+      logger: mockLogger,
+      command: 'build',
     });
 
     expect(ctx.compressionPool.maxThreads).toBe(8);

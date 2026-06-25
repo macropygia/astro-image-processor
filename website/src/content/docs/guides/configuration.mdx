@@ -16,6 +16,7 @@ export default defineConfig({
   integrations: [
     astroImageProcessor({
       scopedStyleStrategy: 'class',
+      devConcurrency: 3,
     }),
   ],
 });

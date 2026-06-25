@@ -36,6 +36,7 @@ export interface ImgProcUserOptions extends Partial<ImgProcSettings> {
       ImgProcProcessorOptions,
       | 'placeholder'
       | 'placeholderColor'
+      | 'devPlaceholder'
       | 'blurProcessor'
       | 'upscale'
       | 'layout'
@@ -181,6 +182,12 @@ export interface ImgProcSettings {
    */
   concurrency: number;
   /**
+   * Concurrency during `astro dev`
+   * - Balances dev server responsiveness and variant throughput
+   * @default 3
+   */
+  devConcurrency: number;
+  /**
    * Download timeout duration (milliseconds)
    * - Timeout duration for downloading remote files
    * @default: 5000 (5 seconds)
@@ -215,6 +222,11 @@ export interface ImgProcSettings {
    * @default "astro-image-processor/extras/JsonFileDataAdapter"
    */
   dataAdapter: ImgProcDataAdapter;
+  /**
+   * Dev: full-reload the page after background compression completes
+   * @default false
+   */
+  devReloadOnCompressComplete: boolean;
 }
 
 /**
@@ -317,6 +329,13 @@ export interface ImgProcProcessorOptions {
    * @see [MDN Reference: color](https://developer.mozilla.org/docs/Web/CSS/color_value)
    */
   placeholderColor?: string;
+  /**
+   * Dev: provisional `<img src>` when cache misses
+   * - `source`: use the original `src` from the component
+   * - `empty`: transparent pixel
+   * @default "source"
+   */
+  devPlaceholder?: 'empty' | 'source';
   /**
    * Sharp instance to generate blurred images
    * - Note that blurred images are written to the inline CSS (and cache database) as Base64.
