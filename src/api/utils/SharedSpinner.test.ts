@@ -29,6 +29,10 @@ vi.mock('ora', () => {
         spinner.isSpinning = false;
         return spinner;
       }),
+      stop: vi.fn(() => {
+        spinner.isSpinning = false;
+        return spinner;
+      }),
     };
     instances.push(spinner);
     return spinner;
@@ -63,5 +67,33 @@ describe('Unit/api/utils/SharedSpinner', () => {
 
     second.spinner.succeed('Completed b');
     expect(ora.mock.results[0]?.value.succeed).toHaveBeenCalledWith('Completed b');
+  });
+
+  test('reuses the same job when a dedupe key is provided', () => {
+    const manager = new SharedSpinner();
+
+    const first = manager.create('img', '/a.png', 'same-key');
+    first.spinner.noteVariantQueued('v1');
+    first.spinner.noteVariantQueued('v1');
+    first.spinner.noteVariantCompleted('v1');
+    first.spinner.noteVariantCompleted('v1');
+
+    const second = manager.create('picture', '/a.png', 'same-key');
+    second.spinner.noteVariantQueued('v2');
+
+    first.spinner.succeed('Completed a');
+    second.spinner.succeed('Completed a');
+  });
+
+  test('does not count completed variants that were not queued', async () => {
+    const ora = (await import('ora')).default as unknown as ReturnType<typeof vi.fn>;
+    const manager = new SharedSpinner();
+    const { spinner } = manager.create('img', '/a.png');
+
+    spinner.noteVariantCompleted('ghost');
+    spinner.noteVariantQueued('v1');
+    spinner.noteVariantCompleted('v1');
+
+    expect(ora.mock.results[0]?.value.text).toBe('Processing... (1/1)');
   });
 });

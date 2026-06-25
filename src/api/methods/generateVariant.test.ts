@@ -1,12 +1,9 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
 import type { Ora } from 'ora';
-import type { Sharp } from 'sharp';
-import { type Mock, afterAll, describe, expect, test, vi } from 'vitest';
+import { afterAll, describe, expect, test, vi } from 'vitest';
+
+import { createSyncCompressionPool } from '#mock/mock.js';
 
 import type { ImgProcDataAdapter } from '../../types.js';
-import { applyProcessors } from '../utils/applyProcessors.js';
 import { generateVariant } from './generateVariant.js';
 
 const mockDb = {
@@ -29,78 +26,44 @@ vi.mock('../../const.js', () => ({
   },
 }));
 
-const mockHasher = vi.fn();
-const mockVariantProcessor = {
-  toBuffer: vi.fn(),
-};
-const mockSharpInstance = {
-  metadata: vi.fn(),
-  toBuffer: vi.fn(),
-};
-
-vi.mock('../utils/applyProcessors.js', () => ({
-  applyProcessors: vi.fn(),
-}));
-
-vi.mock('../utils/resolveSharpFormat.js', () => ({
-  resolveSharpFormat: vi.fn((format: string) => format),
-}));
-
-vi.mock('sharp', () => ({
-  __esModule: true,
-  default: vi.fn(() => mockSharpInstance),
-}));
+const compressionPool = createSyncCompressionPool();
 
 describe('Unit/api/methods/generateVariant', () => {
   afterAll(() => {
-    // vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   test('default', async () => {
     const buffer = Buffer.from('test buffer');
-    const variantBuffer = Buffer.from('variant buffer');
-    const variantHash = 'variantHash';
-    const variantMetadata = {
-      format: 'jpeg',
+    const resultMetadata = {
+      hash: 'variantHash',
       width: 800,
       height: 600,
+      format: 'jpeg' as const,
+      ext: 'jpg',
     };
 
-    (applyProcessors as Mock).mockReturnValue(mockSharpInstance);
-    mockSharpInstance.toBuffer.mockResolvedValue(variantBuffer);
-    mockHasher.mockReturnValue(variantHash);
-    mockSharpInstance.metadata.mockResolvedValue(variantMetadata);
-
-    vi.spyOn(fs.promises, 'writeFile').mockResolvedValue(undefined);
+    vi.spyOn(compressionPool, 'runVariant').mockResolvedValue(resultMetadata);
 
     const result = await generateVariant({
       src: 'test.jpg',
       buffer,
       db: mockDb as unknown as ImgProcDataAdapter,
-      hasher: mockHasher,
+      hasher: vi.fn(),
       imageCacheDir: 'cache/dir',
       processor: undefined,
-      variantProcessor: mockVariantProcessor as unknown as Sharp,
+      variantWidth: 800,
+      variantFormat: 'jpeg',
       variantProfileHash: 'variantProfileHash',
       sourceHash: 'sourceHash',
-      variantWidth: 800,
       variantDensity: 1,
       spinner: mockSpinner,
+      compressionPool,
     });
 
-    expect(applyProcessors).toHaveBeenCalledWith({
-      processors: [undefined, mockVariantProcessor],
-      buffer,
-    });
-    expect(mockSharpInstance.toBuffer).toHaveBeenCalled();
-    expect(mockHasher).toHaveBeenCalledWith(variantBuffer);
-    expect(mockSharpInstance.metadata).toHaveBeenCalled();
-    expect(fs.promises.writeFile).toHaveBeenCalledWith(
-      path.join('cache/dir', `${variantHash}.jpg`),
-      variantBuffer,
-    );
+    expect(compressionPool.runVariant).toHaveBeenCalled();
     expect(mockDb.insert).toHaveBeenCalledWith({
-      hash: variantHash,
+      hash: resultMetadata.hash,
       category: 'variant',
       format: 'jpeg',
       width: 800,
@@ -109,7 +72,7 @@ describe('Unit/api/methods/generateVariant', () => {
       profile: 'variantProfileHash',
     });
     expect(result).toEqual({
-      hash: variantHash,
+      hash: 'variantHash',
       width: 800,
       height: 600,
       format: 'jpeg',
@@ -121,17 +84,18 @@ describe('Unit/api/methods/generateVariant', () => {
       src: 'test.jpg',
       buffer,
       db: mockDb as unknown as ImgProcDataAdapter,
-      hasher: mockHasher,
+      hasher: vi.fn(),
       imageCacheDir: 'cache/dir',
       processor: undefined,
-      variantProcessor: mockVariantProcessor as unknown as Sharp,
+      variantWidth: 800,
+      variantFormat: 'jpeg',
       variantProfileHash: 'variantProfileHash',
       sourceHash: 'sourceHash',
-      variantWidth: 800,
       spinner: mockSpinner,
+      compressionPool,
     });
     expect(resultWithWidth).toEqual({
-      hash: variantHash,
+      hash: 'variantHash',
       width: 800,
       height: 600,
       format: 'jpeg',
@@ -142,35 +106,31 @@ describe('Unit/api/methods/generateVariant', () => {
 
   test('throw', async () => {
     const buffer = Buffer.from('test buffer');
-    const variantBuffer = Buffer.from('variant buffer');
-    const variantHash = 'variantHash';
-    const variantMetadata = {
-      format: 'jpeg',
+
+    vi.spyOn(compressionPool, 'runVariant').mockResolvedValue({
+      hash: 'variantHash',
       width: 800,
       height: 600,
-    };
-
-    (applyProcessors as Mock).mockReturnValue(mockSharpInstance);
-    mockSharpInstance.toBuffer.mockResolvedValue(variantBuffer);
-    mockHasher.mockReturnValue(variantHash);
-    mockSharpInstance.metadata.mockResolvedValue(variantMetadata);
+      format: 'jpeg',
+      ext: 'jpg',
+    });
     mockDb.insert.mockRejectedValue(new Error('DB insert error'));
-    mockDb.fetch.mockResolvedValue({ profile: 'oldProfileHash' });
 
     await expect(() =>
       generateVariant({
         src: 'test.jpg',
         buffer,
         db: mockDb as unknown as ImgProcDataAdapter,
-        hasher: mockHasher,
+        hasher: vi.fn(),
         imageCacheDir: 'cache/dir',
         processor: undefined,
-        variantProcessor: mockVariantProcessor as unknown as Sharp,
+        variantWidth: 800,
+        variantFormat: 'jpeg',
         variantProfileHash: 'variantProfileHash',
         sourceHash: 'sourceHash',
-        variantWidth: 800,
         variantDensity: 1,
         spinner: mockSpinner,
+        compressionPool,
       }),
     ).rejects.toThrowError('DB insert error');
   });

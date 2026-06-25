@@ -1,6 +1,5 @@
 import type { AstroIntegrationLogger } from 'astro';
 import type { HTMLAttributes, HTMLTag } from 'astro/types';
-import type PQueue from 'p-queue';
 import type {
   AvifOptions,
   FormatEnum,
@@ -18,6 +17,7 @@ import type { BaseSourceArgs } from './api/BaseSource.js';
 import type { ImageSourceArgs } from './api/ImageSource.js';
 import type { PictureSourceArgs } from './api/PictureSource.js';
 import type { SharedSpinner } from './api/utils/SharedSpinner.js';
+import type { CompressionPool } from './api/workers/compressionPool.js';
 import type { defaultGlobalClassNames } from './const.js';
 
 // ===============================
@@ -758,8 +758,8 @@ export interface ImgProcContext {
   /** Logger from Astro */
   logger?: AstroIntegrationLogger | undefined;
 
-  /** Shared queue for variant generation across components */
-  variantQueue: PQueue;
+  /** Shared compression worker pool for variant generation across components */
+  compressionPool: CompressionPool;
 
   /** Shared terminal spinner (one ora instance per build session) */
   sharedSpinner: SharedSpinner;

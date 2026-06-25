@@ -1,12 +1,19 @@
 import type { AstroConfig, AstroIntegrationLogger } from 'astro';
+import sharp from 'sharp';
 import { vi } from 'vitest';
 
 import { SharedSpinner } from '../src/api/utils/SharedSpinner.js';
+import type {
+  BlurCompressionResult,
+  VariantCompressionResult,
+} from '../src/api/workers/compressionJobs.js';
+import type { CompressionPool } from '../src/api/workers/compressionPool.js';
 import type {
   ImgProcContext,
   ImgProcDataAdapter,
   ImgProcDataAdapterInitOptions,
   ImgProcFile,
+  ImgProcOutputFormat,
   ImgProcUserOptions,
   ImgProcVariants,
 } from '../src/types.js';
@@ -29,6 +36,78 @@ export const mockLogger = {
   error: vi.fn(),
   debug: vi.fn(),
 } as Partial<AstroIntegrationLogger> as AstroIntegrationLogger;
+
+const runVariantSync = async (
+  buffer: Buffer,
+  job: {
+    sourceProfiles: Record<string, unknown>[];
+    variantWidth: number;
+    variantFormat: ImgProcOutputFormat;
+    variantFormatOptions: Record<string, unknown>;
+  },
+): Promise<VariantCompressionResult> => {
+  let prepared = buffer;
+  for (const profile of job.sourceProfiles) {
+    prepared = await sharp(prepared)
+      .pipe(sharp(profile as never))
+      .toBuffer();
+  }
+  const variantBuffer = await sharp(prepared)
+    .resize(job.variantWidth)
+    .toFormat(job.variantFormat, job.variantFormatOptions)
+    .toBuffer();
+  const metadata = await sharp(variantBuffer).metadata();
+  const format = metadata.format as ImgProcOutputFormat;
+  return {
+    hash: `hash-${format}-${metadata.width}`,
+    width: metadata.width ?? job.variantWidth,
+    height: metadata.height ?? job.variantWidth,
+    format,
+    ext: format === 'jpeg' ? 'jpg' : format,
+  };
+};
+
+const runBlurSync = async (
+  buffer: Buffer,
+  job: {
+    sourceProfiles: Record<string, unknown>[];
+    resizeWidth: number;
+    format: ImgProcOutputFormat;
+    formatOptions: Record<string, unknown>;
+  },
+): Promise<BlurCompressionResult> => {
+  let prepared = buffer;
+  for (const profile of job.sourceProfiles) {
+    prepared = await sharp(prepared)
+      .pipe(sharp(profile as never))
+      .toBuffer();
+  }
+  const blurredBuffer = await sharp(prepared)
+    .resize(job.resizeWidth)
+    .toFormat(job.format, job.formatOptions)
+    .toBuffer();
+  const metadata = await sharp(blurredBuffer).metadata();
+  const format = metadata.format as ImgProcOutputFormat;
+  return {
+    hash: `blur-${format}`,
+    base64: blurredBuffer.toString('base64'),
+    format,
+    width: metadata.width ?? job.resizeWidth,
+    height: metadata.height ?? job.resizeWidth,
+  };
+};
+
+export const createSyncCompressionPool = () =>
+  ({
+    queueSize: 0,
+    pending: 0,
+    runVariant: (job: Parameters<typeof runVariantSync>[1] & { buffer: Buffer }) =>
+      runVariantSync(job.buffer, job),
+    runBlur: (job: Parameters<typeof runBlurSync>[1] & { buffer: Buffer }) =>
+      runBlurSync(job.buffer, job),
+    onIdle: vi.fn().mockResolvedValue(undefined),
+    destroy: vi.fn().mockResolvedValue(undefined),
+  }) as unknown as CompressionPool;
 
 export const mockDb = {
   fetch: vi.fn(),
@@ -61,9 +140,7 @@ export const mockContext = {
   },
   formatOptions: {},
   componentProps: {},
-  variantQueue: {
-    add: vi.fn((fn: () => unknown) => fn()),
-  },
+  compressionPool: createSyncCompressionPool(),
   sharedSpinner: new SharedSpinner(),
 } as unknown as ImgProcContext;
 

@@ -3,7 +3,6 @@ import path from 'node:path';
 
 import type { AstroIntegrationLogger } from 'astro';
 import type { HTMLAttributes } from 'astro/types';
-import type PQueue from 'p-queue';
 
 import { getTimeStat } from '../integration/utils/getTimeStat.js';
 import type {
@@ -33,6 +32,7 @@ import { pathExists } from './utils/pathExists.js';
 import { resolveExpiresAt } from './utils/resolveExpiresAt.js';
 import { resolvePathPattern } from './utils/resolvePathPattern.js';
 import type { ImgProcSpinnerHandle } from './utils/SharedSpinner.js';
+import type { CompressionPool } from './workers/compressionPool.js';
 
 export interface BaseSourceArgs {
   /** Integration context */
@@ -62,8 +62,8 @@ export class BaseSource {
   formatOptions: ImgProcFormatOptions;
   /** Integration settings (incl. default options) */
   settings: Omit<ImgProcSettings, 'dataAdapter'>;
-  /** Shared variant generation queue */
-  variantQueue: PQueue;
+  /** Shared compression worker pool */
+  compressionPool: CompressionPool;
   /** Global logger */
   logger?: AstroIntegrationLogger | undefined;
 
@@ -118,7 +118,7 @@ export class BaseSource {
     this.db = db;
     this.dirs = dirs;
     this.settings = settings;
-    this.variantQueue = ctx.variantQueue;
+    this.compressionPool = ctx.compressionPool;
     this.logger = logger;
 
     // Spinner

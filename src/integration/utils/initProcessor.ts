@@ -3,10 +3,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import type { AstroConfig, AstroIntegrationLogger } from 'astro';
-import PQueue from 'p-queue';
 
 import { normalizePath } from '../../api/utils/normalizePath.js';
 import { SharedSpinner } from '../../api/utils/SharedSpinner.js';
+import { CompressionPool } from '../../api/workers/compressionPool.js';
 import type { ImgProcContext, ImgProcContextDirectories, ImgProcUserOptions } from '../../types.js';
 import { resolveOptions } from './resolveOptions.js';
 
@@ -91,7 +91,7 @@ export const initProcessor: InitProcessor = async ({ options, config, logger }) 
 
   logger?.info('Database initialized.');
 
-  const variantQueue = new PQueue({ concurrency: settings.concurrency });
+  const compressionPool = new CompressionPool({ maxThreads: settings.concurrency });
   const sharedSpinner = new SharedSpinner();
 
   const ctx: ImgProcContext = {
@@ -105,7 +105,7 @@ export const initProcessor: InitProcessor = async ({ options, config, logger }) 
     dirs,
     // Logger
     logger,
-    variantQueue,
+    compressionPool,
     sharedSpinner,
   };
 

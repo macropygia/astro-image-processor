@@ -1,29 +1,47 @@
-import sharp from 'sharp';
-
 import type { ImgProcVariant, ImgProcVariants } from '../../types.js';
 import type { BaseSource } from '../BaseSource.js';
-import { deterministicHash } from '../utils/deterministicHash.js';
-import { getFilteredSharpOptions } from '../utils/getFilteredSharpOptions.js';
-import { generateVariant } from './generateVariant.js';
-import { retrieveVariant } from './retrieveVariant.js';
+import { listVariantDescriptors } from './listVariantDescriptors.js';
+import { resolveVariantGeneration } from './resolveVariantGeneration.js';
 
-type GenerateVariants = (source: BaseSource) => Promise<ImgProcVariants>;
+type VariantEnqueueState = {
+  variants: ImgProcVariants;
+  tasks: Promise<void | ImgProcVariant>[];
+};
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
-export const generateVariants: GenerateVariants = async (source) => {
+const enqueueStateSym = Symbol.for('astro-image-processor.variantEnqueueState');
+const sharedEnqueueStateBySourceHash = new Map<string, VariantEnqueueState>();
+
+export const clearSharedVariantEnqueueState = () => {
+  sharedEnqueueStateBySourceHash.clear();
+};
+
+const getEnqueueState = (source: BaseSource): VariantEnqueueState => {
+  const state = (source as BaseSource & { [enqueueStateSym]?: VariantEnqueueState })[
+    enqueueStateSym
+  ];
+  if (state) {
+    return state;
+  }
+
+  const sourceHash = source.data.hash;
+  if (sourceHash) {
+    const shared = sharedEnqueueStateBySourceHash.get(sourceHash);
+    if (shared) {
+      return shared;
+    }
+  }
+
+  throw new Error('Variants have not been enqueued');
+};
+
+export const enqueueVariants = async (source: BaseSource): Promise<void> => {
   const {
-    componentType,
-    variantQueue,
-    db,
-    dirs: { imageCacheDir },
     data: { hash: sourceHash },
-    options: { src, densities, format, formats, processor },
-    formatOptions,
+    options: { src, processor },
     resolved,
     settings: { hasher },
     logger,
-    spinner,
-    profile,
+    dirs: { imageCacheDir },
   } = source;
 
   if (!sourceHash) {
@@ -35,78 +53,47 @@ export const generateVariants: GenerateVariants = async (source) => {
   }
 
   const variants: ImgProcVariants = {};
-  const formatsArray = componentType === 'img' ? [format] : formats;
-
-  let completed = 0;
-  let toGenerate = 0;
-
-  // biome-ignore lint/suspicious/noConfusingVoidType: p-queue issue
-  const results: Promise<void | ImgProcVariant>[] = [];
+  const formatsArray =
+    source.componentType === 'img' ? [source.options.format] : source.options.formats;
 
   for (const variantFormat of formatsArray) {
-    const variantFormatOption = formatOptions[variantFormat];
     variants[variantFormat] = [];
-
-    for (let index = 0; index < resolved.widths.length; index++) {
-      const variantWidth = Math.round(resolved.widths[index] as number);
-      const variantDensity =
-        densities && resolved.densities ? resolved.densities[index] : undefined;
-
-      const variantProcessor = sharp()
-        .resize(variantWidth)
-        .toFormat(variantFormat, variantFormatOption);
-
-      const variantProfile = [profile, getFilteredSharpOptions(variantProcessor)]
-        .flat()
-        .filter(Boolean);
-      const variantProfileHash = deterministicHash(variantProfile, hasher);
-
-      // Cache
-      const itemFromCache = await retrieveVariant({
-        src,
-        db,
-        sourceHash,
-        variantProfileHash,
-        imageCacheDir,
-        variantWidth,
-        variantDensity,
-        logger,
-        spinner,
-      });
-
-      if (itemFromCache) {
-        variants[variantFormat]?.push(itemFromCache);
-        continue;
-      }
-
-      // New file
-      const buffer = await source.getBuffer();
-      toGenerate++;
-      const result = variantQueue.add(async () => {
-        const item = await generateVariant({
-          src,
-          buffer,
-          db,
-          hasher,
-          imageCacheDir,
-          processor,
-          variantProcessor,
-          variantProfileHash,
-          sourceHash,
-          variantWidth,
-          variantDensity,
-          logger,
-          spinner,
-        });
-        completed++;
-        spinner.setVariantProgress(completed, toGenerate);
-        return item;
-      });
-      results.push(result);
-    }
   }
 
-  const generatedItems = await Promise.all(results);
+  // biome-ignore lint/suspicious/noConfusingVoidType: Promise<void | ImgProcVariant> in tasks array
+  const tasks: Promise<void | ImgProcVariant>[] = [];
+
+  for (const descriptor of listVariantDescriptors(source)) {
+    const generationTask = resolveVariantGeneration({
+      source,
+      sourceHash,
+      variantProfileHash: descriptor.variantProfileHash,
+      src,
+      variantFormat: descriptor.variantFormat,
+      variantFormatOptions: descriptor.variantFormatOptions,
+      variantWidth: descriptor.variantWidth,
+      variantDensity: descriptor.variantDensity,
+      imageCacheDir,
+      processor,
+      hasher,
+      logger,
+    });
+    tasks.push(generationTask);
+  }
+
+  const state: VariantEnqueueState = {
+    variants,
+    tasks,
+  };
+
+  (source as BaseSource & { [enqueueStateSym]: VariantEnqueueState })[enqueueStateSym] = state;
+  sharedEnqueueStateBySourceHash.set(sourceHash, state);
+};
+
+export const awaitVariants = async (source: BaseSource): Promise<ImgProcVariants> => {
+  const { variants, tasks } = getEnqueueState(source);
+
+  const generatedItems = await Promise.all(tasks);
   for (const item of generatedItems) {
     if (!item) {
       continue;
@@ -119,5 +106,18 @@ export const generateVariants: GenerateVariants = async (source) => {
     variants[key]?.sort((a, b) => a.width - b.width);
   }
 
+  const sourceHash = source.data.hash;
+  delete (source as BaseSource & { [enqueueStateSym]?: VariantEnqueueState })[enqueueStateSym];
+  if (sourceHash) {
+    sharedEnqueueStateBySourceHash.delete(sourceHash);
+  }
+
   return variants;
+};
+
+type GenerateVariants = (source: BaseSource) => Promise<ImgProcVariants>;
+
+export const generateVariants: GenerateVariants = async (source) => {
+  await enqueueVariants(source);
+  return awaitVariants(source);
 };
