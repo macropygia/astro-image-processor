@@ -14,6 +14,7 @@ describe('Integration/build', () => {
       PATH: process.env.PATH ?? '',
       HOME: process.env.HOME ?? '',
       NODE_ENV: 'production',
+      CI: 'true',
     };
     execSync('pnpm exec astro build --config astro.build1.ts --root __test__', {
       cwd: projectRoot,
