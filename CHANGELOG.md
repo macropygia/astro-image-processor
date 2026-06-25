@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.2.3
+
+### Patch Changes
+
+- eac3ac5: Fix typo
+
 ## 0.2.2
 
 ### Patch Changes
