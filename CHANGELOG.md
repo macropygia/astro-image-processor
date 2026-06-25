@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.2.1
+
+### Patch Changes
+
+- 86e1fd6: Change postinstall to prepare in npm scripts
+
 ## 0.2.0
 
 ### Minor Changes
