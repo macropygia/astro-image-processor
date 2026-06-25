@@ -10,8 +10,8 @@ describe('Unit/integration/middleware', () => {
     const html = '<!DOCTYPE html><html><head><title>t</title></head><body></body></html>';
     const locals: App.Locals = {};
     const next = async () => {
-      locals.__aipHead?.styles.push('<style>.foo{}</style>');
-      locals.__aipHead?.links.push('<link rel="preload" href="/a">');
+      locals.__aipHead?.styles.push({ sequence: 1, html: '<style>.foo{}</style>' });
+      locals.__aipHead?.links.push({ sequence: 0, html: '<link rel="preload" href="/a">' });
       return new Response(html, { headers: { 'content-type': 'text/html' } });
     };
 
@@ -32,7 +32,7 @@ describe('Unit/integration/middleware', () => {
     const body = '{"ok":true}';
     const locals: App.Locals = {};
     const next = async () => {
-      locals.__aipHead?.styles.push('<style>.foo{}</style>');
+      locals.__aipHead?.styles.push({ sequence: 0, html: '<style>.foo{}</style>' });
       return new Response(body, { headers: { 'content-type': 'application/json' } });
     };
 
