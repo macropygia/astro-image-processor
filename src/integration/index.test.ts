@@ -36,10 +36,13 @@ describe('Unit/integration/astroImageProcessor', () => {
   test('register integration and vite plugin', async () => {
     const mockConfig = { someConfig: true };
     const mockUpdateConfig = vi.fn();
-    const mockLogger = { log: vi.fn() };
+    const mockAddMiddleware = vi.fn();
+    const mockLogger = { log: vi.fn(), info: vi.fn() };
 
     const mockContext = {
       db: { close: vi.fn() },
+      settings: { devServerImageEndpoint: '/_aip' },
+      dirs: { imageCacheDir: '/tmp/aip-cache' },
     };
 
     (initProcessor as Mock).mockResolvedValue(mockContext);
@@ -47,7 +50,9 @@ describe('Unit/integration/astroImageProcessor', () => {
     await astroConfigSetupHook({
       config: mockConfig,
       updateConfig: mockUpdateConfig,
+      addMiddleware: mockAddMiddleware,
       logger: mockLogger,
+      command: 'build',
     });
 
     expect(initProcessor).toHaveBeenCalledWith({
@@ -57,6 +62,31 @@ describe('Unit/integration/astroImageProcessor', () => {
     });
 
     expect(globalThis.imageProcessorContext).toBe(mockContext);
+
+    expect(mockAddMiddleware).toHaveBeenCalledWith({
+      entrypoint: expect.any(URL),
+      order: 'pre',
+    });
+  });
+
+  test('logs dev inline style notice when command is dev', async () => {
+    const mockLogger = { log: vi.fn(), info: vi.fn() };
+    (initProcessor as Mock).mockResolvedValue({
+      settings: { devServerImageEndpoint: '/_aip' },
+      dirs: { imageCacheDir: '/tmp/aip-cache' },
+    });
+
+    await astroConfigSetupHook({
+      config: {},
+      updateConfig: vi.fn(),
+      addMiddleware: vi.fn(),
+      logger: mockLogger,
+      command: 'dev',
+    });
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Dev: <style> elements are rendered inline in the body for preview (not injected into <head>).',
+    );
   });
 
   test('build done', () => {

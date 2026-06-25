@@ -16,13 +16,22 @@ export const astroImageProcessor = (options?: ImgProcUserOptions): AstroIntegrat
   return {
     name: 'astro-image-processor',
     hooks: {
-      'astro:config:setup': async ({ config, logger, updateConfig }) => {
+      'astro:config:setup': async ({ config, logger, updateConfig, addMiddleware, command }) => {
         // Init and create context
         globalThis.imageProcessorContext = await initProcessor({
           options,
           config,
           logger,
         });
+        addMiddleware({
+          entrypoint: new URL('./middleware.ts', import.meta.url),
+          order: 'pre',
+        });
+        if (command === 'dev') {
+          logger.info(
+            'Dev: <style> elements are rendered inline in the body for preview (not injected into <head>).',
+          );
+        }
         // Redirect compressed images to cache directory for dev server
         updateConfig({
           vite: {

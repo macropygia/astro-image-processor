@@ -1,0 +1,16 @@
+import { defineConfig } from 'astro/config';
+
+import { astroImageProcessor } from '../src/integration/index.js';
+
+// biome-ignore lint/style/noDefaultExport: test config
+export default defineConfig({
+  root: '__test__',
+  output: 'static',
+  outDir: 'dist/2',
+  scopedStyleStrategy: 'class',
+  integrations: [
+    astroImageProcessor({
+      preserveDirectories: true,
+    }),
+  ],
+});

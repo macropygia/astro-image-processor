@@ -22,7 +22,6 @@ export default defineConfig({
         '**/Bun*',
         '**/bun*',
         '**/src/extras/index.ts', // only exports
-        '**/src/components/index.ts', // only exports
         '**/src/components/exports.ts', // only exports
       ],
       reporter: ['html', 'json'],
@@ -30,6 +29,10 @@ export default defineConfig({
     alias: {
       '#test': path.resolve(path.dirname(fileURLToPath(import.meta.url)), './__test__/src'),
       '#mock': path.resolve(path.dirname(fileURLToPath(import.meta.url)), './__mock__/'),
+      'astro:middleware': path.resolve(
+        path.dirname(fileURLToPath(import.meta.url)),
+        './__mock__/astro-middleware.ts',
+      ),
     },
   },
 });

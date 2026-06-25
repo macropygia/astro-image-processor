@@ -4,8 +4,8 @@ import type {
   ImgProcPictureComponentProps,
   ImgProcProcessorOptions,
 } from '../types';
-import { injectStyle } from './injectStyle';
-import { injectLink } from './injectLink';
+import { injectStyle } from '../integration/injectStyle';
+import { injectLink } from '../integration/injectLink';
 import { PictureSource } from '../api/PictureSource';
 
 type Props = ImgProcPictureComponentProps;
@@ -112,8 +112,8 @@ const {
 
 // Generate <style> and <link> elements for injection
 const [InjectStyle, InjectLink] = await Promise.all([
-  css ? injectStyle(css) : undefined,
-  links ? injectLink(links) : undefined,
+  css ? injectStyle(css, Astro.locals) : undefined,
+  links ? injectLink(links, Astro.locals) : undefined,
 ]);
 ---
 
