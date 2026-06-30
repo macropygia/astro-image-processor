@@ -65,13 +65,15 @@ Sets the `x` descriptors used in the `image-set()`.
 Selects the type of the placeholder.
 
 - Type: `"dominantColor" | null`
-- Default: `dominantColor`
+- Default: `null`
+- `null`
+    - Disables dominant-color placeholder styling.
 - `dominantColor`
     - Uses a single color.
     - By default, uses the color obtained from sharp's `stats().dominant`.
     - If the `placeholderColor` property is set, uses the color specified by the `placeholderColor` property.
 - `blurred` is unavailable in the `<Background>` component
-- If the default value is set to `blurred` in `options.componentProps.placeholder`, use `dominantColor` instead
+- If `options.componentProps.placeholder` is set to `blurred`, `dominantColor` is used instead
 
 ### `placeholderColor`
 

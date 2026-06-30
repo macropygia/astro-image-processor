@@ -55,4 +55,17 @@ describe('Unit/intergration/resolveOptions', () => {
 
     expect(formatOptions).toMatchObject(mockFormatOptions);
   });
+
+  test('componentProps placeholder override', () => {
+    const { componentProps } = resolveOptions(
+      {
+        componentProps: {
+          placeholder: 'dominantColor',
+        },
+      },
+      mockAstroConfig,
+    );
+
+    expect(componentProps.placeholder).toBe('dominantColor');
+  });
 });

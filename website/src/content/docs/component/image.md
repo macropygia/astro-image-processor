@@ -108,7 +108,9 @@ Sets the `sizes` attribute of the `<img>` element.
 Selects the type of the placeholder.
 
 - Type: `"blurred" | "dominantColor" | null`
-- Default: `blurred`
+- Default: `null`
+- `null`
+    - Disables placeholder styling and blurred image generation.
 - `blurred`
     - Uses the image processed by the sharp instance specified in `blurProcessor`.
     - The image is converted to Base64 and directly written in CSS as a Data URL.

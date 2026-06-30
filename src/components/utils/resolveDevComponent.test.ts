@@ -141,6 +141,36 @@ describe('resolveDevComponent', () => {
     vi.stubEnv('MODE', originalMode);
   });
 
+  test('forwards ctx with componentProps to buildImage', async () => {
+    const originalMode = import.meta.env.MODE;
+    vi.stubEnv('MODE', 'development');
+
+    const configCtx = {
+      settings: {},
+      componentProps: { placeholder: 'dominantColor' },
+    } as ImgProcContext;
+
+    vi.mocked(runDevCacheProbe).mockResolvedValue({
+      allHit: false,
+      hits: [],
+      misses: [{ variantProfileHash: 'p', variantFormat: 'webp', variantWidth: 800 }],
+      variants: { webp: [] },
+    });
+
+    await resolveImageDevOutput({
+      ctx: configCtx,
+      options: { src: '/hero.png' },
+    });
+
+    expect(ImageSource.buildImage).toHaveBeenCalledWith({
+      ctx: configCtx,
+      asBackground: undefined,
+      options: { src: '/hero.png' },
+    });
+
+    vi.stubEnv('MODE', originalMode);
+  });
+
   test('picture and background helpers expose the same mode contract', async () => {
     const originalMode = import.meta.env.MODE;
     vi.stubEnv('MODE', 'production');

@@ -54,7 +54,7 @@ export const defaultOptions: Omit<ImgProcOptions, 'scopedStyleStrategy'> = {
   dataAdapter: new JsonFileDataAdapter(),
   devReloadOnCompressComplete: false,
   componentProps: {
-    placeholder: 'blurred',
+    placeholder: null,
     devPlaceholder: 'source',
     blurProcessor: sharp().resize(20).webp({ quality: 1 }),
     upscale: 'never',

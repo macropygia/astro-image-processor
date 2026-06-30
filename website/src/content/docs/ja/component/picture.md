@@ -110,7 +110,9 @@ import Picture from 'astro-image-processor/components';
 プレースホルダーの指定
 
 - 型: `"blurred" | "dominantColor" | null`
-- 既定値: `blurred`
+- 既定値: `null`
+- `null`
+    - プレースホルダーのスタイルとぼかし画像の生成を無効にする
 - `blurred`
     - `blueProcessor` で指定されたsharpインスタンスで処理した画像を使用する
     - 画像はBase64に変換され、Data URL形式でCSSに直接記述される

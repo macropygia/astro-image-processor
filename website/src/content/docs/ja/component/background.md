@@ -65,13 +65,15 @@ import Background from 'astro-image-processor/components';
 プレースホルダーの指定
 
 - 型: `"dominantColor" | null`
-- 既定値: `dominantColor`
+- 既定値: `null`
+- `null`
+    - ドミナントカラーのプレースホルダースタイルを無効にする
 - `dominantColor`
     - 単色を使用する
     - 既定ではsharpの `stats().dominant` で得られる色を使用する
     - `placeholderColor` プロパティが設定されている場合は `placeholderColor` プロパティで指定した色を使用する
 - `<Background>` コンポーネントでは `blurred` は選択不可
-- `options.componentProps.placeholder` で既定値を `blurred` に設定している場合は `dominantColor` が使用される
+- `options.componentProps.placeholder` を `blurred` に設定した場合は `dominantColor` が使用される
 
 ### `placeholderColor`
 

@@ -5,6 +5,7 @@ import { type Mock, afterEach, describe, expect, test, vi } from 'vitest';
 
 import { mockContext } from '#mock/mock.js';
 
+import { defaultOptions } from '../const.js';
 import type { ImgProcContext } from '../types.js';
 import { BaseSource, type BaseSourceArgs } from './BaseSource.js';
 import { addSource } from './methods/addSource.js';
@@ -129,6 +130,62 @@ describe('Unit/api/BaseSource', () => {
       };
       // @ts-ignore
       expect(() => new BaseSource(args)).toThrow('Invalid src attribute');
+    });
+  });
+
+  describe('placeholder resolution', () => {
+    const createCtx = (
+      componentProps: Partial<ImgProcContext['componentProps']>,
+    ): ImgProcContext => ({
+      ...mockContext,
+      componentProps: {
+        ...defaultOptions.componentProps,
+        ...componentProps,
+      },
+    });
+
+    test('defaults to null', () => {
+      const args: BaseSourceArgs = {
+        ctx: createCtx({}),
+        componentType: 'img',
+        options: { src: '/path/to/image.jpg' },
+      };
+      // @ts-ignore
+      const instance = new BaseSource(args);
+      expect(instance.options.placeholder).toBeNull();
+    });
+
+    test('uses componentProps from integration config', () => {
+      const args: BaseSourceArgs = {
+        ctx: createCtx({ placeholder: 'dominantColor' }),
+        componentType: 'img',
+        options: { src: '/path/to/image.jpg' },
+      };
+      // @ts-ignore
+      const instance = new BaseSource(args);
+      expect(instance.options.placeholder).toBe('dominantColor');
+    });
+
+    test('maps blurred to dominantColor for background', () => {
+      const args: BaseSourceArgs = {
+        ctx: createCtx({ placeholder: 'blurred' }),
+        componentType: 'background',
+        options: { src: '/path/to/image.jpg' },
+      };
+      // @ts-ignore
+      const instance = new BaseSource(args);
+      expect(instance.options.placeholder).toBe('dominantColor');
+    });
+
+    test('component prop overrides integration config', () => {
+      const args: BaseSourceArgs = {
+        ctx: createCtx({ placeholder: 'blurred' }),
+        componentType: 'img',
+        options: { src: '/path/to/image.jpg', placeholder: null },
+      };
+      // @ts-ignore
+      const instance = new BaseSource(args);
+      expect(instance.options.placeholder).toBeNull();
     });
   });
 

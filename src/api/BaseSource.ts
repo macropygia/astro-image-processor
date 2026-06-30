@@ -141,10 +141,18 @@ export class BaseSource {
     const availableOptions = Object.fromEntries(
       Object.entries(rest).filter(([, value]) => value !== undefined),
     ) as Partial<ImgProcProcessorOptions>;
+    const basePlaceholder =
+      'placeholder' in availableOptions
+        ? (availableOptions.placeholder ?? null)
+        : (defaultComponentProps.placeholder ?? null);
+    const placeholder =
+      componentType === 'background' && basePlaceholder === 'blurred'
+        ? 'dominantColor'
+        : basePlaceholder;
     this.options = {
       ...defaultComponentProps,
-      placeholder: componentType === 'background' ? 'dominantColor' : 'blurred',
       ...availableOptions,
+      placeholder,
       src,
       width: width ? Number(width) : undefined,
       height: height ? Number(height) : undefined,

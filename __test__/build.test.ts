@@ -40,6 +40,11 @@ describe('Integration/build', () => {
       stdio: 'inherit',
       env: cleanEnv,
     });
+    execSync('pnpm exec astro build --config astro.build3.ts --root __test__', {
+      cwd: projectRoot,
+      stdio: 'inherit',
+      env: cleanEnv,
+    });
 
     const readNormalized = (distPath: string) =>
       normalizeBuildHtml(fs.readFileSync(distPath, 'utf8'));
@@ -50,5 +55,8 @@ describe('Integration/build', () => {
     await expect(readNormalized('__test__/dist/2/index.html')).toMatchFileSnapshot(
       './__snapshots__/2.html',
     );
-  }, 60_000);
+
+    const configPlaceholderHtml = readNormalized('__test__/dist/3/config-placeholder/index.html');
+    expect(configPlaceholderHtml).toMatch(/background-color/);
+  }, 90_000);
 });
