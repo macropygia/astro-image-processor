@@ -1,5 +1,11 @@
 # astro-image-processor
 
+## 0.2.4
+
+### Patch Changes
+
+- a8c57df: **[BREAKING CHANGE]** Change the default `placeholder` to `null` and fix `componentProps.placeholder` from `astro.config` not being applied.
+
 ## 0.2.3
 
 ### Patch Changes
