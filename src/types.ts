@@ -118,11 +118,19 @@ export interface ImgProcSettings {
   /**
    * Base directory for resolving local image `src` paths
    * - Applies to root-relative paths (`/assets/foo.png`) and bare relative paths (`assets/foo.png`)
-   * - Does not apply to remote URLs, data URLs, `/@fs/`, built assets (`/_astro/...`), or page-relative paths (`./foo.png`)
+   * - Does not apply to remote URLs, data URLs, `/@fs/`, built assets (`/_astro/...`), page-relative paths (`./foo.png`), or `@`-prefixed paths (use `imagePathAliases`)
    * - Placeholders: `[root]`, `[srcDir]`, `[publicDir]`, `[outDir]`, `[cacheDir]`
    * @default `[root]`
    */
   imagePathBaseDirPattern: string;
+  /**
+   * Path aliases for image `src` values starting with `@`
+   * - Keys: alias prefix (e.g. `@`, `@images`). Must start with `@`
+   * - Values: directory pattern with placeholders (`[root]`, `[srcDir]`, `[publicDir]`, `[outDir]`, `[cacheDir]`)
+   * - Not synced from Vite or tsconfig; define explicitly in integration options
+   * @default {}
+   */
+  imagePathAliases: Record<string, string>;
   /**
    * Compressed image serving endpoint for dev server
    * @default "/_aip"
@@ -132,6 +140,7 @@ export interface ImgProcSettings {
    * Preserve directory structure for image files
    * - Place images by root relative paths with `srcDir` as the document root
    * - Image filenames are resolved according to `fileNamePattern`
+   * - Output paths are relative to the consuming app's `srcDir`; images outside `srcDir` (e.g. via `imagePathAliases` in a monorepo) may not preserve directories as expected
    * - e.g.
    *   - Place the source file in `/src/assets/images/foo/bar.png` and set the `src` property in the component to the same value
    *   - Image output to `/dist/assets/images/foo/[resolved fileNamePattern]`
@@ -739,6 +748,14 @@ export interface ImgProcDataAdapter {
 // Context
 // ===============================
 
+/** Resolved image path alias rule (longest prefix first) */
+export type ImagePathAliasRule = {
+  /** Alias prefix without trailing slash, e.g. `@` or `@images` */
+  prefix: string;
+  /** Absolute base directory */
+  baseDir: string;
+};
+
 /**
  * Stored directories
  */
@@ -765,6 +782,8 @@ export type ImgProcContextDirectories = {
   imageOutDir: string;
   /** Resolved base directory for local image `src` path resolution */
   imagePathBaseDir: string;
+  /** Resolved alias rules for `@`-prefixed image `src` paths */
+  imagePathAliasRules: ImagePathAliasRule[];
 };
 
 /**

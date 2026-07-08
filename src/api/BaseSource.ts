@@ -33,9 +33,9 @@ import { noopSpinner } from './utils/noopSpinner.js';
 import { normalizePath } from './utils/normalizePath.js';
 import { pathExists } from './utils/pathExists.js';
 import { resolveExpiresAt } from './utils/resolveExpiresAt.js';
-import { resolveLocalSourcePath } from './utils/resolveLocalSourcePath.js';
 import { resolvePathPattern } from './utils/resolvePathPattern.js';
 import { shouldGenerateBlurredPlaceholder } from './utils/resolveProvisionalPlaceholder.js';
+import { resolveSourceFilePath } from './utils/resolveSourceFilePath.js';
 import type { ImgProcSpinnerHandle } from './utils/SharedSpinner.js';
 import type { CompressionPool } from './workers/compressionPool.js';
 
@@ -172,11 +172,7 @@ export class BaseSource {
       this.localSourcePath = new URL(src.replace(ATFS_RE, 'file://')).pathname;
     } else if (src.length > 0) {
       this.type = 'local';
-      this.localSourcePath = normalizePath(
-        src.startsWith(`/${this.dirs.assetsDirName}/`)
-          ? path.join(this.dirs.outDir, src)
-          : resolveLocalSourcePath({ dirs: this.dirs, src }),
-      );
+      this.localSourcePath = normalizePath(resolveSourceFilePath({ dirs: this.dirs, src }));
     } else {
       throw new Error('Invalid src attribute');
     }

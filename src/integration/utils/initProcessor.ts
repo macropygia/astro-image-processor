@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import type { AstroConfig, AstroIntegrationLogger } from 'astro';
 
+import { buildImagePathAliasRules } from '../../api/utils/buildImagePathAliasRules.js';
 import { normalizePath } from '../../api/utils/normalizePath.js';
 import { SharedSpinner } from '../../api/utils/SharedSpinner.js';
 import { CompressionPool } from '../../api/workers/compressionPool.js';
@@ -54,6 +55,7 @@ export const initProcessor: InitProcessor = async ({ options, config, logger, co
     imageOutDir: '',
     imageAssetsDirName: '',
     imagePathBaseDir: '',
+    imagePathAliasRules: [],
   };
 
   const replaceDirPlaceholders = (pattern: string) =>
@@ -108,6 +110,11 @@ export const initProcessor: InitProcessor = async ({ options, config, logger, co
   dirs.imagePathBaseDir = normalizePath(
     path.resolve(replaceDirPlaceholders(settings.imagePathBaseDirPattern)),
     true,
+  );
+
+  dirs.imagePathAliasRules = buildImagePathAliasRules(
+    settings.imagePathAliases,
+    replaceDirPlaceholders,
   );
 
   // Initialize database

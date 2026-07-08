@@ -61,7 +61,7 @@ title: Configuration Reference
 - 型: `string`
 - 既定値: `[root]`
 - ルート相対パス（`/assets/foo.png`）および先頭 `/` なしの相対パス（`assets/foo.png`）に適用される。先頭 `/` の有無は同等に扱われる
-- リモートURL、data URL、`/@fs/`、ビルド済みアセット（`/_astro/...`）、ページファイル相対パス（`./foo.png`）には適用されない
+- リモートURL、data URL、`/@fs/`、ビルド済みアセット（`/_astro/...`）、ページファイル相対パス（`./foo.png`）、`@` 始まりのパス（`imagePathAliases` を使用）には適用されない
 - 以下のプレースホルダーが使用可能:
     - `[root]`: Astroの `root`
     - `[srcDir]`: Astroの `srcDir`
@@ -80,13 +80,39 @@ astroImageProcessor({
 <Image src="/assets/images/foo.png" alt="..." width={800} height={600} />
 ```
 
+### `imagePathAliases`
+
+`@` で始まる画像 `src` のパスエイリアス
+
+- 型: `Record<string, string>`
+- 既定値: `{}`
+- キーは `@` で始める（例: `@`, `@images`）。値は `imagePathBaseDirPattern` と同じプレースホルダーを使うディレクトリパターン
+- Vite の `resolve.alias` や tsconfig の `paths` とは自動同期しない。ここで明示的に定義する
+- 最長一致のプレフィックスが優先される（`@` より `@images` が先）
+- マッチしない `@` 始まりの `src` はエラーになる
+
+```ts
+astroImageProcessor({
+    imagePathAliases: {
+        '@': '[srcDir]',
+        '@images': '[srcDir]/assets/images',
+    },
+});
+```
+
+```astro
+<Image src="@/assets/foo.png" alt="..." width={800} height={600} />
+```
+
+tsconfig の `"@/*": ["src/*"]` に相当させる場合は `'@': '[srcDir]'` を設定する。
+
 ### `preserveDirectories`
 
 ディレクトリ構造を再現する
 
 - 型: `boolean`
 - 既定値: `false`
-- `imagePathBaseDirPattern` でソースファイルを解決し、`srcDir` からの相対パスで画像を配置する
+- `imagePathAliases` または `imagePathBaseDirPattern` でソースファイルを解決し、`srcDir` からの相対パスで画像を配置する
 - 画像ファイル名は `fileNamePattern` に従って解決される
 - `imagePathBaseDirPattern: '[root]'`（既定）の例
     - 画像を `/src/assets/images/foo/bar.png` に配置し、コンポーネントの `src` プロパティに同じ値を設定
@@ -94,6 +120,10 @@ astroImageProcessor({
     - `<img>` 要素等の `src` `srcset` 属性には `/assets/images/foo/[resolved fileNamePattern]` が出力される
 - `imagePathBaseDirPattern: '[srcDir]'` の例
     - 画像を `src/assets/images/foo/bar.png` に配置し、`src="/assets/images/foo/bar.png"` を指定
+- 出力パスはビルドを実行する Astro アプリの `srcDir` からの相対パスで決まる（コンポーネントの定義場所や参照元パッケージの `srcDir` ではない）
+- ソース画像がそのアプリの `srcDir` 配下にある場合に、既存の例どおり意図したディレクトリ構造になる
+- `imagePathAliases` などで `srcDir` 外（monorepo の別パッケージなど）の画像を参照する場合、出力 URL や `dist` 上のパスに `../` が含まれたり、想定と異なる配置になることがある。画像の読み込み・処理自体は可能だが、ディレクトリ再現の結果は保証されない
+- monorepo で別パッケージの画像を使う場合は、既定の `preserveDirectories: false`（`/_astro/[hash].[ext]`）の利用、または消費側アプリの `srcDir` 配下にアセットを置くことを検討する。エイリアス設定は [`imagePathAliases`](#imagepathaliases) を参照
 
 ### `fileNamePattern`
 

@@ -137,4 +137,29 @@ describe('Unit/intergration/initProcessor', () => {
     rmdirSync(ctx.dirs.imageCacheDir);
     rmdirSync(ctx.dirs.downloadDir);
   });
+
+  test('resolves imagePathAliases', async () => {
+    const ctx = await initProcessor({
+      options: {
+        imageCacheDirPattern: '__test__/image_cache_dir_aliases',
+        downloadDirPattern: '__test__/download_dir_aliases',
+        imagePathAliases: {
+          '@': '[srcDir]',
+          '@images': '[srcDir]/assets/images',
+        },
+      },
+      config: mockAstroConfig,
+      logger: mockLogger,
+    });
+
+    expect(ctx.dirs.imagePathAliasRules).toEqual([
+      { prefix: '@images', baseDir: '/mock/root/src/assets/images/' },
+      { prefix: '@', baseDir: '/mock/root/src/' },
+    ]);
+
+    createdPools.push(ctx.compressionPool);
+
+    rmdirSync(ctx.dirs.imageCacheDir);
+    rmdirSync(ctx.dirs.downloadDir);
+  });
 });

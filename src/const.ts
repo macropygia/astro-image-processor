@@ -39,6 +39,7 @@ export const defaultOptions: Omit<ImgProcOptions, 'scopedStyleStrategy'> = {
   imageAssetsDirPattern: '/[assetsDirName]/',
   imageOutDirPattern: '[outDir]',
   imagePathBaseDirPattern: '[root]',
+  imagePathAliases: {},
   devServerImageEndpoint: '/_aip',
   preserveDirectories: false,
   fileNamePattern: '[name]_[width]x[height]@[descriptor].[ext]?[hash8]',

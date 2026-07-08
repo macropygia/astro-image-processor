@@ -61,7 +61,7 @@ Base directory for resolving local image `src` paths.
 - Type: `string`
 - Default: `[root]`
 - Applies to root-relative paths (`/assets/foo.png`) and bare relative paths (`assets/foo.png`). A leading `/` is optional.
-- Does not apply to remote URLs, data URLs, `/@fs/`, built assets (`/_astro/...`), or page-relative paths (`./foo.png`).
+- Does not apply to remote URLs, data URLs, `/@fs/`, built assets (`/_astro/...`), page-relative paths (`./foo.png`), or `@`-prefixed paths (use `imagePathAliases`).
 - The following placeholders can be used:
     - `[root]`: Replaced with Astro's `root`
     - `[srcDir]`: Replaced with Astro's `srcDir`
@@ -80,13 +80,39 @@ astroImageProcessor({
 <Image src="/assets/images/foo.png" alt="..." width={800} height={600} />
 ```
 
+### `imagePathAliases`
+
+Path aliases for image `src` values starting with `@`.
+
+- Type: `Record<string, string>`
+- Default: `{}`
+- Keys must start with `@` (e.g. `@`, `@images`). Values are directory patterns with the same placeholders as `imagePathBaseDirPattern`.
+- Not synced from Vite `resolve.alias` or tsconfig `paths`; define explicitly here.
+- Longest matching prefix wins (`@images` before `@`).
+- Unknown `@`-prefixed `src` values throw an error.
+
+```ts
+astroImageProcessor({
+    imagePathAliases: {
+        '@': '[srcDir]',
+        '@images': '[srcDir]/assets/images',
+    },
+});
+```
+
+```astro
+<Image src="@/assets/foo.png" alt="..." width={800} height={600} />
+```
+
+To mirror tsconfig `"@/*": ["src/*"]`, set `'@': '[srcDir]'`.
+
 ### `preserveDirectories`
 
 Preserve directory structure for image files.
 
 - Type: `boolean`
 - Default: `false`
-- Place images by paths relative to `srcDir`, using `imagePathBaseDirPattern` to resolve the source file on disk.
+- Place images by paths relative to `srcDir`, using `resolveSourceFilePath` (`imagePathAliases` or `imagePathBaseDirPattern`) to locate the source file on disk.
 - Image filenames are resolved according to `fileNamePattern`.
 - Example with default `imagePathBaseDirPattern: '[root]'`:
     - Place the source file in `/src/assets/images/foo/bar.png` and set the `src` property in the component to the same value.
@@ -94,6 +120,10 @@ Preserve directory structure for image files.
     - The `src` and `srcset` of the `<img>` element will contain `/assets/images/foo/[resolved fileNamePattern]`.
 - Example with `imagePathBaseDirPattern: '[srcDir]'`:
     - Place the source file at `src/assets/images/foo/bar.png` and set `src="/assets/images/foo/bar.png"`.
+- Output paths are computed relative to the consuming Astro app's `srcDir`, not relative to the component file or source package.
+- Works as intended when source images live under that app's `srcDir` (the existing examples assume this).
+- When `imagePathAliases` resolves images outside the app's `srcDir` (e.g. monorepo shared packages), output URLs and `dist` layout may include `../` segments or otherwise differ from in-app assets. File processing still works; only directory preservation may not match expectations.
+- For cross-package images in a monorepo, prefer leaving `preserveDirectories` at `false` (default `/_astro/[hash].[ext]` output), or keep assets under the consuming app's `srcDir`. See also [`imagePathAliases`](#imagepathaliases).
 
 ### `fileNamePattern`
 

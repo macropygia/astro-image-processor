@@ -93,4 +93,38 @@ describe('Unit/api/utils/resolvePathPattern', () => {
       toSrc: '/assets/images/1234567890abcdef.avif',
     });
   });
+
+  test('uses imagePathAliases for @-prefixed src', () => {
+    const src = '@/assets/images/image.png';
+    const dirs = {
+      srcDir: '/project/src/',
+      outDir: '/project/dist/',
+      imageCacheDir: '/project/cache/',
+      imagePathBaseDir: '/project/',
+      imagePathAliasRules: [{ prefix: '@', baseDir: '/project/src/' }],
+    } as ImgProcContextDirectories;
+    const item: ImgProcVariant = {
+      hash: '1234567890abcdef',
+      ext: 'avif',
+      descriptor: '1x',
+      width: 800,
+      height: 600,
+      format: 'avif',
+    };
+
+    expect(
+      resolvePathPattern({
+        src,
+        fileNamePattern: '[hash].[ext]',
+        dirs,
+        resolved: { width: 800, height: 600 },
+        item,
+      }),
+    ).toEqual({
+      from: '/project/cache/1234567890abcdef.avif',
+      to: '/project/dist/assets/images/1234567890abcdef.avif',
+      toDir: '/project/dist/assets/images',
+      toSrc: '/assets/images/1234567890abcdef.avif',
+    });
+  });
 });

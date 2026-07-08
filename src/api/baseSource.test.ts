@@ -101,6 +101,25 @@ describe('Unit/api/BaseSource', () => {
       expect(instance.localSourcePath).toBe('root/src/images/foo.png');
     });
 
+    test('local file (imagePathAliases)', () => {
+      const ctx = {
+        ...mockContext,
+        dirs: {
+          ...mockContext.dirs,
+          imagePathAliasRules: [{ prefix: '@', baseDir: 'root/src/' }],
+        },
+      } as ImgProcContext;
+      const args: BaseSourceArgs = {
+        ctx,
+        componentType: 'img',
+        options: { src: '@/images/foo.png' },
+      };
+      // @ts-ignore
+      const instance = new BaseSource(args);
+
+      expect(instance.localSourcePath).toBe('root/src/images/foo.png');
+    });
+
     test('local file (assets)', () => {
       const args: BaseSourceArgs = {
         ctx: mockContext,
