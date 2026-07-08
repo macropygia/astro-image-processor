@@ -1,5 +1,12 @@
 # astro-image-processor
 
+## 0.2.5
+
+### Patch Changes
+
+- 543ea17: Add `imagePathAliases` integration option to resolve `@`-prefixed local image `src` paths via explicit alias prefixes.
+- 76dae95: Add `imagePathBaseDirPattern` integration option to configure the base directory for resolving local image `src` paths.
+
 ## 0.2.4
 
 ### Patch Changes
