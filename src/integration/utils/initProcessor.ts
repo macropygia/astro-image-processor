@@ -53,7 +53,16 @@ export const initProcessor: InitProcessor = async ({ options, config, logger, co
     downloadDir: '',
     imageOutDir: '',
     imageAssetsDirName: '',
+    imagePathBaseDir: '',
   };
+
+  const replaceDirPlaceholders = (pattern: string) =>
+    pattern
+      .replaceAll('[root]', dirs.rootDir)
+      .replaceAll('[srcDir]', dirs.srcDir)
+      .replaceAll('[publicDir]', dirs.publicDir)
+      .replaceAll('[outDir]', dirs.outDir)
+      .replaceAll('[cacheDir]', dirs.cacheDir);
 
   // Replace placeholders in image cache directory
   dirs.imageCacheDir = normalizePath(
@@ -93,6 +102,11 @@ export const initProcessor: InitProcessor = async ({ options, config, logger, co
   // Replace placeholders in image assets directory
   dirs.imageAssetsDirName = normalizePath(
     path.resolve(settings.imageAssetsDirPattern.replaceAll('[assetsDirName]', dirs.assetsDirName)),
+    true,
+  );
+
+  dirs.imagePathBaseDir = normalizePath(
+    path.resolve(replaceDirPlaceholders(settings.imagePathBaseDirPattern)),
     true,
   );
 

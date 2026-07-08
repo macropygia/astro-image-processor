@@ -62,8 +62,43 @@ describe('Unit/api/BaseSource', () => {
       // @ts-ignore
       const instance = new BaseSource(args);
 
-      expect(instance.localSourcePath).toBe(`${mockContext.dirs.rootDir}path/to/image.jpg`);
+      expect(instance.localSourcePath).toBe(
+        `${mockContext.dirs.imagePathBaseDir}path/to/image.jpg`,
+      );
       expect(instance.type).toBe('local');
+    });
+
+    test('local file without leading slash', () => {
+      const args: BaseSourceArgs = {
+        ctx: mockContext,
+        componentType: 'img',
+        options: { src: 'path/to/image.jpg' },
+      };
+      // @ts-ignore
+      const instance = new BaseSource(args);
+
+      expect(instance.localSourcePath).toBe(
+        `${mockContext.dirs.imagePathBaseDir}path/to/image.jpg`,
+      );
+    });
+
+    test('local file (custom imagePathBaseDir)', () => {
+      const ctx = {
+        ...mockContext,
+        dirs: {
+          ...mockContext.dirs,
+          imagePathBaseDir: 'root/src/',
+        },
+      } as ImgProcContext;
+      const args: BaseSourceArgs = {
+        ctx,
+        componentType: 'img',
+        options: { src: '/images/foo.png' },
+      };
+      // @ts-ignore
+      const instance = new BaseSource(args);
+
+      expect(instance.localSourcePath).toBe('root/src/images/foo.png');
     });
 
     test('local file (assets)', () => {

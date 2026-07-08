@@ -54,18 +54,46 @@ title: Configuration Reference
     - 例えば `disableCopy` を `true` に、この項目を `https://cdn.example.com/assets/` に設定するとHTML出力は `src="https://cdn.example.com/assets/[hash].webp"` のようになる
     - その上で `rsync --update --delete` などで `imageCacheDir` とCDNを同期することで各種リソースの使用を最小化できる
 
+### `imagePathBaseDirPattern`
+
+ローカル画像の `src` パス解決の基準ディレクトリ
+
+- 型: `string`
+- 既定値: `[root]`
+- ルート相対パス（`/assets/foo.png`）および先頭 `/` なしの相対パス（`assets/foo.png`）に適用される。先頭 `/` の有無は同等に扱われる
+- リモートURL、data URL、`/@fs/`、ビルド済みアセット（`/_astro/...`）、ページファイル相対パス（`./foo.png`）には適用されない
+- 以下のプレースホルダーが使用可能:
+    - `[root]`: Astroの `root`
+    - `[srcDir]`: Astroの `srcDir`
+    - `[publicDir]`: Astroの `publicDir`
+    - `[outDir]`: Astroの `outDir`
+    - `[cacheDir]`: Astroの `cacheDir`
+- `[srcDir]` をドキュメントルートにする例:
+
+```ts
+astroImageProcessor({
+    imagePathBaseDirPattern: '[srcDir]',
+});
+```
+
+```astro
+<Image src="/assets/images/foo.png" alt="..." width={800} height={600} />
+```
+
 ### `preserveDirectories`
 
 ディレクトリ構造を再現する
 
 - 型: `boolean`
 - 既定値: `false`
-- Astroの `srcDir` をドキュメントルートと仮定したルート相対パスに画像を配置する
+- `imagePathBaseDirPattern` でソースファイルを解決し、`srcDir` からの相対パスで画像を配置する
 - 画像ファイル名は `fileNamePattern` に従って解決される
-- 例
+- `imagePathBaseDirPattern: '[root]'`（既定）の例
     - 画像を `/src/assets/images/foo/bar.png` に配置し、コンポーネントの `src` プロパティに同じ値を設定
     - 画像は `/dist/assets/images/foo/[resolved fileNamePattern]` に出力される
     - `<img>` 要素等の `src` `srcset` 属性には `/assets/images/foo/[resolved fileNamePattern]` が出力される
+- `imagePathBaseDirPattern: '[srcDir]'` の例
+    - 画像を `src/assets/images/foo/bar.png` に配置し、`src="/assets/images/foo/bar.png"` を指定
 
 ### `fileNamePattern`
 

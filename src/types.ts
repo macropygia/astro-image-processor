@@ -116,6 +116,14 @@ export interface ImgProcSettings {
    */
   imageOutDirPattern: string;
   /**
+   * Base directory for resolving local image `src` paths
+   * - Applies to root-relative paths (`/assets/foo.png`) and bare relative paths (`assets/foo.png`)
+   * - Does not apply to remote URLs, data URLs, `/@fs/`, built assets (`/_astro/...`), or page-relative paths (`./foo.png`)
+   * - Placeholders: `[root]`, `[srcDir]`, `[publicDir]`, `[outDir]`, `[cacheDir]`
+   * @default `[root]`
+   */
+  imagePathBaseDirPattern: string;
+  /**
    * Compressed image serving endpoint for dev server
    * @default "/_aip"
    */
@@ -755,6 +763,8 @@ export type ImgProcContextDirectories = {
   imageAssetsDirName: string;
   /** Processor imageOutDir */
   imageOutDir: string;
+  /** Resolved base directory for local image `src` path resolution */
+  imagePathBaseDir: string;
 };
 
 /**

@@ -25,7 +25,16 @@ describe('Unit/intergration/initProcessor', () => {
     });
 
     const { dirs } = ctx;
-    const { rootDir, srcDir, publicDir, outDir, cacheDir, imageCacheDir, downloadDir } = dirs;
+    const {
+      rootDir,
+      srcDir,
+      publicDir,
+      outDir,
+      cacheDir,
+      imageCacheDir,
+      downloadDir,
+      imagePathBaseDir,
+    } = dirs;
 
     expect(rootDir).toBe('/mock/root/');
     expect(srcDir).toBe('/mock/root/src/');
@@ -34,6 +43,7 @@ describe('Unit/intergration/initProcessor', () => {
     expect(imageCacheDir.endsWith('__test__/image_cache_dir/')).toBeTruthy();
     expect(downloadDir.endsWith('__test__/download_dir/')).toBeTruthy();
     expect(outDir).toBe('/mock/root/dist/');
+    expect(imagePathBaseDir).toBe('/mock/root/');
 
     expect(existsSync(imageCacheDir)).toBeTruthy();
     expect(existsSync(downloadDir)).toBeTruthy();
@@ -102,6 +112,25 @@ describe('Unit/intergration/initProcessor', () => {
     });
 
     expect(ctx.compressionPool.maxThreads).toBe(8);
+
+    createdPools.push(ctx.compressionPool);
+
+    rmdirSync(ctx.dirs.imageCacheDir);
+    rmdirSync(ctx.dirs.downloadDir);
+  });
+
+  test('resolves imagePathBaseDirPattern', async () => {
+    const ctx = await initProcessor({
+      options: {
+        imageCacheDirPattern: '__test__/image_cache_dir_base',
+        downloadDirPattern: '__test__/download_dir_base',
+        imagePathBaseDirPattern: '[srcDir]',
+      },
+      config: mockAstroConfig,
+      logger: mockLogger,
+    });
+
+    expect(ctx.dirs.imagePathBaseDir).toBe('/mock/root/src/');
 
     createdPools.push(ctx.compressionPool);
 

@@ -126,6 +126,7 @@ export const mockContext = {
     assetsDirName: 'assets',
     outDir: 'out/',
     rootDir: 'root/',
+    imagePathBaseDir: 'root/',
     imageCacheDir: 'cache/',
     imageAssetsDirName: 'img/',
     imageOutDir: 'out/img/',

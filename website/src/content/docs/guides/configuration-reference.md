@@ -54,18 +54,46 @@ Image output directory pattern.
     - For example, if `disableCopy` is `true` and this item is set to `https://cdn.example.com/assets/`, the HTML output will be like `src="https://cdn.example.com/assets/[hash].webp"`.
     - Additionally, you can minimize resource usage by synchronizing `imageCacheDir` with the CDN using `rsync --update --delete`, etc.
 
+### `imagePathBaseDirPattern`
+
+Base directory for resolving local image `src` paths.
+
+- Type: `string`
+- Default: `[root]`
+- Applies to root-relative paths (`/assets/foo.png`) and bare relative paths (`assets/foo.png`). A leading `/` is optional.
+- Does not apply to remote URLs, data URLs, `/@fs/`, built assets (`/_astro/...`), or page-relative paths (`./foo.png`).
+- The following placeholders can be used:
+    - `[root]`: Replaced with Astro's `root`
+    - `[srcDir]`: Replaced with Astro's `srcDir`
+    - `[publicDir]`: Replaced with Astro's `publicDir`
+    - `[outDir]`: Replaced with Astro's `outDir`
+    - `[cacheDir]`: Replaced with Astro's `cacheDir`
+- Example with `[srcDir]` as the document root:
+
+```ts
+astroImageProcessor({
+    imagePathBaseDirPattern: '[srcDir]',
+});
+```
+
+```astro
+<Image src="/assets/images/foo.png" alt="..." width={800} height={600} />
+```
+
 ### `preserveDirectories`
 
 Preserve directory structure for image files.
 
 - Type: `boolean`
 - Default: `false`
-- Place images by root-relative paths with `srcDir` as the document root.
+- Place images by paths relative to `srcDir`, using `imagePathBaseDirPattern` to resolve the source file on disk.
 - Image filenames are resolved according to `fileNamePattern`.
-- Example:
+- Example with default `imagePathBaseDirPattern: '[root]'`:
     - Place the source file in `/src/assets/images/foo/bar.png` and set the `src` property in the component to the same value.
     - Image output to `/dist/assets/images/foo/[resolved fileNamePattern]`.
     - The `src` and `srcset` of the `<img>` element will contain `/assets/images/foo/[resolved fileNamePattern]`.
+- Example with `imagePathBaseDirPattern: '[srcDir]'`:
+    - Place the source file at `src/assets/images/foo/bar.png` and set `src="/assets/images/foo/bar.png"`.
 
 ### `fileNamePattern`
 

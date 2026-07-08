@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import type { ImgProcContextDirectories, ImgProcVariant } from '../../types.js';
 import { normalizePath } from './normalizePath.js';
+import { resolveLocalSourcePath } from './resolveLocalSourcePath.js';
 
 type ResolvePathPattern = (args: {
   src: string;
@@ -29,11 +30,12 @@ export const resolvePathPattern: ResolvePathPattern = ({
   resolved,
   item,
 }) => {
-  const { rootDir, srcDir, outDir, imageCacheDir } = dirs;
+  const { srcDir, outDir, imageCacheDir } = dirs;
 
   const from = normalizePath(path.join(imageCacheDir, `${item.hash}.${item.ext}`));
 
-  const srcPath = normalizePath(path.relative(srcDir, path.join(rootDir, src)));
+  const absoluteSrc = resolveLocalSourcePath({ dirs, src });
+  const srcPath = normalizePath(path.relative(srcDir, absoluteSrc));
 
   const srcParts = path.parse(srcPath);
   const toDir = normalizePath(path.join(outDir, srcParts.dir));
